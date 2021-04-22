@@ -36,7 +36,7 @@ const Room = () => {
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
   const [vid, setVid] = useState(false);
   const [mic, setMic] = useState(false);
-  const [workoutType, setWorkoutType] = useState('yt'); // either 'vid' or 'yt'
+  const [workoutType, setWorkoutType] = useState('vid'); // either 'vid' or 'yt'
   const { roomName, room, handleLogout, workout, handleSetWorkout, openSideBar, handleOpenSideBar } = useContext(AppContext);
   const loadingRoomData = useRef(true);
   // Video stuff
@@ -179,7 +179,7 @@ const Room = () => {
   // handles roomData changes from server
   useEffect(() => {
     const handler = (roomDataServer) => {
-      updateRoomData(roomDataServer.workoutType, roomDataServer.workoutID);
+      updateRoomData(roomDataServer.workoutType, roomDataServer.workoutId);
     }
     sckt.socket.on('roomData', handler);
     return () => sckt.socket.off('roomData', handler);
@@ -204,7 +204,7 @@ const Room = () => {
       const roomData = {
         "name": roomName,
         "sid": room.sid,
-        "workoutID": workout.name,
+        "workoutID": workout.workoutName,
         "workoutType": workoutType
       }
       sckt.socket.emit('updateRoomData', roomData, (err) => {});
@@ -232,7 +232,6 @@ const Room = () => {
     }
     loadingRoomData.current = true;
     setWorkoutType(newData.workoutType)
-
     fetch("/api/workouts?name=" + newData.workoutID, {
       method: "GET",
       headers: {

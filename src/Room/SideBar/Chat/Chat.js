@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { sckt } from '../../../Socket';
 import ChatInput from './ChatInput/ChatInput';
 import Messages from './Messages/Messages';
 import { Box, Divider } from '@material-ui/core';
+import {AppContext} from "../../../AppContext"
 
 
 const Chat = ({ currUser, users }) => {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
+    const {room} = useContext(AppContext)
 
     useEffect(() => {
         const handler = (message) => setMessages(messages => [...messages, message]);
@@ -19,7 +21,7 @@ const Chat = ({ currUser, users }) => {
         event.preventDefault();
         let trimmedMessage = message.trim();
         if (trimmedMessage.length > 0) {
-            sckt.socket.emit('sendMessage', trimmedMessage, () => setMessage(''));
+            sckt.socket.emit('sendMessage', {message: trimmedMessage, userSid: room.localParticipant.sid}, () => setMessage(''));
         }
     }
 

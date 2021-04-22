@@ -1,4 +1,6 @@
 const workouts = require('./defaultWorkouts.json')
+const {db} = require('./firebase.js');
+
 
 const getWorkouts = () => {
     return workouts.slice(0, 10)

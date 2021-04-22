@@ -39,7 +39,8 @@
     "socket.io-client": "^2.3.0",
     "twilio": "^3.54.2",
     "twilio-video": "^2.10.0",
-    "aos": "^2.3.4"
+    "aos": "^2.3.4",
+    "firebase-admin": "*"
   },
   "scripts": {
     "start": "react-scripts start",

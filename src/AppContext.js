@@ -62,9 +62,15 @@ const AppContextProvider = ({children}) => {
     setRoomTitle(event.target.value);
   }, []);
 
-  const makeCustomRoom = (event) => {
-    const room_code = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5).toUpperCase();
-    setRoomName(room_code)
+  const makeCustomRoom = async (event) => {
+    const res = await fetch('/api/roomCode', { 
+      method: "GET", 
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    })
+    const roomCode = await res.text();
+    setRoomName(roomCode)
     setUsername("Leader")
     setRoomState('make_custom')
   }
