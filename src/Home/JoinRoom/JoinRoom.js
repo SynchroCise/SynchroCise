@@ -114,7 +114,7 @@ const JoinRoom = () => {
             <Grid item xs={12}>
               <Box mb={4}>
                 <Typography variant="h4">
-                  Room: {roomName}
+                  Room: {roomName.substring(0, 6).toUpperCase()}
                 </Typography>
               </Box>
             </Grid>
@@ -141,7 +141,7 @@ const JoinRoom = () => {
                 placeholder="Room Code:"
                 variant="outlined"
                 fullWidth
-                value={roomName}
+                value={roomName.substring(0, 6).toUpperCase()}
                 disabled
               />
             </Grid>

@@ -272,7 +272,7 @@ const CreateRoom = () => {
                 label="Room Code:"
                 variant="outlined"
                 fullWidth
-                value={roomName}
+                value={roomName.substring(0, 6).toUpperCase()}
                 readOnly
                 disabled
                 InputProps={{

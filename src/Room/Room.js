@@ -361,7 +361,7 @@ const Room = () => {
       <Box display="flex" alignItems="center" justifyContent="center" my={6} className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`}>
         <Grid container >
           <Grid item container justify="space-between" xs={12}>
-            <Typography variant="h4">Room: {roomName}, User: {room.localParticipant.identity}</Typography>
+            <Typography variant="h4">Room: {roomName.substring(0, 6).toUpperCase()}, User: {room.localParticipant.identity}</Typography>
             <IconButton onClick={handleOpenSideBar}>
               {openSideBar ? <ChevronRight /> : <ChevronLeft />}
             </IconButton>
