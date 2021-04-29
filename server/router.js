@@ -37,20 +37,22 @@ router.post('/video/token', (req, res) => {
 });
 
 // WORKOUTS
-router.get('/api/workouts', (req, res) => {
+router.get('/api/workouts', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   const workoutName = req.query.name;
   if (workoutName == undefined) {
-    res.send(JSON.stringify(getWorkouts()));
+    res.send(JSON.stringify(await getWorkouts()));
   } else {
-    res.send(getWorkoutByName(workoutName));
+    const newWorkout = await getWorkoutByName(workoutName)
+    console.log(newWorkout)
+    res.send(newWorkout);
   }
 });
 
-router.post('/api/workouts', (req, res) => {
+router.post('/api/workouts', async (req, res) => {
   res.setHeader('Content-Type', 'text/plain');
   const workout = req.body;
-  const [code, msg] = addWorkout(workout.workoutName, workout.exercises);
+  const [code, msg] = await addWorkout(workout.workoutName, workout.exercises);
   res.status(code).send(msg);
 });
 
@@ -81,6 +83,15 @@ router.post('/api/rooms', async (req, res) => {
   const room = req.body;
   const [code, roomCode] = await addRoom(room.name, room.sid, room.workoutID, room.workoutType);
   res.status(code).send(roomCode);
+});
+
+// SIGN IN/UP
+router.post('/api/signin', (req, res) => {
+
+});
+
+router.post('/api/signup', (req, res) => {
+  
 });
 
 module.exports = router;

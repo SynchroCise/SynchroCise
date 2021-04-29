@@ -14,6 +14,7 @@ const {
     getLeadersInRoom
 } = require('./users.js');
 const { getActiveRooms, getRoomsBySID, updateRoomData } = require('./rooms.js');
+const { getWorkoutById } = require('./workouts.js');
 
 
 const router = require('./router')
@@ -35,28 +36,30 @@ io.on('connection', (socket) => {
         if (error) return callback(error);
         return callback();
     });
-    socket.on('join', async ({ name, room, sid }, callback) => {
-        const { user, error } = await addUser({ socketId:socket.id, name, room, sid });
+    socket.on('join', async ({ name, room, sid, userId }, callback) => {
+        const { user, error } = await addUser({ socketId:socket.id, name, room, sid, userId });
         if (error) return callback('Firebase connection failed');
 
         socket.emit('message', { user: { name: 'admin' }, text: `Hi ${user.name}! Welcome to your new room! You can invite your friends to watch with you by sending them the link to this page.` });
-        socket.emit('roomData', (await getRoomsBySID(user.room))[0]);
+
+        let roomData = (await getRoomsBySID(user.room))[0];
+        roomData['workout'] = await getWorkoutById(roomData.workoutId)
+        socket.emit('roomData', roomData);
+        let roomUsers = await getUsersInRoom(user.room)
+        let leaderList = roomUsers.filter(user => user.isLeader === true).map((obj) => obj.sid);
+        socket.emit('leader', leaderList);
         // socket.emit('message', { user: { name: 'admin' }, text: `${process.env.CLIENT}/room/${user.room}` });
 
         socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has joined` });
-
-        let roomUsers = await getUsersInRoom(user.room)
         // gets video sync data from other user
         if (roomUsers.length > 1) {
             const otherUser = roomUsers.filter((roomUser) => user.id !== roomUser.id)[0]
-            if (otherUser) socket.to(otherUser.sid).emit('getSync', { id: user.socketId });
+            if (otherUser) socket.to(otherUser.socketId).emit('getSync', { id: user.socketId });
         }
 
         socket.join(user.room);
         // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
 
-        let leaderList = (await getLeadersInRoom(user.room)).map((obj) => obj.sid);
-        io.to(user.room).emit('leader', leaderList);
         callback({id: user.id});
     });
     socket.on('disconnect', async () => {
@@ -101,7 +104,8 @@ io.on('connection', (socket) => {
         const room = await updateRoomData(name, workoutID, workoutType);
         // console.log(oldRoom)
         if (room) {
-            socket.broadcast.to(room.twilioRoomSid).emit('roomData', room)
+            room['workout'] = await getWorkoutById(room.workoutId);
+            socket.broadcast.to(room.twilioRoomSid).emit('roomData', room);
         }
     })
     // socket.on('getAllRoomData', ({ }, callback) => {

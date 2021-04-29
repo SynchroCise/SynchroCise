@@ -19,20 +19,32 @@ const checkUser = ({ name, room }) => {
     return {};
 }
 
-const addUser = async ({ socketId, name, room, sid }) => {
+const addUser = async ({ socketId, name, room, sid, userId }) => {
     isLeader = ((await getLeadersInRoom(room)).length > 0) ? false : true;
-    // TODO: Check if the temporary user even exists first when implementing login
-    const docRef = await db.collection('users').add({
-        createdTime: timestamp.now(),
-        displayName: name,
-        twilioRoomSid: room,
-        twilioUserSid: sid,
-        isTemp: true,
-        isLeader: isLeader,
-        socketId: socketId
-    }).catch(error => console.log(error));
-    const user = await getUserById(docRef.id)
-    return { user };
+    const logInUser = (userId) ? (await getUserById(userId)) : false
+    // if user was logged in
+    if (logInUser) {
+        const userRef = db.collection('users').doc(userId);
+        await userRef.set({
+            isLeader: isLeader,
+            twilioRoomSid: room,
+            twilioUserSid: sid,
+            socketId: socketId
+        }, { merge: true }).catch( error => console.log(error));
+        return {user: logInUser}
+    } else {
+        const docRef = await db.collection('users').add({
+            createdTime: timestamp.now(),
+            displayName: name,
+            twilioRoomSid: room,
+            twilioUserSid: sid,
+            isTemp: true,
+            isLeader: isLeader,
+            socketId: socketId
+        }).catch(error => console.log(error));
+        const user = await getUserById(docRef.id)
+        return { user };
+    }    
 };
 
 const removeUser = async (socketId) => {

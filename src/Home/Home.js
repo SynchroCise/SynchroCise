@@ -1,6 +1,7 @@
 import React, {useContext, useState, useEffect}from "react";
 import {useHistory} from 'react-router-dom'
 // import "../media/CoLab.css";
+import LoginDialog from '../Login/LoginDialog';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import {AppContext} from "../AppContext"
@@ -18,7 +19,8 @@ const Home = () => {
   const {joinRoom, roomName, handleRoomNameChange, makeCustomRoom, handleSetRoomName} = useContext(AppContext)
   const rightElement = <FontAwesomeIcon icon={faArrowRight} />;
   const history = useHistory()
-  const [errMessage, setErrMessage] = useState('')
+  const [errMessage, setErrMessage] = useState('');
+
 
   useEffect(() => {
     AOS.init({once: true});
@@ -29,7 +31,7 @@ const Home = () => {
     history.push(RoutesEnum.CreateRoom)
   }
   
-  const handleJoinRoom = (event) =>{
+  const handleJoinRoom = (event) => {
     fetch(`/api/rooms?sid_or_name=${roomName}`, {
       method: "GET",
       headers: {
@@ -55,7 +57,6 @@ const Home = () => {
   }
 
   return (
-    
     <div>
       <Box my={15} mx={6}>
         <Grid container spacing={4} alignItems="center">

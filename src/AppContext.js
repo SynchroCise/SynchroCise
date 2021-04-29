@@ -11,6 +11,7 @@ const AppContextProvider = ({children}) => {
   const [roomState, setRoomState] = useState(null);
   const [roomTitle, setRoomTitle] = useState("")
   const [openSideBar, setOpenSideBar] = useState(true)
+  const [userId, setUserId] = useState('')
 
   const handleSetRoom = (room) => {
     setRoom(room)
@@ -35,6 +36,9 @@ const AppContextProvider = ({children}) => {
   }
   const handleOpenSideBar = () => {
     setOpenSideBar(!openSideBar)
+  }
+  const handleSetUserId = (userId) => {
+    setUserId(userId)
   }
 
   // const createRoom = (room_code) => {
@@ -129,6 +133,8 @@ const AppContextProvider = ({children}) => {
         handleSetWorkout,
         openSideBar,
         handleOpenSideBar,
+        userId,
+        handleSetUserId,
         disconnectRoom,
         joinRoom,
         handleUsernameChange,

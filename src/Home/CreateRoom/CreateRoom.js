@@ -76,7 +76,7 @@ const CreateRoom = () => {
             body: JSON.stringify({
               name: room.name,
               sid: room.sid,
-              workoutID: workout.workoutName,
+              workoutID: workout.id,
               workoutType: 'vid',
             }),
             headers: {
