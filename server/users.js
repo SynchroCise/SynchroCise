@@ -1,8 +1,17 @@
+const { UserBindingInstance } = require('twilio/lib/rest/chat/v2/service/user/userBinding');
 const {db, timestamp} = require('./firebase.js');
+const bcrypt = require('bcrypt');
+
+const isValidPassword = async (user, password) => {
+    console.log('password')
+    return await bcrypt.compare(password, user.password);
+}
 
 const userFromDoc = (doc) => ({
     id: doc.id,
     name: doc.data().displayName,
+    email: doc.data().email,
+    password: doc.data().password,
     room: doc.data().twilioRoomSid,
     sid: doc.data().twilioUserSid,
     isLeader: doc.data().isLeader,
@@ -18,6 +27,17 @@ const checkUser = ({ name, room }) => {
     if (duplicateUser) return { error: 'DUPLICATE_USER' };
     return {};
 }
+
+const createUserLogin = async ({email, password, displayName}) => {
+    const existUser = await getUserByEmail(email);
+    if (existUser && existUser.length > 0) return false
+    const hash = await bcrypt.hash(password, 10);
+    const userRef = db.collection('users').doc()
+    const user = { createdTime: timestamp.now(), email, password:hash, displayName }
+    await userRef.set(user, { merge: true }).catch( error => console.log(error));
+    user['id'] = userRef.id
+    return { user, message:'success' }
+};
 
 const addUser = async ({ socketId, name, room, sid, userId }) => {
     isLeader = ((await getLeadersInRoom(room)).length > 0) ? false : true;
@@ -105,6 +125,8 @@ const getUsersBySid = async (sid) => await getUsersByX('twilioUserSid', sid);
 
 const getUsersInRoom = async (room) => await getUsersByX('twilioRoomSid', room);
 
+const getUserByEmail = async (email, isAuth) => await getUsersByX('email', email);
+
 const getLeadersInRoom = async (room) => {
     let users = await getUsersInRoom(room)
     return users.filter(user => user.isLeader === true)
@@ -119,5 +141,8 @@ module.exports = {
     getUsersBySocketId,
     getUsersByName,
     getUsersBySid,
-    getLeadersInRoom
+    getLeadersInRoom,
+    createUserLogin,
+    getUserByEmail,
+    isValidPassword
 };

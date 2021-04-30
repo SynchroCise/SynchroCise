@@ -2,6 +2,7 @@ const express = require('express');
 const socketio = require('socket.io');
 const http = require('http');
 const bodyParser = require('body-parser');
+const passport = require('passport');
 const pino = require('express-pino-logger')();
 
 const {
@@ -18,6 +19,7 @@ const { getWorkoutById } = require('./workouts.js');
 
 
 const router = require('./router')
+const secureRoute = require('./secure-router');
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
@@ -178,7 +180,8 @@ io.on('connection', (socket) => {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(pino);
-app.use(router);
+app.use('/', router);
+app.use('/user', passport.authenticate('jwt', { session: false }), secureRoute);
 app.use(cors())
 
 
