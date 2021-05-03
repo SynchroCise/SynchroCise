@@ -98,8 +98,7 @@ io.on('connection', (socket) => {
         // update room data here
         const oldRoom = {...getRoom(sid)}
         const room = updateRoomData(sid, name, workoutID, workoutType);
-        console.log(oldRoom)
-        console.log(room)
+
         if (room && oldRoom != room) {
             socket.broadcast.to(room.sid).emit('roomData', room)
         }
@@ -168,6 +167,30 @@ io.on('connection', (socket) => {
         // console.log(admin_msg);
         io.in(room).emit('message', { user: { name: 'admin' }, text: admin_msg });
         callback();
+    });
+
+    // socket.on('muteMic', callback => {
+    //     const user = getUserById(socket.id);
+    //     user.isMuted = !user.isMuted;
+    //     callback();
+    // });
+
+    socket.on('syncWorkout', (params, callback)=> {
+        console.log("in socket")
+        const user = getUserById(socket.id);
+        if (user) {
+            socket.to(user.room).emit('sendWorkoutState', params);
+            callback();
+        }
+    });
+
+    socket.on('startWorkout', (startWorkoutState, callback)=> {
+        console.log("in socket")
+        const user = getUserById(socket.id);
+        if (user) {
+            socket.to(user.room).emit('sendStartWorkoutState', startWorkoutState);
+            callback();
+        }
     });
 });
 

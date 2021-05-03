@@ -8,8 +8,7 @@ import play from "../../media/play.png";
 import { Drawer, Typography, LinearProgress, IconButton, Box, Grid , Divider} from '@material-ui/core';
 import {PlayArrow, Pause} from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
-
-
+import { sckt } from '../../Socket';
 
 const SideBar = ({
     currUser,
@@ -45,6 +44,39 @@ const SideBar = ({
         }
     }, [counter, startWorkout, workoutNumber, workoutTime]);
 
+    // useEffect(() => {
+    //     const sendWorkoutStateHandler = ({
+    //         counterState, 
+    //         startWorkoutState, 
+    //         workoutNumberState, 
+    //         workoutTimeState, 
+    //         exerciseState, 
+    //         completedState, 
+    //         nextUpExerciseState
+    //     }) => {
+    //         setStartWorkout(startWorkoutState)
+    //         setCounter(counterState)
+    //         setWorkoutNumber(workoutNumberState)
+    //         setWorkoutTime(workoutTimeState)
+    //         setExercise(exerciseState);
+    //         setCompleted(completedState);
+    //         setNextUpExercise(nextUpExerciseState)
+    //     }
+
+    //     sckt.socket.on("sendWorkoutState", sendWorkoutStateHandler);
+    //     console.log(startWorkout)
+    //     return () => sckt.socket.off('sendWorkoutState', sendWorkoutStateHandler);
+    // }, []);
+
+    useEffect(() => {
+        const sendStartWorkoutStateHandler = (startWorkoutState ) => {
+            setStartWorkout(startWorkoutState)
+        }
+
+        sckt.socket.on("sendStartWorkoutState", sendStartWorkoutStateHandler);
+        console.log(startWorkout)
+        return () => sckt.socket.off('sendStartWorkoutState', sendStartWorkoutStateHandler);
+    }, []);
 
     useEffect(() => {
         setExercise(workout.exercises[workoutNumber].exercise);
@@ -78,13 +110,34 @@ const SideBar = ({
         </React.Fragment>
     )
 
+    // const handleStartWorkout = () => {
+    //     var startWorkoutState = !startWorkout
+    //     let params = {
+    //         counterState: counter,
+    //         startWorkoutState: startWorkout, 
+    //         workoutNumberState: workoutNumber, 
+    //         workoutTimeState: workoutTime,
+    //         exerciseState: exercise, 
+    //         completedState: completed, 
+    //         nextUpExerciseState: nextUpExercise
+    //       };
+    //     console.log("handle sw")
+    //     sckt.socket.emit('startWorkout', startWorkoutState, () => {setStartWorkout(startWorkoutState)});
+    // }
+    
+    const handleStartWorkout = () => {
+        var startWorkoutState = !startWorkout
+        console.log("handle sw")
+        sckt.socket.emit('startWorkout', startWorkoutState, () => {setStartWorkout(startWorkoutState)});
+    }
+
     const TimerProgressBarMarkup = isYoutube ? <></> : (
         <React.Fragment>
             <Box display="flex" justifyContent="flex-end"><Typography variant="body1">{counter}s</Typography></Box>
             <div><LinearProgress variant="determinate" value={completed} /></div>
             <Box display="flex" justifyContent="flex-end">
                 <IconButton
-                    onClick={() => setStartWorkout(!startWorkout)}>
+                    onClick={handleStartWorkout}>
                     {(startWorkout) ? <Pause/> : <PlayArrow/>}
                 </IconButton>
             </Box>
