@@ -1,25 +1,18 @@
-import React, {useState}from "react";// import "../media/CoLab.css";
+import React, {useContext}from "react";// import "../media/CoLab.css";
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import ToolBar from '@material-ui/core/ToolBar';
 import Button from '@material-ui/core/Button';
-import LoginDialog from '../Login/LoginDialog';
+import AuthDialog from '../Auth/AuthDialog';
+import {AppContext} from "../AppContext"
+
 
 const Navbar = () => {
-  const [openDialog, setOpenDialog] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
-
-  const handleSetOpenDialog = (val) => {
-    setOpenDialog(val);
-  }
+  const {userId, handleSetOpenAuthDialog, handleSetIsSignUp} = useContext(AppContext)
 
   const handleLoginDialogClick = (val) => {
-    setIsSignUp(val);
-    setOpenDialog(true);
-  }
-
-  const handleSetIsSignUp = () => {
-    setIsSignUp(!isSignUp);
+    handleSetIsSignUp(val);
+    handleSetOpenAuthDialog(true);
   }
 
   return (
@@ -28,15 +21,15 @@ const Navbar = () => {
         <Typography variant="h5" style={{flexGrow: 1}} color="secondary">
           SynchroCise
         </Typography>
-        <Button onClick={() => handleLoginDialogClick(false)}>Sign In</Button>
-        <Button color="secondary" onClick={() => handleLoginDialogClick(true)}>Sign Up</Button>
+        {(userId) ? (<div/>) : 
+        (
+          <div>
+            <Button onClick={() => handleLoginDialogClick(false)}>Sign In</Button>
+            <Button color="secondary" onClick={() => handleLoginDialogClick(true)}>Sign Up</Button>
+          </div>
+        )}
       </ToolBar>
-      <LoginDialog
-        openDialog={openDialog}
-        isSignUp={isSignUp}
-        handleSetOpenDialog={handleSetOpenDialog}
-        handleSetIsSignUp={handleSetIsSignUp}
-      />
+      <AuthDialog/>
     </AppBar>
   );
 };

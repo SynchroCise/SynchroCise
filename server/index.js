@@ -4,6 +4,7 @@ const http = require('http');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const pino = require('express-pino-logger')();
+var cookieParser = require('cookie-parser');
 
 const {
     checkUser,
@@ -66,7 +67,7 @@ io.on('connection', (socket) => {
     });
     socket.on('disconnect', async () => {
         const user = await removeUser(socket.id);
-        if (user) {
+        if (user && user.length > 0) {
             socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has left` });
             // socket.broadcast.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
             let leaderList = (await getLeadersInRoom(user.room)).map((obj) => obj.sid);
@@ -75,7 +76,7 @@ io.on('connection', (socket) => {
     });
     socket.on('leaveRoom', async ({ room }) => {
         const user = await removeUser(socket.id);
-        if (user) {
+        if (user && user.length > 0) {
             socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has left` });
             // socket.broadcast.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
 
@@ -180,6 +181,7 @@ io.on('connection', (socket) => {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(pino);
+app.use(cookieParser());
 app.use('/', router);
 app.use('/user', passport.authenticate('jwt', { session: false }), secureRoute);
 app.use(cors())

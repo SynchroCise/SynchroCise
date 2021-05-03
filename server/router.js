@@ -118,12 +118,13 @@ router.post(
           }
           req.login(
             user,
+            { session: false },
             async (error) => {
               if (error) return next(error);
               const body = { id: user.id, email: user.email };
               const token = jwt.sign({ user: body }, process.env.JWT_SECRET);
-
-              return res.json({ token });
+              res.cookie('jwt', token, { httpOnly: true });
+              return res.json({ token, userId: user.id });
             }
           );
         } catch (error) {

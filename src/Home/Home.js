@@ -1,7 +1,6 @@
 import React, {useContext, useState, useEffect}from "react";
 import {useHistory} from 'react-router-dom'
 // import "../media/CoLab.css";
-import LoginDialog from '../Login/LoginDialog';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import {AppContext} from "../AppContext"

@@ -3,7 +3,6 @@ const {db, timestamp} = require('./firebase.js');
 const bcrypt = require('bcrypt');
 
 const isValidPassword = async (user, password) => {
-    console.log('password')
     return await bcrypt.compare(password, user.password);
 }
 
@@ -69,7 +68,8 @@ const addUser = async ({ socketId, name, room, sid, userId }) => {
 
 const removeUser = async (socketId) => {
     const usersToRemove = (await getUsersBySocketId(socketId));
-    if (!usersToRemove) return usersToRemove
+    if (!usersToRemove || usersToRemove.length == 0) return usersToRemove
+    console.log(usersToRemove)
     const userToRemove = usersToRemove[0]
     const userRef = db.collection('users').doc(userToRemove.id);
     if (userToRemove.isTemp) {

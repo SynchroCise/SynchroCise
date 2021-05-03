@@ -19,7 +19,7 @@ import moment from 'moment'
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const {connecting, username, roomName, roomState, roomTitle, workout, handleSetRoom, handleSetRoomName, handleRoomTitle, handleSetConnecting, handleSetWorkout} = useContext(AppContext)
+  const {connecting, username, roomName, roomState, roomTitle, workout, handleSetRoom, handleSetRoomName, handleRoomTitle, handleSetConnecting, handleSetWorkout, checkLoggedIn} = useContext(AppContext)
   const leftElement = <FontAwesomeIcon icon={faArrowLeft} />;
   const rightElement = <FontAwesomeIcon icon={faArrowRight} />;
   const history = useHistory()
@@ -319,7 +319,7 @@ const CreateRoom = () => {
                 <Typography variant="h4" style={{flexGrow: 1}}>Workouts</Typography>
               </Grid>
               <Grid item>
-                <IconButton onClick={()=>{history.push(RoutesEnum.CreateWorkout)}} className={classes.blackButton}><Add /></IconButton>
+                <IconButton onClick={()=>{history.push(RoutesEnum.CreateWorkout);}} className={classes.blackButton}><Add /></IconButton>
               </Grid>
             </Grid>
             <Grid item xs={12}>
