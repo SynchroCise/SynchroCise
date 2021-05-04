@@ -10,6 +10,11 @@ var cookieExtractor = function(req) {
   return token;
 };
 
+const validateEmail = (email) => {
+  const re = /\S+@\S+\.\S+/;
+  return re.test(email);
+}
+
 passport.use(
     'signup',
     new localStrategy(
@@ -21,10 +26,12 @@ passport.use(
       async (req, email, password, done) => {
         try {
           const displayName = req.body.displayName;
-          if (!displayName || displayName == '') return done(null, false, {error: true, message: 'Missing displayName'})
+          if (!displayName || displayName == '') return done(null, false, {error: true, message: 'Missing displayName'});
+          if (!validateEmail(email)) return done(null, false, {error: true, message: 'Invalid Email'});
+
           let {user} = await createUserLogin({ email, password, displayName });
           if (!user) {
-              return done(null, false, {error: true, message: 'User already created'})
+              return done(null, false, {error: true, message: 'Email already used'})
           } 
           return done(null, user, {message: 'Signed In Successfully!'});
         } catch (error) {

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -48,6 +48,24 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignUp({handleSetIsSignUp, handleSubmit}) {
   const classes = useStyles();
+  const [email, setEmail] = useState('')
+  const [errMessage, setErrMessage] = useState('')
+
+  const handleSetEmail = (e) => {
+    setEmail(e.target.value)
+  }
+
+  const validateOnSubmit = async (e) => {
+    e.preventDefault()
+    const re = /\S+@\S+\.\S+/;
+    const isValidEmail =  re.test(email);
+    if (email && isValidEmail) {
+      const { success, errMessage } = await handleSubmit(e);
+      if (!success) setErrMessage(errMessage)
+    } else {
+      setErrMessage('Invalid Email');
+    }
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -59,7 +77,7 @@ export default function SignUp({handleSetIsSignUp, handleSubmit}) {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form onSubmit={handleSubmit} className={classes.form} noValidate>
+        <form onSubmit={validateOnSubmit} className={classes.form} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -82,6 +100,7 @@ export default function SignUp({handleSetIsSignUp, handleSubmit}) {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                onChange={handleSetEmail}
               />
             </Grid>
             <Grid item xs={12}>
@@ -101,6 +120,9 @@ export default function SignUp({handleSetIsSignUp, handleSubmit}) {
                 control={<Checkbox value="allowExtraEmails" color="primary" />}
                 label="I want to receive inspiration, marketing promotions and updates via email."
               />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography color='error' variant='body1'>{errMessage}</Typography>
             </Grid>
           </Grid>
           <Button

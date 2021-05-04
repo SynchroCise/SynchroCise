@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -48,6 +48,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignIn({handleSetIsSignUp, handleSubmit}) {
   const classes = useStyles();
+  const [errMessage, setErrMessage] = useState('')
+
+  const validateOnSubmit = async (e) => {
+    e.preventDefault()
+    const { success, errMessage } = await handleSubmit(e);
+    if (!success) setErrMessage(errMessage)
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -59,7 +66,7 @@ export default function SignIn({handleSetIsSignUp, handleSubmit}) {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form onSubmit={handleSubmit} className={classes.form} noValidate>
+        <form onSubmit={validateOnSubmit} className={classes.form} noValidate>
           <TextField
             variant="outlined"
             margin="normal"
@@ -86,6 +93,7 @@ export default function SignIn({handleSetIsSignUp, handleSubmit}) {
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
+          <Typography color='error' variant='body1'>{errMessage}</Typography>
           <Button
             type="submit"
             fullWidth

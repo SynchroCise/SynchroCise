@@ -19,42 +19,44 @@ export default function LoginDialog() {
         });
         // failed login
         if (!res.ok) {
-            console.log(await res.text());
-            return false
+            const errMessage = await res.text();
+            return {success: false, errMessage}
         }
         const resp = await res.json();
         handleSetUserId(resp.userId); // userId determines whether a person is logged in or not
         handleSetOpenAuthDialog(false);
         
-        return true
+        return { success: true }
     }
     const signUp = async (formData) => {
-        // attemp signup
+        // attempt signup
         const res = await fetch('/signup', {
             method: 'POST',
             body: formData,
         });
         // failed signup
         if (!res.ok) {
-            console.log(await res.text());
-            return false
+            const errMessage = await res.text();
+            return {success: false, errMessage}
         }
         console.log(await res.json())
-        return true
+        return { success: true }
     }
     const handleSignIn = async (event) => {
         event.preventDefault()
         const data = new URLSearchParams(new FormData(event.target));
-        await signIn(data);
+        return await signIn(data);
     }
     const handleSignUp = async (event) => {
         event.preventDefault()
         const data = new URLSearchParams(new FormData(event.target));
         // attemp signup
-        const success = await signUp(data)
+        const { success, errMessage } = await signUp(data)
         if (success) {
-            await signIn(data)
+            const { success, errMessage } = await signIn(data)
+            return {success, errMessage}
         }
+        return {success, errMessage}
     }
 
     return (
