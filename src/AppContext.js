@@ -11,6 +11,7 @@ const AppContextProvider = ({children}) => {
   const [roomState, setRoomState] = useState(null);
   const [roomTitle, setRoomTitle] = useState("")
   const [openSideBar, setOpenSideBar] = useState(true)
+  const [userId, setUserId] = useState('')
 
   const handleSetRoom = (room) => {
     setRoom(room)
@@ -35,6 +36,9 @@ const AppContextProvider = ({children}) => {
   }
   const handleOpenSideBar = () => {
     setOpenSideBar(!openSideBar)
+  }
+  const handleSetUserId = (userId) => {
+    setUserId(userId)
   }
 
   // const createRoom = (room_code) => {
@@ -62,9 +66,15 @@ const AppContextProvider = ({children}) => {
     setRoomTitle(event.target.value);
   }, []);
 
-  const makeCustomRoom = (event) => {
-    const room_code = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5).toUpperCase();
-    setRoomName(room_code)
+  const makeCustomRoom = async (event) => {
+    const res = await fetch('/api/roomCode', { 
+      method: "GET", 
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    })
+    const roomCode = await res.text();
+    setRoomName(roomCode)
     setUsername("Leader")
     setRoomState('make_custom')
   }
@@ -123,6 +133,8 @@ const AppContextProvider = ({children}) => {
         handleSetWorkout,
         openSideBar,
         handleOpenSideBar,
+        userId,
+        handleSetUserId,
         disconnectRoom,
         joinRoom,
         handleUsernameChange,

@@ -19,7 +19,7 @@ import moment from 'moment'
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const {connecting, username, roomName, roomState, roomTitle, workout, handleSetRoom, handleRoomTitle, handleSetConnecting, handleSetWorkout} = useContext(AppContext)
+  const {connecting, username, roomName, roomState, roomTitle, workout, handleSetRoom, handleSetRoomName, handleRoomTitle, handleSetConnecting, handleSetWorkout} = useContext(AppContext)
   const leftElement = <FontAwesomeIcon icon={faArrowLeft} />;
   const rightElement = <FontAwesomeIcon icon={faArrowRight} />;
   const history = useHistory()
@@ -76,16 +76,15 @@ const CreateRoom = () => {
             body: JSON.stringify({
               name: room.name,
               sid: room.sid,
-              workoutID: workout.workoutName,
+              workoutID: workout.id,
               workoutType: 'vid',
             }),
             headers: {
               "Content-Type": "application/json",
             },
           }).then((res) => res.text().then((res) => {
-            console.log(res)
-            handleSetConnecting(false);
             handleSetRoom(room);
+            handleSetConnecting(false);
             history.push(RoutesEnum.Room)
           })).catch((err) => {
             console.error(err);
@@ -273,7 +272,7 @@ const CreateRoom = () => {
                 label="Room Code:"
                 variant="outlined"
                 fullWidth
-                value={roomName}
+                value={roomName.substring(0, 6).toUpperCase()}
                 readOnly
                 disabled
                 InputProps={{

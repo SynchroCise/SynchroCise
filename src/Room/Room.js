@@ -36,9 +36,10 @@ const Room = () => {
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
   const [vid, setVid] = useState(false);
   const [mic, setMic] = useState(false);
-  const [workoutType, setWorkoutType] = useState('yt'); // either 'vid' or 'yt'
-  const { roomName, room, handleLogout, workout, handleSetWorkout, openSideBar, handleOpenSideBar } = useContext(AppContext);
+  const [workoutType, setWorkoutType] = useState('vid'); // either 'vid' or 'yt'
+  const { roomName, room, handleLogout, workout, handleSetWorkout, openSideBar, handleOpenSideBar, handleSetUserId } = useContext(AppContext);
   const loadingRoomData = useRef(true);
+  
   // Video stuff
   const playerRef = useRef(null);
   const [videoProps, setVideoProps] = useState({
@@ -161,11 +162,12 @@ const Room = () => {
     const name = room.localParticipant.identity
 
     sckt.socket.emit('join', { name, room: room.sid, sid }, ({ id }) => {
-            // updateCurrUser({ id });
-            // setTimeout(() => {
-            //   setIsJoined(true);
-            // }, 750);
-          });
+      handleSetUserId(id);
+      // updateCurrUser({ id });
+      // setTimeout(() => {
+      //   setIsJoined(true);
+      // }, 750);
+    });
   }, []);
   // handles leader changes from server
   useEffect(() => {
@@ -179,7 +181,7 @@ const Room = () => {
   // handles roomData changes from server
   useEffect(() => {
     const handler = (roomDataServer) => {
-      updateRoomData(roomDataServer.workoutType, roomDataServer.workoutID);
+      updateRoomData(roomDataServer);
     }
     sckt.socket.on('roomData', handler);
     return () => sckt.socket.off('roomData', handler);
@@ -204,7 +206,7 @@ const Room = () => {
       const roomData = {
         "name": roomName,
         "sid": room.sid,
-        "workoutID": workout.name,
+        "workoutID": workout.id,
         "workoutType": workoutType
       }
       sckt.socket.emit('updateRoomData', roomData, (err) => {});
@@ -223,27 +225,14 @@ const Room = () => {
     }
   }, [participants]);
 
-  const updateRoomData = (newWorkoutType, newWorkoutID) => {
-    const newData = {
-      "name": roomName,
-      "sid": room.sid,
-      "workoutID": newWorkoutID,
-      "workoutType": newWorkoutType
-    }
+  const updateRoomData = (roomData) => {
     loadingRoomData.current = true;
-    setWorkoutType(newData.workoutType)
-
-    fetch("/api/workouts?name=" + newData.workoutID, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((res) => res.json()).then((res) => {
-      loadingRoomData.current = true;
-      handleSetWorkout(res)
-    }).catch((err) => {
-      console.log(err)
-    });
+    if (roomData.workoutType != workoutType) {
+      setWorkoutType(roomData.workoutType)
+    }
+    if (roomData.workout != workout) {
+      handleSetWorkout(roomData.workout)
+    }
   }
 
 
@@ -256,9 +245,9 @@ const Room = () => {
     all_participants = (workoutType == 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
     return all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
-      .map((participant) => (
-        <Grid item xs={3} key={participant.sid}> 
-          <Participant participant={participant} />
+      .map((participant, index) => (
+        <Grid item xs={3}> 
+          <Participant participant={participant} key={participant.sid} />
         </Grid>
       ));
   };
@@ -372,7 +361,7 @@ const Room = () => {
       <Box display="flex" alignItems="center" justifyContent="center" my={6} className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`}>
         <Grid container >
           <Grid item container justify="space-between" xs={12}>
-            <Typography variant="h4">Room: {roomName}, User: {room.localParticipant.identity}</Typography>
+            <Typography variant="h4">Room: {roomName.substring(0, 6).toUpperCase()}, User: {room.localParticipant.identity}</Typography>
             <IconButton onClick={handleOpenSideBar}>
               {openSideBar ? <ChevronRight /> : <ChevronLeft />}
             </IconButton>

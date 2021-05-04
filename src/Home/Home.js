@@ -15,10 +15,11 @@ import "aos/dist/aos.css";
 
 // this component renders form to be passed to VideoChat.js
 const Home = () => {
-  const {joinRoom, roomName, handleRoomNameChange, makeCustomRoom} = useContext(AppContext)
+  const {joinRoom, roomName, handleRoomNameChange, makeCustomRoom, handleSetRoomName} = useContext(AppContext)
   const rightElement = <FontAwesomeIcon icon={faArrowRight} />;
   const history = useHistory()
-  const [errMessage, setErrMessage] = useState('')
+  const [errMessage, setErrMessage] = useState('');
+
 
   useEffect(() => {
     AOS.init({once: true});
@@ -29,7 +30,7 @@ const Home = () => {
     history.push(RoutesEnum.CreateRoom)
   }
   
-  const handleJoinRoom = (event) =>{
+  const handleJoinRoom = (event) => {
     fetch(`/api/rooms?sid_or_name=${roomName}`, {
       method: "GET",
       headers: {
@@ -37,8 +38,9 @@ const Home = () => {
       },
     }).then((res) => {
       if (res.ok) {
-        res.text().then((res) => {
+        res.json().then((room) => {
           joinRoom()
+          handleSetRoomName(room.id)
           history.push(RoutesEnum.JoinRoom)
         });
       } else {
@@ -54,7 +56,6 @@ const Home = () => {
   }
 
   return (
-    
     <div>
       <Box my={15} mx={6}>
         <Grid container spacing={4} alignItems="center">
