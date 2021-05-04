@@ -1,5 +1,6 @@
 const workouts = require('./defaultWorkouts.json')
 const {db, timestamp} = require('./firebase.js');
+const { getUserById } = require('./users');
 
 
 const workoutFromDoc = (doc) => ({
@@ -41,6 +42,7 @@ const addWorkout = async (workoutName, exercises, userId) => {
         createdTime: timestamp.now(),
         exercises: exercises,
         workoutName: workoutName,
+        userId: userId
     }).catch(error => {return [400, 'ERROR']});
     return [200, 'Success']
 };

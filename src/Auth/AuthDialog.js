@@ -23,7 +23,6 @@ export default function LoginDialog() {
             return false
         }
         const resp = await res.json();
-        console.log(resp)
         handleSetUserId(resp.userId); // userId determines whether a person is logged in or not
         handleSetOpenAuthDialog(false);
         
