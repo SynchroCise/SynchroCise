@@ -37,7 +37,7 @@ const Room = () => {
   const [vid, setVid] = useState(false);
   const [mic, setMic] = useState(false);
   const [workoutType, setWorkoutType] = useState('vid'); // either 'vid' or 'yt'
-  const { roomName, room, handleLogout, workout, handleSetWorkout, openSideBar, handleOpenSideBar, handleSetUserId } = useContext(AppContext);
+  const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar } = useContext(AppContext);
   const loadingRoomData = useRef(true);
   
   // Video stuff
@@ -161,8 +161,7 @@ const Room = () => {
     const sid = room.localParticipant.sid;
     const name = room.localParticipant.identity
 
-    sckt.socket.emit('join', { name, room: room.sid, sid }, ({ id }) => {
-      handleSetUserId(id);
+    sckt.socket.emit('join', { name, room: room.sid, sid, userId}, ({ id }) => {
       // updateCurrUser({ id });
       // setTimeout(() => {
       //   setIsJoined(true);
@@ -435,7 +434,7 @@ const Room = () => {
         </Grid>
       </Box>
       <SideBar 
-        handleLogout={handleLogout}
+        handleLeaveRoom={handleLeaveRoom}
         currUser={room.localParticipant}
         users={participants}
         isYoutube={workoutType == 'yt' ? 1 : 0}

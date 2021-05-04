@@ -64,7 +64,7 @@ const CreateWorkout = () => {
     setSelectedExercise(null);
     if (exercises.length > 0 && badExerciseIndices.length == 0) {
       const newWorkout = { workoutName, exercises }
-      fetch("/api/workouts", {
+      fetch("/user/addWorkout", {
         method: "POST",
         body: JSON.stringify(newWorkout),
         headers: {

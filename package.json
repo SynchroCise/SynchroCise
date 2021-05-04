@@ -40,7 +40,13 @@
     "twilio": "^3.54.2",
     "twilio-video": "^2.10.0",
     "aos": "^2.3.4",
-    "firebase-admin": "*"
+    "firebase-admin": "*",
+    "bcrypt": "^4.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "passport": "0.4.1",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "cookie-parser": "*"
   },
   "scripts": {
     "start": "react-scripts start",

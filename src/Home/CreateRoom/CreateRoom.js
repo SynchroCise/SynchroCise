@@ -19,9 +19,7 @@ import moment from 'moment'
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const {connecting, username, roomName, roomState, roomTitle, workout, handleSetRoom, handleSetRoomName, handleRoomTitle, handleSetConnecting, handleSetWorkout} = useContext(AppContext)
-  const leftElement = <FontAwesomeIcon icon={faArrowLeft} />;
-  const rightElement = <FontAwesomeIcon icon={faArrowRight} />;
+  const {userId, connecting, username, roomName, roomState, roomTitle, workout, handleSetRoom, handleSetRoomName, handleRoomTitle, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog} = useContext(AppContext)
   const history = useHistory()
   const [selectedWorkout, setSelectedWorkout] = useState(0);
   const [defaultWorkout, setDefaultWorkout] = useState([]);
@@ -99,43 +97,6 @@ const CreateRoom = () => {
     [roomName, username, workout]
   );
 
-  const makeYoutubeMarkup = (
-    <>
-      <button className="pleftIcon">{leftElement}</button>
-      <p className="pworkout">Follow a Work Out</p>
-      <div className="form-floating mb-3">
-        <button
-          className="text-align-center youtubeIcon"
-          type="submit"
-          style={{ position: "relative", left: "3rem" }}
-        >
-          Update Link
-        </button>
-
-        <img
-          src={youtubeimg}
-          alt="Logo"
-          style={{
-            position: "relative",
-            left: "-18rem",
-            width: "13rem",
-            height: "8rem",
-            marginTop: "1rem",
-          }}
-        ></img>
-        <p className="pdesc">
-          20 MIN FULL BODY WORKOUT - Intense Version / No Equipment I Pamela
-          Reif <br></br>
-          <br></br>
-          <br></br>
-          <p>
-            <strong>Pamela Reif</strong>
-          </p>
-        </p>
-      </div>
-    </>
-  )
-
   const handleSelect = value => () => {
     setSelectedWorkout(value)
     handleSetWorkout(defaultWorkout[value])
@@ -160,7 +121,7 @@ const CreateRoom = () => {
             </IconButton>
           </TableCell>
           <TableCell className={classes.tableCell} onClick={handleSelect(index)}>{row.workoutName}</TableCell>
-          <TableCell className={classes.tableCell} onClick={handleSelect(index)} align="right">Test User</TableCell>
+          <TableCell className={classes.tableCell} onClick={handleSelect(index)} align="right">{row.userId}</TableCell>
           <TableCell className={classes.tableCell} onClick={handleSelect(index)} align="right">{fancyTimeFormat(row.exercises.reduce((a, b) => a + b.time, 0))}</TableCell>
         </TableRow>
         <TableRow>
@@ -184,11 +145,6 @@ const CreateRoom = () => {
         </TableRow>
       </React.Fragment>
     );
-    // return (
-    //   <ListItem button key={index} onClick={handleSelect(index)} selected={Boolean(index==selectedWorkout)}>
-    //     <ListItemText primary={defaultWorkout[index].workoutName} />
-    //   </ListItem>
-    // )
   }
 
   // https://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds
@@ -253,6 +209,14 @@ const CreateRoom = () => {
       </TableBody>
     </Table>
   )
+
+  const handleAddWorkout = () => {
+    if (userId) {
+      history.push(RoutesEnum.CreateWorkout);
+    } else {
+      handleSetOpenAuthDialog(true);
+    }
+  }
 
   return (
     <Box display="flex" alignItems="center" justifyContent="center" mx={12} my={6}>
@@ -319,7 +283,7 @@ const CreateRoom = () => {
                 <Typography variant="h4" style={{flexGrow: 1}}>Workouts</Typography>
               </Grid>
               <Grid item>
-                <IconButton onClick={()=>{history.push(RoutesEnum.CreateWorkout)}} className={classes.blackButton}><Add /></IconButton>
+                <IconButton onClick={handleAddWorkout} className={classes.blackButton}><Add /></IconButton>
               </Grid>
             </Grid>
             <Grid item xs={12}>

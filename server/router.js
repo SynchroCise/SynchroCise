@@ -1,10 +1,14 @@
 const express = require('express');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
 const { videoToken } = require('./tokens');
 const config = require('./config');
 const router = express.Router();
+require('./auth');
 
-const { getWorkouts, addWorkout, getWorkoutByName } = require('./workouts.js');
+const { getWorkouts, getWorkoutByName } = require('./workouts.js');
 const { addRoom, getRoomCode, getRoomsByCode} = require('./rooms.js');
+const { reservationsUrl } = require('twilio/lib/jwt/taskrouter/util');
 ;
 const sendTokenResponse = (token, res) => {
   res.set('Content-Type', 'application/json');
@@ -44,16 +48,8 @@ router.get('/api/workouts', async (req, res) => {
     res.send(JSON.stringify(await getWorkouts()));
   } else {
     const newWorkout = await getWorkoutByName(workoutName)
-    console.log(newWorkout)
     res.send(newWorkout);
   }
-});
-
-router.post('/api/workouts', async (req, res) => {
-  res.setHeader('Content-Type', 'text/plain');
-  const workout = req.body;
-  const [code, msg] = await addWorkout(workout.workoutName, workout.exercises);
-  res.status(code).send(msg);
 });
 
 // ROOMS
@@ -85,13 +81,52 @@ router.post('/api/rooms', async (req, res) => {
   res.status(code).send(roomCode);
 });
 
-// SIGN IN/UP
-router.post('/api/signin', (req, res) => {
+// AUTHENTICATION
+router.post(
+  '/signup',
+  (req, res, next) => {
+    passport.authenticate('signup', (err, user, info) => {
+      if (err) { return next(err) }
+      if (info.error) { return res.status(401).send(info.message) }
+      res.json({
+        message: 'Signup successful',
+        user: user
+      });
+    })(req, res, next);
+  });
 
-});
+router.post(
+  '/login',
+  async (req, res, next) => {
+    passport.authenticate(
+      'login',
+      async (err, user, info) => {
+        try {
+          if (info.error) {
+            res.status(401).send(info.message)
+          }
+           if (err || !user) {
+            const error = new Error('An error occurred.');
+            return next(error);
+          }
+          req.login(
+            user,
+            { session: false },
+            async (error) => {
+              if (error) return next(error);
+              const body = { id: user.id, email: user.email };
+              const token = jwt.sign({ user: body }, process.env.JWT_SECRET);
+              res.cookie('jwt', token, { httpOnly: true });
+              return res.json({ token, userId: user.id });
+            }
+          );
+        } catch (error) {
+          return next(error);
+        }
+      }
+    )(req, res, next);
+  }
+);
 
-router.post('/api/signup', (req, res) => {
-  
-});
 
 module.exports = router;

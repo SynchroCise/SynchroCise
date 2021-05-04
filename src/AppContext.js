@@ -12,6 +12,8 @@ const AppContextProvider = ({children}) => {
   const [roomTitle, setRoomTitle] = useState("")
   const [openSideBar, setOpenSideBar] = useState(true)
   const [userId, setUserId] = useState('')
+  const [openAuthDialog, setOpenAuthDialog] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
 
   const handleSetRoom = (room) => {
     setRoom(room)
@@ -39,6 +41,12 @@ const AppContextProvider = ({children}) => {
   }
   const handleSetUserId = (userId) => {
     setUserId(userId)
+  }
+  const handleSetOpenAuthDialog = (val) => {
+    setOpenAuthDialog(val);
+  }
+  const handleSetIsSignUp = (val) => {
+    setIsSignUp(val);
   }
 
   // const createRoom = (room_code) => {
@@ -72,7 +80,7 @@ const AppContextProvider = ({children}) => {
       headers: {
         "Content-Type": "text/plain",
       },
-    })
+    });
     const roomCode = await res.text();
     setRoomName(roomCode)
     setUsername("Leader")
@@ -83,37 +91,63 @@ const AppContextProvider = ({children}) => {
     handleSetRoomName(event.target.value);
   }, []);
 
-    // ejects user from room and return them to lobby
-    const handleLogout = useCallback(() => {
-      handleSetRoom((prevRoom) => {
-        if (prevRoom) {
-          prevRoom.localParticipant.tracks.forEach((trackPub) => {
-            trackPub.track.stop();
-          });
-          prevRoom.disconnect();
-        }
-        return null;
-      });
-    }, []);
+  const checkLoggedIn = async () => {
+    const res = await fetch('/user/profile', {
+      method: 'GET',
+    });
+    if (!res.ok) {
+      setUserId('');
+      return false;
+    }
+    const resp = await res.json()
+    setUserId(resp.user.id)
+    return true;
+  }
+  const handleLogout = async () => {
+    const res = await fetch('/user/logout', { method: "POST" });
+    if (res.ok) {
+      setUserId('');
+    }
+  }
 
-    useEffect(() => {
-      if (room) {
-        const tidyUp = (event) => {
-          if (event.persisted) {
-            return;
-          }
-          if (room) {
-            handleLogout();
-          }
-        };
-        window.addEventListener("pagehide", tidyUp);
-        window.addEventListener("beforeunload", tidyUp);
-        return () => {
-          window.removeEventListener("pagehide", tidyUp);
-          window.removeEventListener("beforeunload", tidyUp);
-        };
+  // ejects user from room and return them to lobby
+  const handleLeaveRoom = useCallback(() => {
+    handleSetRoom((prevRoom) => {
+      if (prevRoom) {
+        prevRoom.localParticipant.tracks.forEach((trackPub) => {
+          trackPub.track.stop();
+        });
+        prevRoom.disconnect();
       }
-    }, [room, handleLogout]);
+      return null;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (room) {
+      const tidyUp = (event) => {
+        if (event.persisted) {
+          return;
+        }
+        if (room) {
+          handleLeaveRoom();
+        }
+      };
+      window.addEventListener("pagehide", tidyUp);
+      window.addEventListener("beforeunload", tidyUp);
+      return () => {
+        window.removeEventListener("pagehide", tidyUp);
+        window.removeEventListener("beforeunload", tidyUp);
+      };
+    }
+  }, [room, handleLeaveRoom]);
+
+  useEffect(() => {
+    if (!userId) {
+      checkLoggedIn()
+    }
+  }, [])
+
 
   return (
       <AppContext.Provider value={{
@@ -134,6 +168,10 @@ const AppContextProvider = ({children}) => {
         openSideBar,
         handleOpenSideBar,
         userId,
+        openAuthDialog,
+        handleSetOpenAuthDialog,
+        isSignUp,
+        handleSetIsSignUp,
         handleSetUserId,
         disconnectRoom,
         joinRoom,
@@ -141,6 +179,8 @@ const AppContextProvider = ({children}) => {
         handleRoomTitle,
         makeCustomRoom,
         handleRoomNameChange,
+        handleLeaveRoom,
+        checkLoggedIn,
         handleLogout
       }}>
           {children}

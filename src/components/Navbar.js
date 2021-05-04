@@ -1,23 +1,35 @@
-import React from "react";
-// import "../media/CoLab.css";
+import React, {useContext}from "react";// import "../media/CoLab.css";
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import ToolBar from '@material-ui/core/ToolBar';
 import Button from '@material-ui/core/Button';
+import AuthDialog from '../Auth/AuthDialog';
+import {AppContext} from "../AppContext"
 
-
-import logo from "../media/sivitus_logo_blue-01.png";
 
 const Navbar = () => {
+  const {userId, handleSetOpenAuthDialog, handleSetIsSignUp, handleLogout} = useContext(AppContext)
+
+  const handleLoginDialogClick = (val) => {
+    handleSetIsSignUp(val);
+    handleSetOpenAuthDialog(true);
+  }
+
   return (
     <AppBar position="static">
       <ToolBar>
         <Typography variant="h5" style={{flexGrow: 1}} color="secondary">
           SynchroCise
         </Typography>
-        <Button>Sign In</Button>
-        <Button color="secondary">Sign Up</Button>
+        {(userId) ? (<Button onClick={handleLogout}>Logout</Button>) : 
+        (
+          <div>
+            <Button onClick={() => handleLoginDialogClick(false)}>Sign In</Button>
+            <Button color="secondary" onClick={() => handleLoginDialogClick(true)}>Sign Up</Button>
+          </div>
+        )}
       </ToolBar>
+      <AuthDialog/>
     </AppBar>
   );
 };

@@ -26,10 +26,9 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="app">
-        <Navbar />
-
         <main>
           <AppContextProvider>
+            <Navbar />
             <Router>
               <Route path={RoutesEnum.Home} exact component={Home} />
               <Route path={RoutesEnum.CreateRoom} component={CreateRoom} />
