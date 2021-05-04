@@ -12,4 +12,11 @@ router.get(
   }
 );
 
+router.post(
+  '/logout',
+  async (req, res, next) => {
+    res.status(202).clearCookie('jwt').send('Cookie cleared')
+  }
+)
+
 module.exports = router;

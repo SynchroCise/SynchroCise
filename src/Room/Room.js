@@ -37,7 +37,7 @@ const Room = () => {
   const [vid, setVid] = useState(false);
   const [mic, setMic] = useState(false);
   const [workoutType, setWorkoutType] = useState('vid'); // either 'vid' or 'yt'
-  const { roomName, room, handleLogout, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar } = useContext(AppContext);
+  const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar } = useContext(AppContext);
   const loadingRoomData = useRef(true);
   
   // Video stuff
@@ -434,7 +434,7 @@ const Room = () => {
         </Grid>
       </Box>
       <SideBar 
-        handleLogout={handleLogout}
+        handleLeaveRoom={handleLeaveRoom}
         currUser={room.localParticipant}
         users={participants}
         isYoutube={workoutType == 'yt' ? 1 : 0}

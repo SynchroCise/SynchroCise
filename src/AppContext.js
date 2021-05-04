@@ -80,7 +80,7 @@ const AppContextProvider = ({children}) => {
       headers: {
         "Content-Type": "text/plain",
       },
-    })
+    });
     const roomCode = await res.text();
     setRoomName(roomCode)
     setUsername("Leader")
@@ -103,9 +103,15 @@ const AppContextProvider = ({children}) => {
     setUserId(resp.user.id)
     return true;
   }
+  const handleLogout = async () => {
+    const res = await fetch('/user/logout', { method: "POST" });
+    if (res.ok) {
+      setUserId('');
+    }
+  }
 
   // ejects user from room and return them to lobby
-  const handleLogout = useCallback(() => {
+  const handleLeaveRoom = useCallback(() => {
     handleSetRoom((prevRoom) => {
       if (prevRoom) {
         prevRoom.localParticipant.tracks.forEach((trackPub) => {
@@ -124,7 +130,7 @@ const AppContextProvider = ({children}) => {
           return;
         }
         if (room) {
-          handleLogout();
+          handleLeaveRoom();
         }
       };
       window.addEventListener("pagehide", tidyUp);
@@ -134,7 +140,13 @@ const AppContextProvider = ({children}) => {
         window.removeEventListener("beforeunload", tidyUp);
       };
     }
-  }, [room, handleLogout]);
+  }, [room, handleLeaveRoom]);
+
+  useEffect(() => {
+    if (!userId) {
+      checkLoggedIn()
+    }
+  }, [])
 
 
   return (
@@ -167,8 +179,9 @@ const AppContextProvider = ({children}) => {
         handleRoomTitle,
         makeCustomRoom,
         handleRoomNameChange,
-        handleLogout,
-        checkLoggedIn
+        handleLeaveRoom,
+        checkLoggedIn,
+        handleLogout
       }}>
           {children}
       </AppContext.Provider>

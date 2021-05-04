@@ -6,7 +6,6 @@ const { createUserLogin, getUserByEmail, isValidPassword } = require('./users.js
 
 var cookieExtractor = function(req) {
   var token = null;
-  console.log(req.cookies)
   if (req && req.cookies) token = req.cookies['jwt'];
   return token;
 };
