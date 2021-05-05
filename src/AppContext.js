@@ -83,7 +83,6 @@ const AppContextProvider = ({children}) => {
     });
     const roomCode = await res.text();
     setRoomName(roomCode)
-    setUsername("Leader")
     setRoomState('make_custom')
   }
 
@@ -101,6 +100,7 @@ const AppContextProvider = ({children}) => {
     }
     const resp = await res.json()
     setUserId(resp.user.id)
+    setUsername(resp.user.displayName)
     return true;
   }
   const handleLogout = async () => {

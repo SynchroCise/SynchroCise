@@ -12,14 +12,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import { FormControlLabel, Switch, IconButton, ListItem, ListItemText, Box, Typography, TextField, InputAdornment, Grid,} from '@material-ui/core';
 import { Table, TableBody, TableCell, TableHead, TableRow, Collapse } from '@material-ui/core';
 
-import { LockOutlined, CreateOutlined, Add, ArrowBack, ArrowForward, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { FixedSizeList } from 'react-window';
 import moment from 'moment'
 
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const {userId, connecting, username, roomName, roomState, roomTitle, workout, handleSetRoom, handleSetRoomName, handleRoomTitle, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog} = useContext(AppContext)
+  const {userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog} = useContext(AppContext)
   const history = useHistory()
   const [selectedWorkout, setSelectedWorkout] = useState(0);
   const [defaultWorkout, setDefaultWorkout] = useState([]);
@@ -233,7 +233,7 @@ const CreateRoom = () => {
             </Grid>
             <Grid item xs={5}>
               <TextField
-                label="Room Code:"
+                label="Room Code"
                 variant="outlined"
                 fullWidth
                 value={roomName.substring(0, 6).toUpperCase()}
@@ -251,14 +251,17 @@ const CreateRoom = () => {
             <Grid item xs={7}/>
             <Grid item xs={5}>
               <TextField
-                placeholder="Room Password:"
+                label="Display Name"
                 variant="outlined"
                 fullWidth
+                value={username}
+                onChange={handleUsernameChange}
                 readOnly={connecting}
+                required
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <LockOutlined />
+                      <PersonOutlined />
                     </InputAdornment>
                   ),
                 }}
