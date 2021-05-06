@@ -15,8 +15,10 @@ import { makeStyles } from "@material-ui/core/styles";
 // this component renders form to be passed to VideoChat.js
 const JoinRoom = () => {
   const {connecting,username, roomName, handleUsernameChange, handleSetRoom, handleRoomTitle, handleSetConnecting} = useContext(AppContext)
-  const rightElement = <FontAwesomeIcon icon={faArrowRight} />;
   const [videoTracks, setVideoTracks] = useState([]);
+  const [audioTracks, setAudioTracks] = useState([]);
+  const [vid, setVid] = useState(true);
+  const [mic, setMic] = useState(true);
 
   const videoRef = useRef(); 
   const videoContainerRef = useRef();
@@ -24,15 +26,16 @@ const JoinRoom = () => {
 
   // create local video track
   useEffect(() => {
-    async function getLocalTrack() {
+    async function getLocalVideoTrack() {
       const videoTrack = await Video.createLocalVideoTrack();
       setVideoTracks(() => [...videoTracks, videoTrack]);
     }
-    getLocalTrack()
-    // const tracks = await createLocalTracks({
-    //   audio: true,
-    //   video: { facingMode: 'user' }
-    // });
+    async function getLocalAudioTrack() {
+      const audioTrack = await Video.createLocalAudioTrack();
+      setAudioTracks(() => [...audioTracks, audioTrack]);
+    }
+    getLocalVideoTrack()
+    getLocalAudioTrack()
   }, [])
 
   useEffect(() => {
@@ -45,10 +48,29 @@ const JoinRoom = () => {
     }
   }, [videoTracks]);
 
+  const handleMic = () => {
+    audioTracks.forEach(track => {
+      (mic) ? track.disable() : track.enable()
+    });
+    setMic(!mic);
+  };
+
+  const handleVid = () => {
+    videoTracks.forEach(track => {
+      (vid) ? track.disable() : track.enable()
+    });
+    setVid(!vid);
+  };
+
   const handleSubmit = useCallback(
     async (event) => {
       event.preventDefault();
       handleSetConnecting(true);
+      if (!roomName) {
+        handleSetConnecting(false);
+        history.push(RoutesEnum.Home)
+        return;
+      }
       const data = await fetch("/video/token", {
         method: "POST",
         body: JSON.stringify({
@@ -66,7 +88,7 @@ const JoinRoom = () => {
       // });
       Video.connect(data.token, {
         name: roomName,
-        tracks: videoTracks
+        tracks: videoTracks.concat(audioTracks)
       })
         .then((room) => {
           room.localParticipant.tracks.forEach(localTracks => {
@@ -160,15 +182,17 @@ const JoinRoom = () => {
             <Grid item xs={1}>
               <IconButton
                 color="primary"
-                className={classes.blackContainedButton}>
-                <Videocam/>
+                className={classes.blackContainedButton}
+                onClick={handleVid}>
+                {vid ? <Videocam/> : <VideocamOff/>}
               </IconButton>
             </Grid>
             <Grid item xs={1}>
               <IconButton
                 color="primary"
-                className={classes.blackContainedButton}>
-                <Mic/>
+                className={classes.blackContainedButton}
+                onClick={handleMic}>
+                {mic ? <Mic/> : <MicOff/>}
               </IconButton>
             </Grid>
           </Grid>
