@@ -141,7 +141,7 @@ const JoinRoom = () => {
                 placeholder="Room Code:"
                 variant="outlined"
                 fullWidth
-                value={roomName}
+                value={"Room Code: " + roomName}
                 disabled
               />
             </Grid>
@@ -149,12 +149,12 @@ const JoinRoom = () => {
             <Grid item xs={12}><hr/></Grid>
             <Grid item xs={12}>
               <Box display="flex" justifyContent="center">
-                <Typography variant="h4">How you'll appear</Typography>
+                <Typography variant="h5">How you'll appear</Typography>
               </Box>
             </Grid>
             <Grid item xs={12}>
               <Box display="flex" justifyContent="center" ref={videoContainerRef}>
-                {(videoRef) ? <video ref={videoRef} autoPlay={true}  style={{width: "100%", maxHeight: "100%"}}/> : ''}
+                {(videoRef) ? <video ref={videoRef} autoPlay={true}  style={{width: "40%", maxHeight: "40%"}}/> : ''}
               </Box>
             </Grid>
             <Grid item xs={1}>

@@ -34,8 +34,8 @@ const Room = () => {
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
-  const [vid, setVid] = useState(false);
-  const [mic, setMic] = useState(false);
+  const [vidOff, setVidOff] = useState(false);
+  const [micMuted, setMicMuted] = useState(false);
   const [workoutType, setWorkoutType] = useState('yt'); // either 'vid' or 'yt'
   const { roomName, room, handleLogout, workout, handleSetWorkout, openSideBar, handleOpenSideBar } = useContext(AppContext);
   const loadingRoomData = useRef(true);
@@ -249,11 +249,11 @@ const Room = () => {
 
   // show all the particpants in the room
   const remoteParticipants = () => {
-    if (participants.length < 1) {
-      return `No Other Participants`;
-    }
+    // if (participants.length < 1) {
+    //   return `No Other Participants`;
+    // }
     let all_participants = [...participants, room.localParticipant];
-    all_participants = (workoutType == 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
+    all_participants = (true) ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
     return all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant) => (
@@ -283,13 +283,23 @@ const Room = () => {
         <Participant
           key={room.localParticipant.sid}
           participant={room.localParticipant}
+          micMuted
         />
       );
     }
   };
 
+  const handleMic = () => {
+    sckt.socket.emit('muteMic', () => setMicMuted(!micMuted));
+    console.log(room.localParticipant)
+  };
+
+  const handleVid = () => {
+    setVidOff(!vidOff);
+  };
+
   const spawnVid = () => {
-    if (vid === false) {
+    if (vidOff === false) {
       return (
         <button className="btn element" onClick={handleVid}>
           {VideoElement}
@@ -305,7 +315,7 @@ const Room = () => {
   };
 
   const spawnMic = () => {
-    if (mic === false) {
+    if (micMuted === false) {
       return (
         <button className="element" onClick={handleMic}>
           {MicElement}
@@ -318,20 +328,6 @@ const Room = () => {
         </button>
       );
     }
-  };
-
-  const spawnIcons = () => {
-    spawnMic();
-    spawnVid();
-  };
-
-  const handleMic = () => {
-    setMic(!mic);
-  };
-
-  const handleVid = () => {
-    setVid(!vid);
-    console.log(vid);
   };
 
   const handleChange = (value) => {
@@ -366,10 +362,11 @@ const Room = () => {
     },
   }));
   const classes = useStyles();
+  const bottonControlWidth = openSideBar ? '70%' : '95%'
 
   return (
-    <React.Fragment>
-      <Box display="flex" alignItems="center" justifyContent="center" my={6} className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`}>
+    <div style={{ height: '100%' }}>
+      <Box display="block" alignItems="center" justifyContent="center" height="80vh" my={1} className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`}>
         <Grid container >
           <Grid item container justify="space-between" xs={12}>
             <Typography variant="h4">Room: {roomName}, User: {room.localParticipant.identity}</Typography>
@@ -393,7 +390,7 @@ const Room = () => {
           </Grid>
           <Grid item xs={12}>
             <Box width="100%">
-              {room && (workoutType == 'vid') ? leaderParticipant() : 
+              {room && (workoutType == 'vid') ? "" : 
               <Video
                 log={log}
                 room={room}
@@ -407,42 +404,38 @@ const Room = () => {
             </Box>
           </Grid>
           <Grid item container xs={12}>{remoteParticipants()}</Grid>
-          <Grid item container xs={12} >
-            <Grid item xs={4}>
-              <Box display="flex" justifyContent="flex-start" alignItems="center">
-                <IconButton>
-                  <Videocam></Videocam>
-                </IconButton>
-                <IconButton>
-                  <Mic></Mic>
-                </IconButton>
-                <IconButton>
-                  <CallEnd></CallEnd>
-                </IconButton>
-              </Box>
+
+          <div style={{ position: 'absolute', bottom:'2vh', width: bottonControlWidth}}>
+            <Grid item container xs={12}>
+              <Grid item xs={4}>
+                <Box display="flex" justifyContent="flex-start" alignItems="center">
+                  {spawnMic()}
+                  {spawnVid()}
+                </Box>
+              </Grid>
+              <Grid item xs={4}>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                  <IconButton onClick={() => handleParticipantPage(-1)}>
+                    <ArrowBack/>
+                  </IconButton>
+                  {participants.length + leaderParticipantIDs.length}/{participants.length + leaderParticipantIDs.length} participants {participantPage + 1}
+                  <IconButton onClick={() => handleParticipantPage(1)}>
+                    <ArrowForward/>
+                  </IconButton>
+                </Box>
+              </Grid>
+              <Grid item xs={4}>
+                <Box display="flex" justifyContent="flex-end" alignItems="center">
+                  <IconButton>
+                    <Apps/>
+                  </IconButton>
+                  <IconButton>
+                    <Fullscreen/>
+                  </IconButton>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={4}>
-              <Box display="flex" justifyContent="center" alignItems="center">
-                <IconButton onClick={() => handleParticipantPage(-1)}>
-                  <ArrowBack/>
-                </IconButton>
-                {participants.length + leaderParticipantIDs.length}/{participants.length + leaderParticipantIDs.length} participants {participantPage}
-                <IconButton onClick={() => handleParticipantPage(1)}>
-                  <ArrowForward/>
-                </IconButton>
-              </Box>
-            </Grid>
-            <Grid item xs={4}>
-              <Box display="flex" justifyContent="flex-end" alignItems="center">
-                <IconButton>
-                  <Apps/>
-                </IconButton>
-                <IconButton>
-                  <Fullscreen/>
-                </IconButton>
-              </Box>
-            </Grid>
-          </Grid>
+          </div>
         </Grid>
       </Box>
       <SideBar 
@@ -452,7 +445,7 @@ const Room = () => {
         isYoutube={workoutType == 'yt' ? 1 : 0}
         drawerWidth={drawerWidth}
       />
-    </React.Fragment>
+    </div>
   );
 };
 

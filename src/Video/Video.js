@@ -118,12 +118,14 @@ const Video = ({ log, videoProps, updateVideoProps, playerRef, sendVideoState, l
     // }, [videoProps.playing])
 
     return (
-        <div className="videoContainer col">
-            <VideoSearch
-                addVideoToQueue={addVideoToQueue}
-                playVideoFromSearch={playVideoFromSearch}
-                updateVideoProps={updateVideoProps}
-            />
+        <div className="videoContainer col" style={{height: "40vh"}}>
+            <div style={{width: "60%"}}>
+                <VideoSearch
+                    addVideoToQueue={addVideoToQueue}
+                    playVideoFromSearch={playVideoFromSearch}
+                    updateVideoProps={updateVideoProps}
+                />
+            </div>
             <VideoPlayer
                 videoProps={videoProps}
                 sendVideoState={sendVideoState}

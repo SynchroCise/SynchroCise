@@ -11,7 +11,8 @@ const checkUser = ({ name, room }) => {
 
 const addUser = ({ id, name, room, sid }) => {
     isLeader = (getLeadersInRoom(room).length > 0) ? false : true;
-    const user = { id, name, room, sid, isLeader };
+    isMuted = false
+    const user = { id, name, room, sid, isLeader, isMuted};
     users.push(user);
     return { user };
 };

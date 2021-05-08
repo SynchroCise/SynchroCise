@@ -26,15 +26,16 @@ const SideBar = ({
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { if(index !== 0)  return workout.exercise}));
 
     
-    useEffect(() => {
-        setWorkoutTime(workout.exercises[0].time);
-        setCounter(workout.exercises[0].time);
-        setExercise(workout.exercises[0].exercise);
-        setWorkoutNumber(0);
-        setCompleted(100);
-        setStartWorkout(false);
-        setNextUpExercise(workout.exercises.map((workout, index) => { if(index !== 0)  return workout.exercise}));
-    }, [workout]);
+    // useEffect(() => {
+    //     console.log()
+    //     setWorkoutTime(workout.exercises[0].time);
+    //     setCounter(workout.exercises[0].time);
+    //     setExercise(workout.exercises[0].exercise);
+    //     setWorkoutNumber(0);
+    //     setCompleted(100);
+    //     setStartWorkout(false);
+    //     setNextUpExercise(workout.exercises.map((workout, index) => { if(index !== 0)  return workout.exercise}));
+    // }, [workout]);
 
     useEffect(() => {
         if(startWorkout){
@@ -44,29 +45,29 @@ const SideBar = ({
         }
     }, [counter, startWorkout, workoutNumber, workoutTime]);
 
-    // useEffect(() => {
-    //     const sendWorkoutStateHandler = ({
-    //         counterState, 
-    //         startWorkoutState, 
-    //         workoutNumberState, 
-    //         workoutTimeState, 
-    //         exerciseState, 
-    //         completedState, 
-    //         nextUpExerciseState
-    //     }) => {
-    //         setStartWorkout(startWorkoutState)
-    //         setCounter(counterState)
-    //         setWorkoutNumber(workoutNumberState)
-    //         setWorkoutTime(workoutTimeState)
-    //         setExercise(exerciseState);
-    //         setCompleted(completedState);
-    //         setNextUpExercise(nextUpExerciseState)
-    //     }
+    useEffect(() => {
+        const syncWorkoutStateHandler = ({
+            counterState, 
+            startWorkoutState, 
+            workoutNumberState, 
+            workoutTimeState, 
+            exerciseState, 
+            completedState, 
+            nextUpExerciseState
+        }) => {
+            setStartWorkout(startWorkoutState)
+            setCounter(counterState)
+            setWorkoutNumber(workoutNumberState)
+            setWorkoutTime(workoutTimeState)
+            setExercise(exerciseState);
+            setCompleted(completedState);
+            setNextUpExercise(nextUpExerciseState)
+        }
 
-    //     sckt.socket.on("sendWorkoutState", sendWorkoutStateHandler);
-    //     console.log(startWorkout)
-    //     return () => sckt.socket.off('sendWorkoutState', sendWorkoutStateHandler);
-    // }, []);
+        sckt.socket.on("sendWorkoutState", syncWorkoutStateHandler);
+        console.log(startWorkout)
+        return () => sckt.socket.off('sendWorkoutState', syncWorkoutStateHandler);
+    }, []);
 
     useEffect(() => {
         const sendStartWorkoutStateHandler = (startWorkoutState ) => {
@@ -110,20 +111,19 @@ const SideBar = ({
         </React.Fragment>
     )
 
-    // const handleStartWorkout = () => {
-    //     var startWorkoutState = !startWorkout
-    //     let params = {
-    //         counterState: counter,
-    //         startWorkoutState: startWorkout, 
-    //         workoutNumberState: workoutNumber, 
-    //         workoutTimeState: workoutTime,
-    //         exerciseState: exercise, 
-    //         completedState: completed, 
-    //         nextUpExerciseState: nextUpExercise
-    //       };
-    //     console.log("handle sw")
-    //     sckt.socket.emit('startWorkout', startWorkoutState, () => {setStartWorkout(startWorkoutState)});
-    // }
+    const handleSyncWorkout = () => {
+        let params = {
+            counterState: counter,
+            startWorkoutState: startWorkout, 
+            workoutNumberState: workoutNumber, 
+            workoutTimeState: workoutTime,
+            exerciseState: exercise, 
+            completedState: completed, 
+            nextUpExerciseState: nextUpExercise
+        };
+        console.log("handle sw")
+        sckt.socket.emit('syncWorkout', params, (error) => {});
+    }
     
     const handleStartWorkout = () => {
         var startWorkoutState = !startWorkout
@@ -174,6 +174,7 @@ const SideBar = ({
     const classes = useStyles();
 
     return (
+        
         <Drawer
         variant="persistent"
         anchor="right"
@@ -186,6 +187,7 @@ const SideBar = ({
                 <Grid container className={classes.fullHeight}  wrap="wrap">
                     <Grid container item style={{height:"40%", width: "100%"}} justify="space-between" direction="column">
                         <Grid item>
+                            {/* {handleSyncWorkout()} */}
                             {TimerProgressBarMarkup}
                             {exerciseListMarkup}
                         </Grid>

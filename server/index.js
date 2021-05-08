@@ -176,11 +176,9 @@ io.on('connection', (socket) => {
     // });
 
     socket.on('syncWorkout', (params, callback)=> {
-        console.log("in socket")
         const user = getUserById(socket.id);
         if (user) {
             socket.to(user.room).emit('sendWorkoutState', params);
-            callback();
         }
     });
 
