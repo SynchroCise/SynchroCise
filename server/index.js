@@ -13,7 +13,8 @@ const {
     getUsersInRoom,
     getUsersBySid,
     getUserByName,
-    getLeadersInRoom
+    getLeadersInRoom,
+    getUsersBySocketId
 } = require('./users.js');
 const { getActiveRooms, getRoomsBySID, updateRoomData } = require('./rooms.js');
 const { getWorkoutById } = require('./workouts.js');
@@ -175,6 +176,14 @@ io.on('connection', (socket) => {
         // console.log(admin_msg);
         io.in(room).emit('message', { user: { name: 'admin' }, text: admin_msg });
         callback();
+    });
+
+    socket.on('startWorkout', async ({startWorkoutState, roomId}, callback)=> {
+        if (roomId) {
+            console.log(room)
+            socket.to(roomId).emit('sendStartWorkoutState', startWorkoutState);
+            callback();
+        }
     });
 });
 

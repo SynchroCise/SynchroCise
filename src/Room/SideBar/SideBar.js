@@ -8,14 +8,14 @@ import play from "../../media/play.png";
 import { Drawer, Typography, LinearProgress, IconButton, Box, Grid , Divider} from '@material-ui/core';
 import {PlayArrow, Pause} from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
-
-
+import { sckt } from '../../Socket';
 
 const SideBar = ({
     currUser,
     users,
     isYoutube,
-    drawerWidth
+    drawerWidth,
+    room
 }) => {
     const {workout, openSideBar} = useContext(AppContext)
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[0].time);
@@ -45,6 +45,16 @@ const SideBar = ({
         }
     }, [counter, startWorkout, workoutNumber, workoutTime]);
 
+    useEffect(() => {
+        const sendStartWorkoutStateHandler = (startWorkoutState) => {
+            console.log("whattt")
+            setStartWorkout(startWorkoutState)
+        }
+
+        sckt.socket.on('sendStartWorkoutState', sendStartWorkoutStateHandler);
+        console.log(startWorkout)
+        return () => sckt.socket.off('sendStartWorkoutState', sendStartWorkoutStateHandler);
+    }, []);
 
     useEffect(() => {
         setExercise(workout.exercises[workoutNumber].exercise);
@@ -77,6 +87,11 @@ const SideBar = ({
             }
         </React.Fragment>
     )
+    
+    const handleStartWorkout = () => {
+        var startWorkoutState = !startWorkout
+        sckt.socket.emit('startWorkout', {startWorkoutState: startWorkoutState, roomId: room.sid}, () => {setStartWorkout(startWorkoutState)});
+    }
 
     const TimerProgressBarMarkup = isYoutube ? <></> : (
         <React.Fragment>
@@ -84,7 +99,7 @@ const SideBar = ({
             <div><LinearProgress variant="determinate" value={completed} /></div>
             <Box display="flex" justifyContent="flex-end">
                 <IconButton
-                    onClick={() => setStartWorkout(!startWorkout)}>
+                    onClick={handleStartWorkout}>
                     {(startWorkout) ? <Pause/> : <PlayArrow/>}
                 </IconButton>
             </Box>
