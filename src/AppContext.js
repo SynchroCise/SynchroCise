@@ -14,6 +14,19 @@ const AppContextProvider = ({children}) => {
   const [userId, setUserId] = useState('')
   const [openAuthDialog, setOpenAuthDialog] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [roomProps, setRoomProps] = useState({
+    queue: [],
+    history: [],
+    playing: true,
+    seekTime: 0,
+    receiving: false,
+    initVideo: false,
+    workoutType: 'vid', // 'yt', 'custom'
+    workout: [],
+    playWorkoutState: false,
+    workoutNumber: 0,
+    workoutCounter: 0
+  });
 
   const handleSetRoom = (room) => {
     setRoom(room)
@@ -181,7 +194,9 @@ const AppContextProvider = ({children}) => {
         handleRoomNameChange,
         handleLeaveRoom,
         checkLoggedIn,
-        handleLogout
+        handleLogout,
+        roomProps,
+        setRoomProps
       }}>
           {children}
       </AppContext.Provider>

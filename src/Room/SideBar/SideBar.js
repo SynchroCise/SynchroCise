@@ -23,7 +23,7 @@ const SideBar = ({
     const [exercise, setExercise] = useState(workout.exercises[0].exercise);
     const [workoutNumber, setWorkoutNumber] = useState(0);
     const [completed, setCompleted] = useState(100);
-    const [startWorkout, setStartWorkout] = useState(false);
+    const [playWorkoutState, setPlayWorkoutState] = useState(false); // true means playing!
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { if(index !== 0)  return workout.exercise}));
 
     
@@ -33,27 +33,27 @@ const SideBar = ({
         setExercise(workout.exercises[0].exercise);
         setWorkoutNumber(0);
         setCompleted(100);
-        setStartWorkout(false);
+        setPlayWorkoutState(false);
         setNextUpExercise(workout.exercises.map((workout, index) => { if(index !== 0)  return workout.exercise}));
     }, [workout]);
 
     useEffect(() => {
-        if(startWorkout){
+        if(playWorkoutState){
             counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
             setCompleted(counter/workoutTime * 100)
             if(counter <= 0 && workoutNumber < workout.exercises.length-1) setWorkoutNumber(workoutNumber + 1)
         }
-    }, [counter, startWorkout, workoutNumber, workoutTime]);
+    }, [counter, playWorkoutState, workoutNumber, workoutTime]);
 
     useEffect(() => {
-        const sendStartWorkoutStateHandler = (startWorkoutState) => {
+        const receiveWorkoutStateHandler = (startWorkoutState) => {
             console.log("whattt")
-            setStartWorkout(startWorkoutState)
+            setPlayWorkoutState(startWorkoutState)
         }
 
-        sckt.socket.on('sendStartWorkoutState', sendStartWorkoutStateHandler);
-        console.log(startWorkout)
-        return () => sckt.socket.off('sendStartWorkoutState', sendStartWorkoutStateHandler);
+        sckt.socket.on('receiveWorkoutState', receiveWorkoutStateHandler);
+        console.log(playWorkoutState)
+        return () => sckt.socket.off('receiveWorkoutState', receiveWorkoutStateHandler);
     }, []);
 
     useEffect(() => {
@@ -89,8 +89,8 @@ const SideBar = ({
     )
     
     const handleStartWorkout = () => {
-        var startWorkoutState = !startWorkout
-        sckt.socket.emit('startWorkout', {startWorkoutState: startWorkoutState, roomId: room.sid}, () => {setStartWorkout(startWorkoutState)});
+        var startWorkoutState = !playWorkoutState
+        sckt.socket.emit('sendWorkoutState', {startWorkoutState: startWorkoutState, roomId: room.sid}, () => {setPlayWorkoutState(startWorkoutState)});
     }
 
     const TimerProgressBarMarkup = isYoutube ? <></> : (
@@ -100,7 +100,7 @@ const SideBar = ({
             <Box display="flex" justifyContent="flex-end">
                 <IconButton
                     onClick={handleStartWorkout}>
-                    {(startWorkout) ? <Pause/> : <PlayArrow/>}
+                    {(playWorkoutState) ? <Pause/> : <PlayArrow/>}
                 </IconButton>
             </Box>
         </React.Fragment>

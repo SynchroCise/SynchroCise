@@ -37,24 +37,15 @@ const Room = () => {
   const [vid, setVid] = useState(false);
   const [mic, setMic] = useState(false);
   const [workoutType, setWorkoutType] = useState('vid'); // either 'vid' or 'yt'
-  const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar } = useContext(AppContext);
+  const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, setRoomProps } = useContext(AppContext);
   const loadingRoomData = useRef(true);
   
   // Video stuff
   const playerRef = useRef(null);
-  const [videoProps, setVideoProps] = useState({
-    queue: [],
-    history: [],
-    playing: true,
-    seekTime: 0,
-    receiving: false,
-    initVideo: false,
-    videoType: 'yt' // 'vimeo', 'twitch', 'soundcloud'
-  });
   const drawerWidth = 300;
 
-  const updateVideoProps = (paramsToChange) => {
-    setVideoProps((prev) => ({ ...prev, ...paramsToChange }));
+  const updateRoomProps = (paramsToChange) => {
+    setRoomProps((prev) => ({ ...prev, ...paramsToChange }));
   }
   const sendVideoState = ({ eventName, eventParams }) => {
     let params = {
@@ -69,31 +60,31 @@ const Room = () => {
     const url = searchItem.video.url;
     const videoType = getVideoType(url);
     if (videoType !== null) {
-      updateVideoProps({ videoType });
+      updateRoomProps({ videoType });
     }
     // Handle playing video immediately
-    const { history } = videoProps;
+    const { history } = roomProps;
     loadVideo(searchItem, false);
     sendVideoState({
       eventName: "syncLoad",
       eventParams: { searchItem, history: [searchItem, ...history] }
     });
-    updateVideoProps({ history: [searchItem, ...history] });
+    updateRoomProps({ history: [searchItem, ...history] });
   }
   const loadVideo = (searchItem, sync) => {
-    const { playing, seekTime, initVideo } = videoProps;
+    const { playing, seekTime, initVideo } = roomProps;
     if ((playerRef.current !== null || !initVideo) && searchItem) {
-      if (!initVideo) updateVideoProps({ initVideo: true });
+      if (!initVideo) updateRoomProps({ initVideo: true });
       let videoUrl = searchItem.video.url;
       if (sync) {
-        updateVideoProps({ url: videoUrl });
-        updateVideoProps({ playing });
-        updateVideoProps({ receiving: false });
+        updateRoomProps({ url: videoUrl });
+        updateRoomProps({ playing });
+        updateRoomProps({ receiving: false });
         playerRef.current.seekTo(seekTime, 'seconds');
       } else {
-        updateVideoProps({ url: videoUrl });
-        updateVideoProps({ playing: true });
-        updateVideoProps({ receiving: false });
+        updateRoomProps({ url: videoUrl });
+        updateRoomProps({ playing: true });
+        updateRoomProps({ receiving: false });
       }
       // sckt.socket.emit('updateRoomData', { video: searchItem }, (error) => { });
     }
@@ -245,7 +236,7 @@ const Room = () => {
     return all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
-        <Grid item xs={3}> 
+        <Grid item xs={3} key={index}> 
           <Participant participant={participant} key={participant.sid} />
         </Grid>
       ));
@@ -385,8 +376,8 @@ const Room = () => {
               <Video
                 log={log}
                 room={room}
-                videoProps={videoProps}
-                updateVideoProps={updateVideoProps}
+                videoProps={roomProps}
+                updateVideoProps={updateRoomProps}
                 playerRef={playerRef}
                 sendVideoState={sendVideoState}
                 loadVideo={loadVideo}

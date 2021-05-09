@@ -178,10 +178,10 @@ io.on('connection', (socket) => {
         callback();
     });
 
-    socket.on('startWorkout', async ({startWorkoutState, roomId}, callback)=> {
+    socket.on('sendWorkoutState', async ({startWorkoutState, roomId}, callback)=> {
         if (roomId) {
             console.log(room)
-            socket.to(roomId).emit('sendStartWorkoutState', startWorkoutState);
+            socket.to(roomId).emit('receiveWorkoutState', startWorkoutState);
             callback();
         }
     });
