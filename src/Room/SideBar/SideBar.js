@@ -17,69 +17,39 @@ const SideBar = ({
     drawerWidth,
     room
 }) => {
-    const {workout, openSideBar} = useContext(AppContext)
-    const [workoutTime, setWorkoutTime] = useState(workout.exercises[0].time);
-    const [counter, setCounter] = useState(workout.exercises[0].time);
-    const [exercise, setExercise] = useState(workout.exercises[0].exercise);
-    const [workoutNumber, setWorkoutNumber] = useState(0);
-    const [completed, setCompleted] = useState(100);
-    const [playWorkoutState, setPlayWorkoutState] = useState(false); // true means playing!
-    const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { if(index !== 0)  return workout.exercise}));
+    const {workout, openSideBar, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter} = useContext(AppContext)
+    const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
+    const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { return workout.exercise }));
 
-    
     useEffect(() => {
-        setWorkoutTime(workout.exercises[0].time);
-        setCounter(workout.exercises[0].time);
-        setExercise(workout.exercises[0].exercise);
-        setWorkoutNumber(0);
-        setCompleted(100);
-        setPlayWorkoutState(false);
-        setNextUpExercise(workout.exercises.map((workout, index) => { if(index !== 0)  return workout.exercise}));
+        setWorkoutTime(workout.exercises[workoutNumber].time);
+        if (workoutCounter == -1) setWorkoutCounter(workout.exercises[0].time);
+        setNextUpExercise(workout.exercises.map((workout, index) => { return workout.exercise }));
     }, [workout]);
 
     useEffect(() => {
         if(playWorkoutState){
-            counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
-            setCompleted(counter/workoutTime * 100)
-            if(counter <= 0 && workoutNumber < workout.exercises.length-1) setWorkoutNumber(workoutNumber + 1)
+            workoutCounter > 0 && setTimeout(() => setWorkoutCounter(workoutCounter - 1), 1000);
+            if(workoutCounter <= 0 && workoutNumber < workout.exercises.length-1) {
+                setWorkoutNumber(workoutNumber + 1)
+                setWorkoutTime(workout.exercises[workoutNumber].time);
+                setWorkoutCounter(workout.exercises[workoutNumber].time);
+            }
         }
-    }, [counter, playWorkoutState, workoutNumber, workoutTime]);
+    }, [workoutCounter, playWorkoutState, workoutNumber, workoutTime]);
 
-    useEffect(() => {
-        const receiveWorkoutStateHandler = (startWorkoutState) => {
-            console.log("whattt")
-            setPlayWorkoutState(startWorkoutState)
-        }
-
-        sckt.socket.on('receiveWorkoutState', receiveWorkoutStateHandler);
-        console.log(playWorkoutState)
-        return () => sckt.socket.off('receiveWorkoutState', receiveWorkoutStateHandler);
-    }, []);
-
-    useEffect(() => {
-        setExercise(workout.exercises[workoutNumber].exercise);
-        setWorkoutTime(workout.exercises[workoutNumber].time);
-        setCounter(workout.exercises[workoutNumber].time);
-        
-        if(workoutNumber === 0) {
-            nextUpExercise.shift()
-            setNextUpExercise(nextUpExercise)
-        }
-        if(workoutNumber !== 0 && nextUpExercise.length >= 1){ 
-            nextUpExercise.shift()
-            setNextUpExercise(nextUpExercise)
-        }
-    }, [workoutNumber]);
 
     const exerciseListMarkup = isYoutube ? <></> : (
         <React.Fragment>
             <Typography variant="body1">Now</Typography>
-            <Typography variant="h5">{exercise}</Typography>
+            <Typography variant="h5">{workout.exercises[workoutNumber].exercise}</Typography>
             <Typography variant="body1">Next Up</Typography>
             {
                 nextUpExercise && nextUpExercise.length > 1 && typeof nextUpExercise != 'string' ? (
                     nextUpExercise.map((exercise, index) => {
-                        return (<Typography key={index} variant="body2">{exercise}</Typography>)
+                        if (index > workoutNumber) {
+                            return (<Typography key={index} variant="body2">{exercise}</Typography>)
+                        }
                     })
                 ) : (
                     <Typography variant="body2">{nextUpExercise}</Typography>
@@ -89,14 +59,17 @@ const SideBar = ({
     )
     
     const handleStartWorkout = () => {
-        var startWorkoutState = !playWorkoutState
-        sckt.socket.emit('sendWorkoutState', {startWorkoutState: startWorkoutState, roomId: room.sid}, () => {setPlayWorkoutState(startWorkoutState)});
+        var startWorkoutState = !playWorkoutState;
+        sendRoomState({
+            eventName: 'syncWorkoutState',
+            eventParams: { playWorkoutState: startWorkoutState }
+        }, () => setPlayWorkoutState(startWorkoutState));
     }
 
     const TimerProgressBarMarkup = isYoutube ? <></> : (
         <React.Fragment>
-            <Box display="flex" justifyContent="flex-end"><Typography variant="body1">{counter}s</Typography></Box>
-            <div><LinearProgress variant="determinate" value={completed} /></div>
+            <Box display="flex" justifyContent="flex-end"><Typography variant="body1">{workoutCounter}s</Typography></Box>
+            <div><LinearProgress variant="determinate" value={workoutCounter/workoutTime * 100} /></div>
             <Box display="flex" justifyContent="flex-end">
                 <IconButton
                     onClick={handleStartWorkout}>
