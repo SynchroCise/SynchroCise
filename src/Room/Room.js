@@ -36,26 +36,93 @@ const Room = () => {
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
   const [vid, setVid] = useState(false);
   const [mic, setMic] = useState(false);
-  const [workoutType, setWorkoutType] = useState('vid'); // either 'vid' or 'yt'
-  const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar } = useContext(AppContext);
+  // const [workoutType, setWorkoutType] = useState('vid'); // either 'vid' or 'yt'
+  const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
   const loadingRoomData = useRef(true);
-  
-  // Video stuff
-  const playerRef = useRef(null);
-  const [videoProps, setVideoProps] = useState({
-    queue: [],
-    history: [],
-    playing: true,
-    seekTime: 0,
-    receiving: false,
-    initVideo: false,
-    videoType: 'yt' // 'vimeo', 'twitch', 'soundcloud'
+
+  // Initializing Room Stuff
+  useEffect(() => {
+    const getRoomSyncHandler = ({ id }) => {
+      let params = {
+        id: id,
+        ...roomProps,
+      }
+      sckt.socket.emit('sendRoomSync', params, (error) => { });
+    };
+    const getVideoSyncHandler = ({ id }) => {
+      log("New user needs videoProps to sync.", 'server');
+      if (playerRef.current !== null) {
+        let params = {
+          id: id,
+          ...videoProps,
+          seekTime: playerRef.current.getCurrentTime(),
+          receiving: true
+        }
+        sckt.socket.emit('sendVideoSync', params, (error) => { });
+      }
+    }
+    sckt.socket.on("getRoomSync", getRoomSyncHandler);
+    sckt.socket.on("getVideoSync", getVideoSyncHandler);
+    return () => {
+      sckt.socket.off("getRoomSync", getRoomSyncHandler)
+      sckt.socket.off("getVideoSync", getVideoSyncHandler);
+    }
   });
+  useEffect(() => {
+    const startRoomSyncHandler = (receivedRoomProps) => {
+      console.log("I'm syncing room.", 'server');
+      updateRoomProps({ ...receivedRoomProps });
+    };
+    const startVideoSyncHandler = (videoProps) => {
+      console.log("I'm syncing video.", 'server');
+      updateVideoProps({ ...videoProps });
+      modifyVideoState({ ...videoProps });
+      // loadVideo(videoProps.history[0], true);
+    };
+    const receiveRoomStateHandler = ({ name, room, eventName, eventParams = {} }) => {
+      const { playWorkoutState, workout, workoutType } = eventParams;
+        switch (eventName) {
+          case 'syncWorkoutState':
+              updateRoomProps({ playWorkoutState });
+              break;
+          case 'syncWorkoutType':
+              updateRoomProps({ workoutType });
+              break;
+          case 'syncWorkout':
+              updateRoomProps({ workout });
+              break;
+          default:
+              break;
+      }
+    }
+    sckt.socket.on('receiveRoomState', receiveRoomStateHandler)
+    sckt.socket.on("startRoomSync", startRoomSyncHandler);
+    sckt.socket.on("startVideoSync", startVideoSyncHandler);
+    return () => {
+      sckt.socket.off('receiveRoomState', receiveRoomStateHandler)
+      sckt.socket.off("startRoomSync", startRoomSyncHandler);
+      sckt.socket.off("startVideoSync", startVideoSyncHandler);
+    }
+  }, []);
+
+  // sending sync video
+  const playerRef = useRef(null);
   const drawerWidth = 300;
 
-  const updateVideoProps = (paramsToChange) => {
-    setVideoProps((prev) => ({ ...prev, ...paramsToChange }));
-  }
+  const modifyVideoState = (paramsToChange) => {
+    if (playerRef.current !== null) {
+      const { playing, seekTime, playbackRate } = paramsToChange;
+      if (playing !== undefined) {
+        updateVideoProps({ playing });
+        // } else if (playbackRate !== undefined) {
+        //     player.setPlaybackRate(playbackRate);
+      }
+      if (seekTime !== undefined) {
+        playerRef.current.seekTo(seekTime);
+      }
+    }
+  } 
+  
   const sendVideoState = ({ eventName, eventParams }) => {
     let params = {
       name: room.localParticipant.identity,
@@ -65,6 +132,7 @@ const Room = () => {
     };
     sckt.socket.emit('sendVideoState', params, (error) => { });
   };
+
   const playVideoFromSearch = (searchItem) => {
     const url = searchItem.video.url;
     const videoType = getVideoType(url);
@@ -177,43 +245,6 @@ const Room = () => {
     return () => sckt.socket.off('leader', handler);
   }, []);
 
-  // handles roomData changes from server
-  useEffect(() => {
-    const handler = (roomDataServer) => {
-      updateRoomData(roomDataServer);
-    }
-    sckt.socket.on('roomData', handler);
-    return () => sckt.socket.off('roomData', handler);
-  }, []);
-
-  // sends disconnect to room if they close screen
-  useEffect( () => {
-    window.addEventListener('beforeunload', leaveRoomIfJoined);
-    // Leave Room.
-    function leaveRoomIfJoined() {
-      if (room) {
-          room.disconnect();
-      }
-    }
-  }, []);
-  
-
-  // uploads roomData changes to server
-  useEffect(() => {
-    // loading prevents sending data from server after receiving it
-    if (!loadingRoomData.current) {
-      const roomData = {
-        "name": roomName,
-        "sid": room.sid,
-        "workoutID": workout.id,
-        "workoutType": workoutType
-      }
-      sckt.socket.emit('updateRoomData', roomData, (err) => {});
-    } else {
-      loadingRoomData.current = false;
-    }
-  }, [workoutType, workout]);
-
   // resets participant page if there are no remote participants
   useEffect(() => {
     let all_participants = [...participants, room.localParticipant];
@@ -223,17 +254,6 @@ const Room = () => {
       setParticipantPage(0)
     }
   }, [participants]);
-
-  const updateRoomData = (roomData) => {
-    loadingRoomData.current = true;
-    if (roomData.workoutType != workoutType) {
-      setWorkoutType(roomData.workoutType)
-    }
-    if (roomData.workout != workout) {
-      handleSetWorkout(roomData.workout)
-    }
-  }
-
 
   // show all the particpants in the room
   const remoteParticipants = () => {
@@ -245,7 +265,7 @@ const Room = () => {
     return all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
-        <Grid item xs={3}> 
+        <Grid item xs={3} key={index}> 
           <Participant participant={participant} key={participant.sid} />
         </Grid>
       ));
@@ -324,7 +344,11 @@ const Room = () => {
 
   const handleChange = (value) => {
     const newWorkoutType = value ? 'yt' : 'vid';
-    setWorkoutType(newWorkoutType)
+    sendRoomState({
+      eventName: 'syncWorkoutType',
+      eventParams: { workoutType: newWorkoutType }
+    }, () => {setWorkoutType(newWorkoutType)});
+    
   }
   const handleParticipantPage = (pageDelta) => {
     let all_participants = [...participants, room.localParticipant];
@@ -439,6 +463,7 @@ const Room = () => {
         users={participants}
         isYoutube={workoutType == 'yt' ? 1 : 0}
         drawerWidth={drawerWidth}
+        room={room}
       />
     </React.Fragment>
   );

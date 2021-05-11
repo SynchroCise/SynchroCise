@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { sckt } from '../Socket';
-// import './Video.scss';
 import { insert } from '../utils/video';
 import VideoSearch from './Search/Search';
 import VideoPlayer from "./Player/Player";
@@ -43,32 +42,6 @@ const Video = ({ log, videoProps, updateVideoProps, playerRef, sendVideoState, l
     }
 
     useEffect(() => {
-        // Send videoProps to new user
-        const getSyncHandler = ({ id }) => {
-            log("New user needs videoProps to sync.", 'server');
-            if (playerRef.current !== null) {
-                let params = {
-                    id: id,
-                    ...videoProps,
-                    seekTime: playerRef.current.getCurrentTime(),
-                    receiving: true
-                }
-                sckt.socket.emit('sendSync', params, (error) => { });
-            }
-        }
-        sckt.socket.on("getSync", getSyncHandler);
-        return () => {
-            sckt.socket.off('getSync', getSyncHandler);
-        };
-    });
-    useEffect(() => {
-        // Sync other user's videoProps to our state
-        const startSyncHandler = (videoProps) => {
-            console.log("I'm syncing.", 'server');
-            updateVideoProps({ ...videoProps });
-            modifyVideoState({ ...videoProps });
-            // loadVideo(videoProps.history[0], true);
-        };
         // Update single value in videoProps from other user
         const receiveVideoStateHandler = ({ name, room, eventName, eventParams = {} }) => {
             const { seekTime, playbackRate, queue, searchItem, history } = eventParams;
@@ -105,10 +78,8 @@ const Video = ({ log, videoProps, updateVideoProps, playerRef, sendVideoState, l
             }
         };
 
-        sckt.socket.on("startSync", startSyncHandler);
         sckt.socket.on("receiveVideoState", receiveVideoStateHandler);
         return () => {
-            sckt.socket.off('startSync', startSyncHandler);
             sckt.socket.off('receiveVideoState', receiveVideoStateHandler);
         };
     }, []);
