@@ -30,12 +30,12 @@ const MicElementMuted = <FontAwesomeIcon icon={faMicrophoneSlash} />;
 
 // using roomName and token, we will create a room
 const Room = () => {
-  const [participants, setParticipants] = useState([]);
+  const [participants, setParticipants] = useState(localStorage.getItem('Participants') === null ? [] : JSON.parse(localStorage.getItem('Participants')));
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
-  const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
-  const [vid, setVid] = useState(false);
-  const [mic, setMic] = useState(false);
+const [leaderParticipantIDs, setLeaderParticipantIDs] = useState(localStorage.getItem('leaderParticipantIDs') === null ? [] : JSON.parse(localStorage.getItem('LeaderParticipantIDs')));
+const [vid, setVid] = useState(localStorage.getItem('Vid') === null ? false : JSON.parse(localStorage.getItem('Vid')));
+const [mic, setMic] = useState(localStorage.getItem('Mic') === null ? false : JSON.parse(localStorage.getItem('Mic')));
   // const [workoutType, setWorkoutType] = useState('vid'); // either 'vid' or 'yt'
   const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
   const loadingRoomData = useRef(true);
@@ -204,14 +204,23 @@ const Room = () => {
           (v, i, a) => a.indexOf(v) === i
         )
       );
+      localStorage.setItem("Participants", JSON.stringify((prevParticipants) =>
+        [...prevParticipants, participant].filter(
+          (v, i, a) => a.indexOf(v) === i
+        )
+      ));
     };
 
     const participantDisconnected = (participant) => {
       setParticipants((prevParticipants) =>
         prevParticipants.filter((p) => p !== participant)
       );
+      localStorage.setItem("Participants", JSON.stringify((prevParticipants) =>
+        prevParticipants.filter((p) => p !== participant)
+      ));
     };
 
+    console.log(room)
     room.on("participantConnected", participantConnected);
     room.on("participantDisconnected", participantDisconnected);
     room.participants.forEach(participantConnected);
@@ -240,6 +249,7 @@ const Room = () => {
   useEffect(() => {
     const handler = (leaderList) => {
       setLeaderParticipantIDs([...leaderList]);
+      localStorage.setItem("LeaderParticipantIDs", JSON.stringify(leaderParticipantIDs));
     }
     sckt.socket.on('leader', handler);
     return () => sckt.socket.off('leader', handler);
@@ -335,20 +345,23 @@ const Room = () => {
 
   const handleMic = () => {
     setMic(!mic);
+    localStorage.setItem("Mic", !mic);
   };
 
   const handleVid = () => {
     setVid(!vid);
-    console.log(vid);
+    localStorage.setItem("Vid", !vid);
   };
 
   const handleChange = (value) => {
     const newWorkoutType = value ? 'yt' : 'vid';
+
     sendRoomState({
       eventName: 'syncWorkoutType',
       eventParams: { workoutType: newWorkoutType }
-    }, () => {setWorkoutType(newWorkoutType)});
-    
+    }, () => {
+      setWorkoutType(newWorkoutType)
+    });
   }
   const handleParticipantPage = (pageDelta) => {
     let all_participants = [...participants, room.localParticipant];
@@ -381,10 +394,10 @@ const Room = () => {
 
   return (
     <React.Fragment>
-      <Box display="flex" alignItems="center" justifyContent="center" my={6} className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`}>
+      <Box display="flex" alignItems="center" justifyContent="center" my={2} className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`}>
         <Grid container >
           <Grid item container justify="space-between" xs={12}>
-            <Typography variant="h4">Room: {roomName.substring(0, 6).toUpperCase()}, User: {room.localParticipant.identity}</Typography>
+            <Typography variant="h5">Room: {roomName.substring(0, 6).toUpperCase()}, User: {room.localParticipant.identity}</Typography>
             <IconButton onClick={handleOpenSideBar}>
               {openSideBar ? <ChevronRight /> : <ChevronLeft />}
             </IconButton>
