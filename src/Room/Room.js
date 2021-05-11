@@ -144,6 +144,7 @@ const Room = () => {
       );
     };
 
+    console.log(room)
     room.on("participantConnected", participantConnected);
     room.on("participantDisconnected", participantDisconnected);
     room.participants.forEach(participantConnected);

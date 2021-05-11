@@ -44,6 +44,7 @@ const JoinRoom = () => {
       };
     }
   }, [videoTracks]);
+  console.log(roomName)
 
   const handleSubmit = useCallback(
     async (event) => {

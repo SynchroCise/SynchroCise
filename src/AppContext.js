@@ -4,22 +4,23 @@ const AppContext = createContext([{}, () => {}]);
 
 const AppContextProvider = ({children}) => {
   // useEffect(() => {
-    localStorage.setItem("Room", null);
-    localStorage.setItem("Connecting", JSON.stringify(false));
-    localStorage.setItem("Username", JSON.stringify(""));
-    localStorage.setItem("Workout", JSON.stringify({"workoutName": "", "exercises": [{"time": 1, "exercise":""}]}));
-    localStorage.setItem("RoomState", JSON.stringify(null));
-    localStorage.setItem("RoomTitle", JSON.stringify(""));
-    localStorage.setItem("UserId", JSON.stringify(null));
+    // localStorage.setItem("Room", room);
+    // localStorage.setItem("Connecting", JSON.stringify(false));
+    // localStorage.setItem("Username", JSON.stringify(""));
+    // localStorage.setItem("Workout", JSON.stringify({"workoutName": "", "exercises": [{"time": 1, "exercise":""}]}));
+    // localStorage.setItem("RoomName", JSON.stringify(''));
+    // localStorage.setItem("RoomState", JSON.stringify(null));
+    // localStorage.setItem("RoomTitle", JSON.stringify(""));
+    // localStorage.setItem("UserId", JSON.stringify(null));
   // })
 
-  const [room, setRoom] = useState(JSON.parse(localStorage.getItem('Room')));
-  const [connecting, setConnecting] = useState(JSON.parse(localStorage.getItem('Connecting')));
-  const [username, setUsername] = useState(JSON.parse(localStorage.getItem('Username')));
-  const [workout, setWorkout] = useState(JSON.parse(localStorage.getItem('Workout')))
-  const [roomName, setRoomName] = useState(JSON.parse(localStorage.getItem('RoomName')));
-  const [roomState, setRoomState] = useState(JSON.parse(localStorage.getItem('RoomName')));
-  const [roomTitle, setRoomTitle] = useState("")
+  const [room, setRoom] = useState(localStorage.getItem('Room') === null ? '' : JSON.parse(localStorage.getItem('Room')));
+  const [connecting, setConnecting] = useState(localStorage.getItem('Connecting') === null ? false : JSON.parse(localStorage.getItem('Connecting')));
+  const [username, setUsername] = useState(localStorage.getItem('Username') === null ? '' : localStorage.getItem('Username'));
+  const [workout, setWorkout] = useState(localStorage.getItem('Workout') === null ? {"workoutName": "", "exercises": [{"time": 1, "exercise":""}]} : JSON.parse(localStorage.getItem('Workout')))
+  const [roomName, setRoomName] = useState(localStorage.getItem('RoomName') === null ? '' : localStorage.getItem('RoomName'));
+  const [roomState, setRoomState] = useState(localStorage.getItem('RoomState') === null ? '' : localStorage.getItem('RoomState'));
+  const [roomTitle, setRoomTitle] = useState(localStorage.getItem('RoomTitle') === null ? '' : localStorage.getItem('RoomTitle'))
   const [openSideBar, setOpenSideBar] = useState(true)
   const [userId, setUserId] = useState('')
   const [openAuthDialog, setOpenAuthDialog] = useState(false);
@@ -28,14 +29,6 @@ const AppContextProvider = ({children}) => {
   // useEffect(() => {
   //   localStorage.setItem("RoomName", JSON.stringify(roomName));
   // }, [roomName]);
-
-  // useEffect(() => {
-  //   localStorage.setItem("RoomState", JSON.stringify(roomState));
-  // }, [roomState]);
-
-  // useEffect(() => {
-  //   localStorage.setItem("roomTitle", JSON.stringify(roomTitle));
-  // }, [roomTitle]);
 
   const handleSetRoom = (room) => {
     setRoom(room)
@@ -53,8 +46,7 @@ const AppContextProvider = ({children}) => {
       //   signalingRegion: room.localParticipant.signalingRegion,
       // }
     // }
-    room
-    ));
+    room));
   }
   const handleSetConnecting = (connecting) => {
     setConnecting(connecting)
@@ -139,11 +131,12 @@ const AppContextProvider = ({children}) => {
     setUsername("Leader")
     localStorage.setItem("Username", "Leader");
     setRoomState('make_custom')
-    localStorage.setItem("RoomStae", "make_custom");
+    localStorage.setItem("RoomState", "make_custom");
   }
 
   const handleRoomNameChange = useCallback((event) => {
     handleSetRoomName(event.target.value);
+    localStorage.setItem("RoomName", JSON.stringify(event.target.value))
   }, []);
 
   const checkLoggedIn = async () => {
@@ -152,16 +145,19 @@ const AppContextProvider = ({children}) => {
     });
     if (!res.ok) {
       setUserId('');
+      localStorage.setItem("UserID", '')
       return false;
     }
     const resp = await res.json()
     setUserId(resp.user.id)
+    localStorage.setItem("UserID", JSON.stringify(resp.user.id))
     return true;
   }
   const handleLogout = async () => {
     const res = await fetch('/user/logout', { method: "POST" });
     if (res.ok) {
       setUserId('');
+      localStorage.setItem("UserID", '')
     }
   }
 
