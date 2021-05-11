@@ -22,7 +22,7 @@ const AppContextProvider = ({children}) => {
   const [roomState, setRoomState] = useState(localStorage.getItem('RoomState') === null ? '' : localStorage.getItem('RoomState'));
   const [roomTitle, setRoomTitle] = useState(localStorage.getItem('RoomTitle') === null ? '' : localStorage.getItem('RoomTitle'))
   const [openSideBar, setOpenSideBar] = useState(true)
-  const [userId, setUserId] = useState('')
+  const [userId, setUserId] = useState(localStorage.getItem('UserId') === null ? '' : localStorage.getItem('UserId'))
   const [openAuthDialog, setOpenAuthDialog] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
 
@@ -32,21 +32,7 @@ const AppContextProvider = ({children}) => {
 
   const handleSetRoom = (room) => {
     setRoom(room)
-    localStorage.setItem("Room", JSON.stringify(
-      // {
-      // name: room.name,
-      // sid: room.sid,
-      // workoutID: room.workoutId,
-      // workoutType: room.workoutType,
-      // localParticipant: {
-      //   audioTracks: room.localParticipant.audioTracks,
-      //   dataTracks: room.localParticipant.dataTracks,
-      //   tracks: room.localParticipant.tracks,
-      //   videoTracks: room.localParticipant.videoTracks,
-      //   signalingRegion: room.localParticipant.signalingRegion,
-      // }
-    // }
-    room));
+    localStorage.setItem("Room", JSON.stringify(room));
   }
   const handleSetConnecting = (connecting) => {
     setConnecting(connecting)
@@ -127,7 +113,7 @@ const AppContextProvider = ({children}) => {
     });
     const roomCode = await res.text();
     setRoomName(roomCode)
-    localStorage.setItem("RoomName", JSON.stringify(roomCode));
+    localStorage.setItem("RoomName", roomCode);
     setUsername("Leader")
     localStorage.setItem("Username", "Leader");
     setRoomState('make_custom')
@@ -145,19 +131,19 @@ const AppContextProvider = ({children}) => {
     });
     if (!res.ok) {
       setUserId('');
-      localStorage.setItem("UserID", '')
+      localStorage.setItem("UserId", '')
       return false;
     }
     const resp = await res.json()
     setUserId(resp.user.id)
-    localStorage.setItem("UserID", JSON.stringify(resp.user.id))
+    localStorage.setItem("UserId", JSON.stringify(resp.user.id))
     return true;
   }
   const handleLogout = async () => {
     const res = await fetch('/user/logout', { method: "POST" });
     if (res.ok) {
       setUserId('');
-      localStorage.setItem("UserID", '')
+      localStorage.setItem("UserId", '')
     }
   }
 
@@ -175,6 +161,7 @@ const AppContextProvider = ({children}) => {
   }, []);
 
   useEffect(() => {
+    console.log(room)
     if (room) {
       const tidyUp = (event) => {
         if (event.persisted) {

@@ -30,19 +30,19 @@ const MicElementMuted = <FontAwesomeIcon icon={faMicrophoneSlash} />;
 
 // using roomName and token, we will create a room
 const Room = () => {
-  const [participants, setParticipants] = useState([]);
+  const [participants, setParticipants] = useState(localStorage.getItem('Participants') === null ? [] : JSON.parse(localStorage.getItem('Participants')));
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
-  const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
-  const [vid, setVid] = useState(false);
-  const [mic, setMic] = useState(false);
-  const [workoutType, setWorkoutType] = useState('vid'); // either 'vid' or 'yt'
+  const [leaderParticipantIDs, setLeaderParticipantIDs] = useState(localStorage.getItem('leaderParticipantIDs') === null ? [] : JSON.parse(localStorage.getItem('LeaderParticipantIDs')));
+  const [vid, setVid] = useState(localStorage.getItem('Vid') === null ? false : JSON.parse(localStorage.getItem('Vid')));
+  const [mic, setMic] = useState(localStorage.getItem('Mic') === null ? false : JSON.parse(localStorage.getItem('Mic')));
+  const [workoutType, setWorkoutType] = useState(localStorage.getItem('WorkoutType') === null ? 'vid' : JSON.parse(localStorage.getItem('WorkoutType'))); // either 'vid' or 'yt'
   const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar } = useContext(AppContext);
   const loadingRoomData = useRef(true);
   
   // Video stuff
   const playerRef = useRef(null);
-  const [videoProps, setVideoProps] = useState({
+  const [videoProps, setVideoProps] = useState(localStorage.getItem('videoProps') === null ? {
     queue: [],
     history: [],
     playing: true,
@@ -50,11 +50,12 @@ const Room = () => {
     receiving: false,
     initVideo: false,
     videoType: 'yt' // 'vimeo', 'twitch', 'soundcloud'
-  });
+  } : JSON.parse(localStorage.getItem('videoProps')));
   const drawerWidth = 300;
 
   const updateVideoProps = (paramsToChange) => {
     setVideoProps((prev) => ({ ...prev, ...paramsToChange }));
+    localStorage.setItem("videoProps", JSON.stringify((prev) => ({ ...prev, ...paramsToChange })));
   }
   const sendVideoState = ({ eventName, eventParams }) => {
     let params = {
@@ -136,12 +137,20 @@ const Room = () => {
           (v, i, a) => a.indexOf(v) === i
         )
       );
+      localStorage.setItem("Participants", JSON.stringify((prevParticipants) =>
+        [...prevParticipants, participant].filter(
+          (v, i, a) => a.indexOf(v) === i
+        )
+      ));
     };
 
     const participantDisconnected = (participant) => {
       setParticipants((prevParticipants) =>
         prevParticipants.filter((p) => p !== participant)
       );
+      localStorage.setItem("Participants", JSON.stringify((prevParticipants) =>
+        prevParticipants.filter((p) => p !== participant)
+      ));
     };
 
     console.log(room)
@@ -173,6 +182,7 @@ const Room = () => {
   useEffect(() => {
     const handler = (leaderList) => {
       setLeaderParticipantIDs([...leaderList]);
+      localStorage.setItem("LeaderParticipantIDs", JSON.stringify(leaderParticipantIDs));
     }
     sckt.socket.on('leader', handler);
     return () => sckt.socket.off('leader', handler);
@@ -229,6 +239,7 @@ const Room = () => {
     loadingRoomData.current = true;
     if (roomData.workoutType != workoutType) {
       setWorkoutType(roomData.workoutType)
+      localStorage.setItem("WorkoutType", JSON.stringify(roomData.workoutType));
     }
     if (roomData.workout != workout) {
       handleSetWorkout(roomData.workout)
@@ -316,16 +327,18 @@ const Room = () => {
 
   const handleMic = () => {
     setMic(!mic);
+    localStorage.setItem("Mic", !mic);
   };
 
   const handleVid = () => {
     setVid(!vid);
-    console.log(vid);
+    localStorage.setItem("Vid", !vid);
   };
 
   const handleChange = (value) => {
     const newWorkoutType = value ? 'yt' : 'vid';
     setWorkoutType(newWorkoutType)
+    localStorage.setItem("WorkoutType", newWorkoutType);
   }
   const handleParticipantPage = (pageDelta) => {
     let all_participants = [...participants, room.localParticipant];
