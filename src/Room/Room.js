@@ -265,7 +265,7 @@ const Room = () => {
     return all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
-        <Grid item xs={3} key={index}> 
+        <Grid item xs={3} key={index} style={{height:"100%"}}>
           <Participant participant={participant} key={participant.sid} />
         </Grid>
       ));
@@ -342,14 +342,6 @@ const Room = () => {
     console.log(vid);
   };
 
-  const handleChange = (value) => {
-    const newWorkoutType = value ? 'yt' : 'vid';
-    sendRoomState({
-      eventName: 'syncWorkoutType',
-      eventParams: { workoutType: newWorkoutType }
-    }, () => {setWorkoutType(newWorkoutType)});
-    
-  }
   const handleParticipantPage = (pageDelta) => {
     let all_participants = [...participants, room.localParticipant];
     all_participants = (workoutType == 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
@@ -362,7 +354,6 @@ const Room = () => {
   const useStyles = makeStyles(theme => ({
     content: {
       flexGrow: 1,
-      padding: theme.spacing(3),
       transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
@@ -381,45 +372,25 @@ const Room = () => {
 
   return (
     <React.Fragment>
-      <Box display="flex" alignItems="center" justifyContent="center" my={6} className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`}>
-        <Grid container >
-          <Grid item container justify="space-between" xs={12}>
-            <Typography variant="h4">Room: {roomName.substring(0, 6).toUpperCase()}, User: {room.localParticipant.identity}</Typography>
-            <IconButton onClick={handleOpenSideBar}>
-              {openSideBar ? <ChevronRight /> : <ChevronLeft />}
-            </IconButton>
+      <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`} height="100%">
+        <Grid container style={{height:"100vh"}}>
+          <Grid item xs={12} style={{height: "70%", width:"100%"}}>
+            {room && (workoutType == 'vid') ? leaderParticipant() : 
+            <Video
+              log={log}
+              room={room}
+              videoProps={videoProps}
+              updateVideoProps={updateVideoProps}
+              playerRef={playerRef}
+              sendVideoState={sendVideoState}
+              loadVideo={loadVideo}
+              playVideoFromSearch={playVideoFromSearch}
+            />}
           </Grid>
-          <Grid item xs={12}>
-            <Paper square style={{width:"83%"}}>
-              <Tabs
-                indicatorColor="primary"
-                textColor="primary"
-                value={workoutType == 'yt' ? 1 : 0}
-                onChange={(event, value) => { handleChange(value) }}
-                aria-label="disabled tabs example"
-              >
-                <Tab value={0} label="Custom Workout"/>
-                <Tab value={1} label="Follow a Youtube Video"/>
-              </Tabs>
-            </Paper>
+          <Grid item container xs={12} style={{height: "20%", width:"100%"}}>
+            {remoteParticipants()}
           </Grid>
-          <Grid item xs={12}>
-            <Box width="100%">
-              {room && (workoutType == 'vid') ? leaderParticipant() : 
-              <Video
-                log={log}
-                room={room}
-                videoProps={videoProps}
-                updateVideoProps={updateVideoProps}
-                playerRef={playerRef}
-                sendVideoState={sendVideoState}
-                loadVideo={loadVideo}
-                playVideoFromSearch={playVideoFromSearch}
-              />}
-            </Box>
-          </Grid>
-          <Grid item container xs={12}>{remoteParticipants()}</Grid>
-          <Grid item container xs={12} >
+          <Grid item container xs={12} style={{height: "10%", width:"100%"}} alignItems="center">
             <Grid item xs={4}>
               <Box display="flex" justifyContent="flex-start" alignItems="center">
                 <IconButton>
@@ -451,6 +422,9 @@ const Room = () => {
                 </IconButton>
                 <IconButton>
                   <Fullscreen/>
+                </IconButton>
+                <IconButton onClick={handleOpenSideBar}>
+                  {openSideBar ? <ChevronRight /> : <ChevronLeft />}
                 </IconButton>
               </Box>
             </Grid>
