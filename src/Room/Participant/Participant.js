@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Box } from '@material-ui/core';
+
 // import "../../media/CoLab.css";
 
 const Participant = ({ participant }) => {
@@ -72,11 +74,11 @@ const Participant = ({ participant }) => {
   }, [audioTracks]);
 
   return (
-    <div className="me-2 col">
-      <p>{participant.identity}</p>
-      <video ref={videoRef} autoPlay={true}  style={{width: "100%", maxHeight: "100%"}}/>
+    <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%">
+      <div>{participant.identity}</div>
+      <video ref={videoRef} autoPlay={true}  style={{flexGrow: 1, maxWidth:"100%", minHeight: 0}}/>
       <audio ref={audioRef} autoPlay={true} muted={true} />
-    </div>
+    </Box>
   );
 };
 

@@ -5,7 +5,7 @@ import { AppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
 import pause from "../../media/pause.png";
 import play from "../../media/play.png";
-import { Drawer, Typography, LinearProgress, IconButton, Box, Grid , Divider} from '@material-ui/core';
+import { Drawer, Typography, LinearProgress, IconButton, Box, Grid , Divider, Tab, Tabs} from '@material-ui/core';
 import {PlayArrow, Pause} from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
 import { sckt } from '../../Socket';
@@ -17,7 +17,7 @@ const SideBar = ({
     drawerWidth,
     room
 }) => {
-    const {workout, openSideBar, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter} = useContext(AppContext)
+    const {workout, openSideBar, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, workoutType, setWorkoutType, roomName} = useContext(AppContext)
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { return workout.exercise }));
 
@@ -64,6 +64,13 @@ const SideBar = ({
             eventName: 'syncWorkoutState',
             eventParams: { playWorkoutState: startWorkoutState }
         }, () => setPlayWorkoutState(startWorkoutState));
+    }
+    const handleChange = (value) => {
+        const newWorkoutType = value ? 'yt' : 'vid';
+        sendRoomState({
+          eventName: 'syncWorkoutType',
+          eventParams: { workoutType: newWorkoutType }
+        }, () => {setWorkoutType(newWorkoutType)});
     }
 
     const TimerProgressBarMarkup = isYoutube ? <></> : (
@@ -119,6 +126,19 @@ const SideBar = ({
           }}>
             <Box mx={2} my={2} height="100%">
                 <Grid container className={classes.fullHeight}  wrap="wrap">
+                    <Grid item style={{height:"10%", width:"100%"}}>
+                        <Typography variant="body1">Room: {roomName.substring(0, 6).toUpperCase()}, User: {room.localParticipant.identity}</Typography>
+                        <Tabs
+                            indicatorColor="primary"
+                            textColor="primary"
+                            value={workoutType == 'yt' ? 1 : 0}
+                            onChange={(event, value) => { handleChange(value) }}
+                            aria-label="disabled tabs example"
+                        >
+                            <Tab value={0} label="Custom Workout"/>
+                            <Tab value={1} label="Follow a Youtube Video"/>
+                        </Tabs>
+                    </Grid>
                     <Grid container item style={{height:"40%", width: "100%"}} justify="space-between" direction="column">
                         <Grid item>
                             {TimerProgressBarMarkup}
@@ -126,7 +146,7 @@ const SideBar = ({
                         </Grid>
                         <Grid item><Divider /></Grid>
                     </Grid>
-                    <Grid item style={{height:"60%", width:"100%"}}>
+                    <Grid item style={{height:"50%", width:"100%"}}>
                         <Chat
                             currUser={currUser}
                             users={users}
