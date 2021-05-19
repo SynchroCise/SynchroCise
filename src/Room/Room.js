@@ -34,28 +34,94 @@ const Room = () => {
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
-  const [workoutType, setWorkoutType] = useState('vid'); // either 'vid' or 'yt'
-  const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar } = useContext(AppContext);
   const [vid, setVid] = useState(room.localParticipant.videoTracks.values().next().value.isTrackEnabled);
   const [mic, setMic] = useState(room.localParticipant.audioTracks.values().next().value.isTrackEnabled);
+  const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
   const loadingRoomData = useRef(true);
-  
-  // Video stuff
-  const playerRef = useRef(null);
-  const [videoProps, setVideoProps] = useState({
-    queue: [],
-    history: [],
-    playing: true,
-    seekTime: 0,
-    receiving: false,
-    initVideo: false,
-    videoType: 'yt' // 'vimeo', 'twitch', 'soundcloud'
+
+  // Initializing Room Stuff
+  useEffect(() => {
+    const getRoomSyncHandler = ({ id }) => {
+      let params = {
+        id: id,
+        ...roomProps,
+      }
+      sckt.socket.emit('sendRoomSync', params, (error) => { });
+    };
+    const getVideoSyncHandler = ({ id }) => {
+      log("New user needs videoProps to sync.", 'server');
+      if (playerRef.current !== null) {
+        let params = {
+          id: id,
+          ...videoProps,
+          seekTime: playerRef.current.getCurrentTime(),
+          receiving: true
+        }
+        sckt.socket.emit('sendVideoSync', params, (error) => { });
+      }
+    }
+    sckt.socket.on("getRoomSync", getRoomSyncHandler);
+    sckt.socket.on("getVideoSync", getVideoSyncHandler);
+    return () => {
+      sckt.socket.off("getRoomSync", getRoomSyncHandler)
+      sckt.socket.off("getVideoSync", getVideoSyncHandler);
+    }
   });
+  useEffect(() => {
+    const startRoomSyncHandler = (receivedRoomProps) => {
+      console.log("I'm syncing room.", 'server');
+      updateRoomProps({ ...receivedRoomProps });
+    };
+    const startVideoSyncHandler = (videoProps) => {
+      console.log("I'm syncing video.", 'server');
+      updateVideoProps({ ...videoProps });
+      modifyVideoState({ ...videoProps });
+      // loadVideo(videoProps.history[0], true);
+    };
+    const receiveRoomStateHandler = ({ name, room, eventName, eventParams = {} }) => {
+      const { playWorkoutState, workout, workoutType } = eventParams;
+        switch (eventName) {
+          case 'syncWorkoutState':
+              updateRoomProps({ playWorkoutState });
+              break;
+          case 'syncWorkoutType':
+              updateRoomProps({ workoutType });
+              break;
+          case 'syncWorkout':
+              updateRoomProps({ workout });
+              break;
+          default:
+              break;
+      }
+    }
+    sckt.socket.on('receiveRoomState', receiveRoomStateHandler)
+    sckt.socket.on("startRoomSync", startRoomSyncHandler);
+    sckt.socket.on("startVideoSync", startVideoSyncHandler);
+    return () => {
+      sckt.socket.off('receiveRoomState', receiveRoomStateHandler)
+      sckt.socket.off("startRoomSync", startRoomSyncHandler);
+      sckt.socket.off("startVideoSync", startVideoSyncHandler);
+    }
+  }, []);
+
+  // sending sync video
+  const playerRef = useRef(null);
   const drawerWidth = 300;
 
-  const updateVideoProps = (paramsToChange) => {
-    setVideoProps((prev) => ({ ...prev, ...paramsToChange }));
-  }
+  const modifyVideoState = (paramsToChange) => {
+    if (playerRef.current !== null) {
+      const { playing, seekTime, playbackRate } = paramsToChange;
+      if (playing !== undefined) {
+        updateVideoProps({ playing });
+        // } else if (playbackRate !== undefined) {
+        //     player.setPlaybackRate(playbackRate);
+      }
+      if (seekTime !== undefined) {
+        playerRef.current.seekTo(seekTime);
+      }
+    }
+  } 
+  
   const sendVideoState = ({ eventName, eventParams }) => {
     let params = {
       name: room.localParticipant.identity,
@@ -65,6 +131,7 @@ const Room = () => {
     };
     sckt.socket.emit('sendVideoState', params, (error) => { });
   };
+
   const playVideoFromSearch = (searchItem) => {
     const url = searchItem.video.url;
     const videoType = getVideoType(url);
@@ -177,43 +244,6 @@ const Room = () => {
     return () => sckt.socket.off('leader', handler);
   }, []);
 
-  // handles roomData changes from server
-  useEffect(() => {
-    const handler = (roomDataServer) => {
-      updateRoomData(roomDataServer);
-    }
-    sckt.socket.on('roomData', handler);
-    return () => sckt.socket.off('roomData', handler);
-  }, []);
-
-  // sends disconnect to room if they close screen
-  useEffect( () => {
-    window.addEventListener('beforeunload', leaveRoomIfJoined);
-    // Leave Room.
-    function leaveRoomIfJoined() {
-      if (room) {
-          room.disconnect();
-      }
-    }
-  }, []);
-  
-
-  // uploads roomData changes to server
-  useEffect(() => {
-    // loading prevents sending data from server after receiving it
-    if (!loadingRoomData.current) {
-      const roomData = {
-        "name": roomName,
-        "sid": room.sid,
-        "workoutID": workout.id,
-        "workoutType": workoutType
-      }
-      sckt.socket.emit('updateRoomData', roomData, (err) => {});
-    } else {
-      loadingRoomData.current = false;
-    }
-  }, [workoutType, workout]);
-
   // resets participant page if there are no remote participants
   useEffect(() => {
     let all_participants = [...participants, room.localParticipant];
@@ -223,17 +253,6 @@ const Room = () => {
       setParticipantPage(0)
     }
   }, [participants]);
-
-  const updateRoomData = (roomData) => {
-    loadingRoomData.current = true;
-    if (roomData.workoutType != workoutType) {
-      setWorkoutType(roomData.workoutType)
-    }
-    if (roomData.workout != workout) {
-      handleSetWorkout(roomData.workout)
-    }
-  }
-
 
   // show all the particpants in the room
   const remoteParticipants = () => {
@@ -245,7 +264,7 @@ const Room = () => {
     return all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
-        <Grid item xs={3}> 
+        <Grid item xs={3} key={index} style={{height:"100%"}}>
           <Participant participant={participant} key={participant.sid} />
         </Grid>
       ));
@@ -290,10 +309,6 @@ const Room = () => {
     setVid(!vid);
   };
 
-  const handleChange = (value) => {
-    const newWorkoutType = value ? 'yt' : 'vid';
-    setWorkoutType(newWorkoutType)
-  }
   const handleParticipantPage = (pageDelta) => {
     let all_participants = [...participants, room.localParticipant];
     all_participants = (workoutType == 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
@@ -306,7 +321,6 @@ const Room = () => {
   const useStyles = makeStyles(theme => ({
     content: {
       flexGrow: 1,
-      padding: theme.spacing(3),
       transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
@@ -325,45 +339,25 @@ const Room = () => {
 
   return (
     <React.Fragment>
-      <Box display="flex" alignItems="center" justifyContent="center" my={6} className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`}>
-        <Grid container >
-          <Grid item container justify="space-between" xs={12}>
-            <Typography variant="h4">Room: {roomName.substring(0, 6).toUpperCase()}, User: {room.localParticipant.identity}</Typography>
-            <IconButton onClick={handleOpenSideBar}>
-              {openSideBar ? <ChevronRight /> : <ChevronLeft />}
-            </IconButton>
+      <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`} height="100%">
+        <Grid container style={{height:"100vh"}}>
+          <Grid item xs={12} style={{height: "70%", width:"100%"}}>
+            {room && (workoutType == 'vid') ? leaderParticipant() : 
+            <Video
+              log={log}
+              room={room}
+              videoProps={videoProps}
+              updateVideoProps={updateVideoProps}
+              playerRef={playerRef}
+              sendVideoState={sendVideoState}
+              loadVideo={loadVideo}
+              playVideoFromSearch={playVideoFromSearch}
+            />}
           </Grid>
-          <Grid item xs={12}>
-            <Paper square style={{width:"83%"}}>
-              <Tabs
-                indicatorColor="primary"
-                textColor="primary"
-                value={workoutType == 'yt' ? 1 : 0}
-                onChange={(event, value) => { handleChange(value) }}
-                aria-label="disabled tabs example"
-              >
-                <Tab value={0} label="Custom Workout"/>
-                <Tab value={1} label="Follow a Youtube Video"/>
-              </Tabs>
-            </Paper>
+          <Grid item container xs={12} style={{height: "20%", width:"100%"}}>
+            {remoteParticipants()}
           </Grid>
-          <Grid item xs={12}>
-            <Box width="100%">
-              {room && (workoutType == 'vid') ? leaderParticipant() : 
-              <Video
-                log={log}
-                room={room}
-                videoProps={videoProps}
-                updateVideoProps={updateVideoProps}
-                playerRef={playerRef}
-                sendVideoState={sendVideoState}
-                loadVideo={loadVideo}
-                playVideoFromSearch={playVideoFromSearch}
-              />}
-            </Box>
-          </Grid>
-          <Grid item container xs={12}>{remoteParticipants()}</Grid>
-          <Grid item container xs={12} >
+          <Grid item container xs={12} style={{height: "10%", width:"100%"}} alignItems="center">
             <Grid item xs={4}>
               <Box display="flex" justifyContent="flex-start" alignItems="center">
                 <IconButton onClick={handleVid}>
@@ -396,6 +390,9 @@ const Room = () => {
                 <IconButton>
                   <Fullscreen/>
                 </IconButton>
+                <IconButton onClick={handleOpenSideBar}>
+                  {openSideBar ? <ChevronRight /> : <ChevronLeft />}
+                </IconButton>
               </Box>
             </Grid>
           </Grid>
@@ -407,6 +404,7 @@ const Room = () => {
         users={participants}
         isYoutube={workoutType == 'yt' ? 1 : 0}
         drawerWidth={drawerWidth}
+        room={room}
       />
     </React.Fragment>
   );

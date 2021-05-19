@@ -13,7 +13,8 @@ const {
     getUsersInRoom,
     getUsersBySid,
     getUserByName,
-    getLeadersInRoom
+    getLeadersInRoom,
+    getUsersBySocketId
 } = require('./users.js');
 const { getActiveRooms, getRoomsBySID, updateRoomData } = require('./rooms.js');
 const { getWorkoutById } = require('./workouts.js');
@@ -45,9 +46,9 @@ io.on('connection', (socket) => {
 
         socket.emit('message', { user: { name: 'admin' }, text: `Hi ${user.name}! Welcome to your new room! You can invite your friends to watch with you by sending them the link to this page.` });
 
-        let roomData = (await getRoomsBySID(user.room))[0];
-        roomData['workout'] = await getWorkoutById(roomData.workoutId)
-        socket.emit('roomData', roomData);
+        // let roomData = (await getRoomsBySID(user.room))[0];
+        // roomData['workout'] = await getWorkoutById(roomData.workoutId)
+        // socket.emit('roomData', roomData);
         let roomUsers = await getUsersInRoom(user.room)
         let leaderList = roomUsers.filter(user => user.isLeader === true).map((obj) => obj.sid);
         socket.emit('leader', leaderList);
@@ -57,7 +58,10 @@ io.on('connection', (socket) => {
         // gets video sync data from other user
         if (roomUsers.length > 1) {
             const otherUser = roomUsers.filter((roomUser) => user.id !== roomUser.id)[0]
-            if (otherUser) socket.to(otherUser.socketId).emit('getSync', { id: user.socketId });
+            if (otherUser) {
+                io.to(otherUser.socketId).emit('getRoomSync', { id: user.socketId });
+                io.to(otherUser.socketId).emit('getVideoSync', { id: user.socketId });
+            }
         }
 
         socket.join(user.room);
@@ -138,9 +142,10 @@ io.on('connection', (socket) => {
     });
 
     /** VIDEO STATE CHANGES */
-    socket.on('sendSync', ({ id, ...videoProps }, callback) => {
+    socket.on('sendVideoSync', ({ id, ...videoProps }, callback) => {
         // console.log(videoProps);
-        socket.to(id).emit('startSync', videoProps);
+        io.to(id).emit('startVideoSync', videoProps);
+        callback();
     });
     socket.on('sendVideoState', (params, callback) => {
         const { name, room, eventName, eventParams } = params;
@@ -176,6 +181,28 @@ io.on('connection', (socket) => {
         io.in(room).emit('message', { user: { name: 'admin' }, text: admin_msg });
         callback();
     });
+
+    /** ROOM STATE CHANGES */
+    socket.on('sendRoomState', (params, callback) => {
+        const { name, room, eventName, eventParams } = params;
+        socket.to(room).emit('receiveRoomState', params);
+        let admin_msg;
+        switch (eventName) {
+            case 'syncWorkoutState':
+                admin_msg = `${name} has paused/played the custom workout`
+            case 'syncWorkoutType':
+                admin_msg = `${name} has changed the workout type`
+            case 'syncWorkout':
+                admin_msg = `${name} has changed the workout`
+        }
+        io.in(room).emit('message', { user: { name: 'admin' }, text: admin_msg });
+        callback();
+    });
+    socket.on('sendRoomSync', ({ id, ...roomProps }, callback) => {
+        io.to(id).emit('startRoomSync', roomProps);
+        callback();
+    });
+
 });
 
 app.use(bodyParser.urlencoded({ extended: false }));

@@ -28,13 +28,17 @@ const App = () => {
       <div className="app">
         <main>
           <AppContextProvider>
-            <Navbar />
             <Router>
-              <Route path={RoutesEnum.Home} exact component={Home} />
-              <Route path={RoutesEnum.CreateRoom} component={CreateRoom} />
-              <Route path={RoutesEnum.JoinRoom} component={JoinRoom} />
-              <Route path={RoutesEnum.Room} component={Room} />
-              <Route path={RoutesEnum.CreateWorkout} component={CreateWorkout} />
+              <Switch>
+                <Route path={RoutesEnum.Room} component={Room} />
+                <>
+                  <Navbar />
+                  <Route path={RoutesEnum.Home} exact component={Home} />
+                  <Route path={RoutesEnum.CreateRoom} component={CreateRoom} />
+                  <Route path={RoutesEnum.JoinRoom} component={JoinRoom} />
+                  <Route path={RoutesEnum.CreateWorkout} component={CreateWorkout} />
+                </>
+              </Switch>
             </Router>
           </AppContextProvider>
         </main>
