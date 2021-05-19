@@ -34,9 +34,9 @@ const Room = () => {
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
+  const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
   const [vid, setVid] = useState(room.localParticipant.videoTracks.values().next().value.isTrackEnabled);
   const [mic, setMic] = useState(room.localParticipant.audioTracks.values().next().value.isTrackEnabled);
-  const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
   const loadingRoomData = useRef(true);
 
   // Initializing Room Stuff
