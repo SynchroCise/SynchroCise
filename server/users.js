@@ -69,7 +69,6 @@ const addUser = async ({ socketId, name, room, sid, userId }) => {
 const removeUser = async (socketId) => {
     const usersToRemove = (await getUsersBySocketId(socketId));
     if (!usersToRemove || usersToRemove.length == 0) return usersToRemove
-    console.log(usersToRemove)
     const userToRemove = usersToRemove[0]
     const userRef = db.collection('users').doc(userToRemove.id);
     if (userToRemove.isTemp) {

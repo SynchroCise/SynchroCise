@@ -34,9 +34,8 @@ const Room = () => {
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
-  const [vid, setVid] = useState(false);
-  const [mic, setMic] = useState(false);
-  // const [workoutType, setWorkoutType] = useState('vid'); // either 'vid' or 'yt'
+  const [vid, setVid] = useState(room.localParticipant.videoTracks.values().next().value.isTrackEnabled);
+  const [mic, setMic] = useState(room.localParticipant.audioTracks.values().next().value.isTrackEnabled);
   const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
   const loadingRoomData = useRef(true);
 
@@ -296,50 +295,18 @@ const Room = () => {
     }
   };
 
-  const spawnVid = () => {
-    if (vid === false) {
-      return (
-        <button className="btn element" onClick={handleVid}>
-          {VideoElement}
-        </button>
-      );
-    } else {
-      return (
-        <button className="btn element" onClick={handleVid}>
-          {VideoElementMuted}
-        </button>
-      );
-    }
-  };
-
-  const spawnMic = () => {
-    if (mic === false) {
-      return (
-        <button className="element" onClick={handleMic}>
-          {MicElement}
-        </button>
-      );
-    } else {
-      return (
-        <button className="element" onClick={handleMic}>
-          {MicElementMuted}
-        </button>
-      );
-    }
-  };
-
-  const spawnIcons = () => {
-    spawnMic();
-    spawnVid();
-  };
-
   const handleMic = () => {
+    room.localParticipant.audioTracks.forEach(track => {
+      (mic) ? track.track.disable() : track.track.enable()
+    });
     setMic(!mic);
   };
 
   const handleVid = () => {
+    room.localParticipant.videoTracks.forEach(track => {
+      (vid) ? track.track.disable() : track.track.enable()
+    });
     setVid(!vid);
-    console.log(vid);
   };
 
   const handleParticipantPage = (pageDelta) => {
@@ -393,15 +360,15 @@ const Room = () => {
           <Grid item container xs={12} style={{height: "10%", width:"100%"}} alignItems="center">
             <Grid item xs={4}>
               <Box display="flex" justifyContent="flex-start" alignItems="center">
-                <IconButton>
-                  <Videocam></Videocam>
+                <IconButton onClick={handleVid}>
+                  {vid ? <Videocam/> : <VideocamOff/>}
                 </IconButton>
-                <IconButton>
-                  <Mic></Mic>
+                <IconButton onClick={handleMic}>
+                  {mic ? <Mic/> : <MicOff/>}
                 </IconButton>
-                <IconButton>
+                {/* <IconButton>
                   <CallEnd></CallEnd>
-                </IconButton>
+                </IconButton> */}
               </Box>
             </Grid>
             <Grid item xs={4}>
