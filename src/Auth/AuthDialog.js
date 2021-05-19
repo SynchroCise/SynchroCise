@@ -7,7 +7,7 @@ import {AppContext} from "../AppContext"
 
 
 export default function LoginDialog() {
-    const {openAuthDialog, handleSetOpenAuthDialog, isSignUp, handleSetIsSignUp, handleSetUserId} = useContext(AppContext)
+    const {openAuthDialog, handleSetOpenAuthDialog, isSignUp, handleSetIsSignUp, handleSetUserId, handleSetUsername} = useContext(AppContext)
     const handleClose = () => {
         handleSetOpenAuthDialog(false);
     };
@@ -24,6 +24,7 @@ export default function LoginDialog() {
         }
         const resp = await res.json();
         handleSetUserId(resp.userId); // userId determines whether a person is logged in or not
+        handleSetUsername(resp.displayName)
         handleSetOpenAuthDialog(false);
         
         return { success: true }

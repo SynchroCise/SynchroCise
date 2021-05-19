@@ -114,10 +114,11 @@ router.post(
             { session: false },
             async (error) => {
               if (error) return next(error);
-              const body = { id: user.id, email: user.email };
+              const body = { id: user.id, email: user.email, displayName: user.name };
               const token = jwt.sign({ user: body }, process.env.JWT_SECRET);
               res.cookie('jwt', token, { httpOnly: true });
-              return res.json({ token, userId: user.id });
+              console.log(user)
+              return res.json({ token, userId: user.id, displayName: user.name });
             }
           );
         } catch (error) {
