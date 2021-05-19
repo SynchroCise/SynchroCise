@@ -1,8 +1,11 @@
-import React, { useEffect, useContext, useState, useRef } from "react";
+import React, { useEffect, useContext, useState, useRef, useMemo } from "react";
+import {useHistory} from 'react-router-dom'
 import Participant from "./Participant/Participant";
 import SideBar from "./SideBar/SideBar";
+import {Video as twilioVideo} from "twilio-video";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AppContext } from "./../AppContext";
+import { RoutesEnum } from '../App'
 import {Paper, Tab, Tabs, Grid, Typography, Box, IconButton} from '@material-ui/core';
 import { ArrowForward, ArrowBack, Videocam, VideocamOff, Mic, MicOff, CallEnd, Fullscreen, Apps, ChevronLeft, ChevronRight } from '@material-ui/icons';
 import {
@@ -19,7 +22,6 @@ import { getVideoType } from '../utils/video';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
 
-
 const VideoElement = <FontAwesomeIcon icon={faVideo} />;
 const VideoElementMuted = <FontAwesomeIcon icon={faVideoSlash} />;
 const MicElement = <FontAwesomeIcon icon={faMicrophone} />;
@@ -33,12 +35,19 @@ const Room = () => {
   const [participants, setParticipants] = useState(localStorage.getItem('Participants') === null ? [] : JSON.parse(localStorage.getItem('Participants')));
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
-const [leaderParticipantIDs, setLeaderParticipantIDs] = useState(localStorage.getItem('leaderParticipantIDs') === null ? [] : JSON.parse(localStorage.getItem('LeaderParticipantIDs')));
-const [vid, setVid] = useState(localStorage.getItem('Vid') === null ? false : JSON.parse(localStorage.getItem('Vid')));
-const [mic, setMic] = useState(localStorage.getItem('Mic') === null ? false : JSON.parse(localStorage.getItem('Mic')));
+  const [leaderParticipantIDs, setLeaderParticipantIDs] = useState(localStorage.getItem('leaderParticipantIDs') === null ? [] : JSON.parse(localStorage.getItem('LeaderParticipantIDs')));
+  const [vid, setVid] = useState(localStorage.getItem('Vid') === null ? false : JSON.parse(localStorage.getItem('Vid')));
+  const [mic, setMic] = useState(localStorage.getItem('Mic') === null ? false : JSON.parse(localStorage.getItem('Mic')));
   // const [workoutType, setWorkoutType] = useState('vid'); // either 'vid' or 'yt'
-  const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
+  const { roomName, room, handleLeaveRoom, workout, handleSetRoom, userId , username, handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
   const loadingRoomData = useRef(true);
+  const history = useHistory()
+
+  useMemo(() => {
+    if(room == null) {
+      history.push(RoutesEnum.JoinRoom)
+    }
+  }, [])
 
   // Initializing Room Stuff
   useEffect(() => {
@@ -220,7 +229,6 @@ const [mic, setMic] = useState(localStorage.getItem('Mic') === null ? false : JS
       ));
     };
 
-    console.log(room)
     room.on("participantConnected", participantConnected);
     room.on("participantDisconnected", participantDisconnected);
     room.participants.forEach(participantConnected);
@@ -231,6 +239,7 @@ const [mic, setMic] = useState(localStorage.getItem('Mic') === null ? false : JS
     };
 
   }, [room]);
+
 
   // joins the room through sockets
   useEffect(() => {
@@ -287,22 +296,25 @@ const [mic, setMic] = useState(localStorage.getItem('Mic') === null ? false : JS
       const participant = participants.filter(
         (participant) => participant.sid === leaderParticipantIDs[0]
       )[0];
-      if (participant === undefined) {
-        return (
-          <Participant
-            key={room.localParticipant.sid}
-            participant={room.localParticipant}
-          />
-        );
+      if(room != null) {
+        if (participant === undefined) {
+          return (
+            <Participant
+              key={room.localParticipant.sid}
+              participant={room.localParticipant}
+            />
+          );
+        }
+        return <Participant key={participant.sid} participant={participant} />;
+        } else {
+          return (
+            <Participant
+              key={room.localParticipant.sid}
+              participant={room.localParticipant}
+            />
+          );
       }
-      return <Participant key={participant.sid} participant={participant} />;
-    } else {
-      return (
-        <Participant
-          key={room.localParticipant.sid}
-          participant={room.localParticipant}
-        />
-      );
+      
     }
   };
 
@@ -397,7 +409,7 @@ const [mic, setMic] = useState(localStorage.getItem('Mic') === null ? false : JS
       <Box display="flex" alignItems="center" justifyContent="center" my={2} className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`}>
         <Grid container >
           <Grid item container justify="space-between" xs={12}>
-            <Typography variant="h5">Room: {roomName.substring(0, 6).toUpperCase()}, User: {room.localParticipant.identity}</Typography>
+            <Typography variant="h5">Room: {roomName.substring(0, 6).toUpperCase()}, User: {room==null ? "user" : room.localParticipant.identity}</Typography>
             <IconButton onClick={handleOpenSideBar}>
               {openSideBar ? <ChevronRight /> : <ChevronLeft />}
             </IconButton>

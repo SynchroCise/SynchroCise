@@ -10,13 +10,13 @@ const Participant = ({ participant }) => {
   const audioRef = useRef();
 
   // filter out tracks that don't exist
-  const trackpubsToTracks = (trackMap) =>
-  // console.log(trackMap)
-    Array.from(trackMap.values())
+  const trackpubsToTracks = (trackMap) =>  
+    Array.from(trackMap)
       .map((publication) => publication.track)
       .filter((track) => track !== null);
 
   useEffect(() => {
+    console.log(participant)
     // use participant objects to set initial values for tracks
     setVideoTracks(trackpubsToTracks(participant.videoTracks));
     localStorage.setItem("VideoTracks", JSON.stringify(participant.videoTracks));

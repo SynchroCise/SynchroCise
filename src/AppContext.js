@@ -16,10 +16,10 @@ const AppContextProvider = ({children}) => {
     // localStorage.setItem("UserId", JSON.stringify(null));
   // })
 
-  const [room, setRoom] = useState(localStorage.getItem('Room') === null ? '' : JSON.parse(localStorage.getItem('Room')));
+  const [room, setRoom] = useState(null);
   const [connecting, setConnecting] = useState(localStorage.getItem('Connecting') === null ? false : JSON.parse(localStorage.getItem('Connecting')));
   const [username, setUsername] = useState(localStorage.getItem('Username') === null ? '' : localStorage.getItem('Username'));
-  // const [workout, setWorkout] = useState(localStorage.getItem('Workout') === null ? {"workoutName": "", "exercises": [{"time": 1, "exercise":""}]} : JSON.parse(localStorage.getItem('Workout')))
+  const [workout, setWorkout] = useState(localStorage.getItem('Workout') === null ? {"workoutName": "", "exercises": [{"time": 1, "exercise":""}]} : JSON.parse(localStorage.getItem('Workout')))
   const [roomName, setRoomName] = useState(localStorage.getItem('RoomName') === null ? '' : localStorage.getItem('RoomName'));
   const [roomState, setRoomState] = useState(localStorage.getItem('RoomState') === null ? '' : localStorage.getItem('RoomState'));
   const [roomTitle, setRoomTitle] = useState(localStorage.getItem('RoomTitle') === null ? '' : localStorage.getItem('RoomTitle'))
@@ -28,23 +28,33 @@ const AppContextProvider = ({children}) => {
   const [openAuthDialog, setOpenAuthDialog] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [roomProps, setRoomProps] = useState(
-    localStorage.getItem('RoomProps') === null ? {
-      workoutType: 'vid', // 'yt', 'custom',
-      workout: {"workoutName": "", "exercises": [{"time": 1, "exercise":""}]},
-      playWorkoutState: false,
-      workoutNumber: 0,
-      workoutCounter: -1
+    localStorage.getItem('RoomProps') === null || localStorage.getItem('RoomProps') === 'undefined'? {
+      "workoutType": "vid", // 'yt', 'custom',
+      "workout": {"workoutName": "", "exercises": [{"time": 1, "exercise":""}]},
+      "playWorkoutState": false,
+      "workoutNumber": 0,
+      "workoutCounter": -1
     } : JSON.parse(localStorage.getItem('RoomProps'))
   );
 
+  // const [roomProps, setRoomProps] = useState(
+  //   localStorage.getItem('RoomProps') === null ? {
+  //     "workoutType": 'vid', // 'yt', 'custom',
+  //     "workout": {"workoutName": "", "exercises": [{"time": 1, "exercise":""}]},
+  //     "playWorkoutState": false,
+  //     "workoutNumber": 0,
+  //     "workoutCounter": -1
+  //   } : JSON.parse(localStorage.getItem('RoomProps'))
+  // );
+
   const [videoProps, setVideoProps] = useState(localStorage.getItem('VideoProps') === null ? {
-      queue: [],
-      history: [],
-      playing: true,
-      seekTime: 0,
-      receiving: false,
-      initVideo: false,
-      videoType: 'yt'
+      "queue": [],
+      "history": [],
+      "playing": true,
+      "seekTime": 0,
+      "receiving": false,
+      "initVideo": false,
+      "videoType": 'yt'
     } : JSON.parse(localStorage.getItem('VideoProps'))
   );
 
@@ -59,6 +69,17 @@ const AppContextProvider = ({children}) => {
   }
 
   const updateRoomProps = (paramsToChange) => {
+    if(localStorage.getItem('RoomProps') === null) {
+      localStorage.setItem("RoomProps", JSON.stringify({
+        "workoutType": 'vid', // 'yt', 'custom',
+        "workout": {"workoutName": "", "exercises": [{"time": 1, "exercise":""}]},
+        "playWorkoutState": false,
+        "workoutNumber": 0,
+        "workoutCounter": -1
+      }))
+      console.log("hello")
+    }
+
     setRoomProps((prev) => ({ ...prev, ...paramsToChange }));
     localStorage.setItem("RoomProps", JSON.stringify((prev) => ({ ...prev, ...paramsToChange })));
   }
@@ -73,7 +94,6 @@ const AppContextProvider = ({children}) => {
 
   const handleSetRoom = (room) => {
     setRoom(room)
-    localStorage.setItem("Room", JSON.stringify(room));
   }
   const handleSetConnecting = (connecting) => {
     setConnecting(connecting)
@@ -94,10 +114,6 @@ const AppContextProvider = ({children}) => {
   const handleSetRoomTitle = (roomTitle) => {
     setRoomTitle(roomTitle)
     localStorage.setItem("RoomTitle", JSON.stringify(roomTitle));
-  }
-  const handleSetWorkout = (workout) => {
-    setWorkout(workout)
-    localStorage.setItem("Workout", JSON.stringify(workout));
   }
   const handleOpenSideBar = () => {
     setOpenSideBar(!openSideBar)
@@ -122,27 +138,25 @@ const AppContextProvider = ({children}) => {
 
   const setWorkoutNumber = (workoutNumber) => updateRoomProps({workoutNumber});
 
-  const handleSetRoom = (room) => setRoom(room)
+  // const handleSetConnecting = (connecting) => setConnecting(connecting)
 
-  const handleSetConnecting = (connecting) => setConnecting(connecting)
+  // const handleSetUsername = (username) => setUsername(username)
 
-  const handleSetUsername = (username) => setUsername(username)
+  // const handleSetRoomName = (roomname) => setRoomName(roomname)
 
-  const handleSetRoomName = (roomname) => setRoomName(roomname)
+  // const handleSetRoomState = (roomState) => setRoomState(roomState)
 
-  const handleSetRoomState = (roomState) => setRoomState(roomState)
-
-  const handleSetRoomTitle = (roomTitle) => setRoomTitle(roomTitle)
+  // const handleSetRoomTitle = (roomTitle) => setRoomTitle(roomTitle)
 
   const handleSetWorkout = (workout) => updateRoomProps({workout})
 
-  const handleOpenSideBar = () => setOpenSideBar(!openSideBar)
+  // const handleOpenSideBar = () => setOpenSideBar(!openSideBar)
 
-  const handleSetUserId = (userId) => setUserId(userId)
+  // const handleSetUserId = (userId) => setUserId(userId)
 
-  const handleSetOpenAuthDialog = (val) => setOpenAuthDialog(val);
+  // const handleSetOpenAuthDialog = (val) => setOpenAuthDialog(val);
 
-  const handleSetIsSignUp = (val) => setIsSignUp(val);
+  // const handleSetIsSignUp = (val) => setIsSignUp(val);
 
 
   // const createRoom = (room_code) => {

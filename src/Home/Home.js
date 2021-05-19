@@ -15,11 +15,10 @@ import "aos/dist/aos.css";
 
 // this component renders form to be passed to VideoChat.js
 const Home = () => {
-  const {joinRoom, roomName, handleRoomNameChange, makeCustomRoom, handleSetRoomName} = useContext(AppContext)
+  const {joinRoom, room, roomName, handleRoomNameChange, makeCustomRoom, handleSetRoomName} = useContext(AppContext)
   const rightElement = <FontAwesomeIcon icon={faArrowRight} />;
   const history = useHistory()
   const [errMessage, setErrMessage] = useState('');
-
 
   useEffect(() => {
     AOS.init({once: true});
