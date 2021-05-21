@@ -18,6 +18,8 @@ import Video from '../Video/Video';
 import { getVideoType } from '../utils/video';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
+import { Redirect} from "react-router-dom";
+
 
 
 const VideoElement = <FontAwesomeIcon icon={faVideo} />;
@@ -29,14 +31,14 @@ const fullElement = <FontAwesomeIcon icon={faExpandAlt} />;
 const MicElementMuted = <FontAwesomeIcon icon={faMicrophoneSlash} />;
 
 // using roomName and token, we will create a room
-const Room = () => {
+const Room = (props) => {
   const [participants, setParticipants] = useState([]);
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
   const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
-  const [vid, setVid] = useState(room.localParticipant.videoTracks.values().next().value.isTrackEnabled);
-  const [mic, setMic] = useState(room.localParticipant.audioTracks.values().next().value.isTrackEnabled);
+  const [vid, setVid] = useState((room) ? room.localParticipant.videoTracks.values().next().value.isTrackEnabled : false);
+  const [mic, setMic] = useState((room) ? room.localParticipant.audioTracks.values().next().value.isTrackEnabled : false);
   const loadingRoomData = useRef(true);
 
   // Initializing Room Stuff
@@ -123,6 +125,7 @@ const Room = () => {
   } 
   
   const sendVideoState = ({ eventName, eventParams }) => {
+    if (!room) return;
     let params = {
       name: room.localParticipant.identity,
       room: room.sid,
@@ -196,6 +199,7 @@ const Room = () => {
 
   // once room is rendered do below
   useEffect(() => {
+    if (!room) return;
     // if participant connects or disconnects update room properties
     const participantConnected = (participant) => {
       setParticipants((prevParticipants) =>
@@ -224,7 +228,7 @@ const Room = () => {
 
   // joins the room through sockets
   useEffect(() => {
-    // TODO: Check if room exists
+    if (!room) return;
     const sid = room.localParticipant.sid;
     const name = room.localParticipant.identity
 
@@ -234,7 +238,7 @@ const Room = () => {
       //   setIsJoined(true);
       // }, 750);
     });
-  }, []);
+  }, [room]);
   // handles leader changes from server
   useEffect(() => {
     const handler = (leaderList) => {
@@ -246,16 +250,18 @@ const Room = () => {
 
   // resets participant page if there are no remote participants
   useEffect(() => {
+    if (!room) return;
     let all_participants = [...participants, room.localParticipant];
     all_participants = (workoutType == 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
     const viewer_len = all_participants.slice(participantPage * ppp, participantPage * ppp + ppp).length
     if (viewer_len == 0 && participantPage != 0) {
       setParticipantPage(0)
     }
-  }, [participants]);
+  }, [participants, room]);
 
   // show all the particpants in the room
   const remoteParticipants = () => {
+    if (!room) return;
     if (participants.length < 1) {
       return `No Other Participants`;
     }
@@ -272,6 +278,7 @@ const Room = () => {
 
 
   const leaderParticipant = () => {
+    if (!room) return;
     if (participants.length >= 1) {
       const participant = participants.filter(
         (participant) => participant.sid === leaderParticipantIDs[0]
@@ -296,6 +303,7 @@ const Room = () => {
   };
 
   const handleMic = () => {
+    if (!room) return;
     room.localParticipant.audioTracks.forEach(track => {
       (mic) ? track.track.disable() : track.track.enable()
     });
@@ -303,6 +311,7 @@ const Room = () => {
   };
 
   const handleVid = () => {
+    if (!room) return;
     room.localParticipant.videoTracks.forEach(track => {
       (vid) ? track.track.disable() : track.track.enable()
     });
@@ -310,6 +319,7 @@ const Room = () => {
   };
 
   const handleParticipantPage = (pageDelta) => {
+    if (!room) return;
     let all_participants = [...participants, room.localParticipant];
     all_participants = (workoutType == 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
     const newPageNum = participantPage + pageDelta;
@@ -336,6 +346,15 @@ const Room = () => {
     },
   }));
   const classes = useStyles();
+
+
+  // check if room exists
+  // TODO: Add loading screen. https://stackoverflow.com/questions/56861580/how-can-i-redirect-before-render
+  if (!room) {
+    return (
+      <Redirect to={`/join-room/${props.match.params.roomCode}`} />
+    );
+  }
 
   return (
     <React.Fragment>

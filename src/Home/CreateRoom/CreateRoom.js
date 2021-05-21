@@ -19,12 +19,13 @@ import moment from 'moment'
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const {userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog} = useContext(AppContext)
+  const {userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom} = useContext(AppContext)
   const history = useHistory()
   const [selectedWorkout, setSelectedWorkout] = useState(0);
   const [defaultWorkout, setDefaultWorkout] = useState([]);
 
   useEffect(() => {
+    makeCustomRoom()
     fetch("/api/workouts", {
       method: "GET",
       headers: {
@@ -83,7 +84,7 @@ const CreateRoom = () => {
           }).then((res) => res.text().then((res) => {
             handleSetRoom(room);
             handleSetConnecting(false);
-            history.push(RoutesEnum.Room)
+            history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`)
           })).catch((err) => {
             console.error(err);
             handleSetConnecting(false);
@@ -101,9 +102,6 @@ const CreateRoom = () => {
     setSelectedWorkout(value)
     handleSetWorkout(defaultWorkout[value])
   }
-
-  useEffect(() => {
- }, [selectedWorkout]);
 
   const Row = ({row, index}) => {
     const [open, setOpen] = useState(false);
@@ -298,6 +296,7 @@ const CreateRoom = () => {
               <IconButton
                 color="primary"
                 className={classes.containedButton}
+                disabled={!roomName}
                 type="submit">
                 <ArrowForward/>
               </IconButton>

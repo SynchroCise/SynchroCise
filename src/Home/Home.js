@@ -26,10 +26,8 @@ const Home = () => {
   }, []);
 
   const handleCreateRoom = () =>{
-    makeCustomRoom()
     history.push(RoutesEnum.CreateRoom)
   }
-  
   const handleJoinRoom = (event) => {
     fetch(`/api/rooms?sid_or_name=${roomName}`, {
       method: "GET",
@@ -41,14 +39,13 @@ const Home = () => {
         res.json().then((room) => {
           joinRoom()
           handleSetRoomName(room.id)
-          history.push(RoutesEnum.JoinRoom)
+          history.push(`${RoutesEnum.JoinRoom}/${room.id.substring(0, 6).toUpperCase()}`)
         });
       } else {
         res.text().then((res) => {
           setErrMessage(res)
         });
       }
-      
     }).catch((err) => {
       console.error(err);
     });
