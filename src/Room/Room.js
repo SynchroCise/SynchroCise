@@ -238,7 +238,7 @@ const Room = (props) => {
       //   setIsJoined(true);
       // }, 750);
     });
-  }, [room]);
+  }, []);
   // handles leader changes from server
   useEffect(() => {
     const handler = (leaderList) => {
@@ -257,7 +257,7 @@ const Room = (props) => {
     if (viewer_len == 0 && participantPage != 0) {
       setParticipantPage(0)
     }
-  }, [participants, room]);
+  }, [participants]);
 
   // show all the particpants in the room
   const remoteParticipants = () => {
