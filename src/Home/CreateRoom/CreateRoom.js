@@ -13,8 +13,6 @@ import { FormControlLabel, Switch, IconButton, ListItem, ListItemText, Box, Typo
 import { Table, TableBody, TableCell, TableHead, TableRow, Collapse } from '@material-ui/core';
 
 import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-import { FixedSizeList } from 'react-window';
-import moment from 'moment'
 
 
 // this component renders form to be passed to VideoChat.js
@@ -25,16 +23,18 @@ const CreateRoom = () => {
   const [defaultWorkout, setDefaultWorkout] = useState([]);
 
   useEffect(() => {
-    fetch("/api/workouts", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((res) => res.json()).then((res) => {
-      setDefaultWorkout(res)
-      handleSetWorkout(res[selectedWorkout])
-    });
-  }, []);
+    if (userId) {
+      fetch("/user/getWorkouts", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => res.json()).then((res) => {
+        setDefaultWorkout(res)
+        handleSetWorkout(res[selectedWorkout])
+      });
+    }
+  }, [userId]);
    
   const handleSubmit = useCallback(
     async (event) => {
@@ -290,7 +290,9 @@ const CreateRoom = () => {
               </Grid>
             </Grid>
             <Grid item xs={12}>
-              <Box width="100%">{workoutListMarkup}</Box>
+              {
+                (userId) ? <Box width="100%">{workoutListMarkup}</Box> : null
+              }
             </Grid>
           </Grid>
           <Grid item xs={1}>

@@ -18,6 +18,14 @@ const getWorkouts = async () => {
     return (workouts) ? workouts : null;
 }
 
+const getUserWorkouts = async (userId) => {
+    const workoutRef = db.collection('workouts');
+    const snapshot = await workoutRef.where('userId', '==', userId).orderBy('createdTime', 'desc').limit(5).get();
+    if (snapshot.empty) return []
+    const workouts = snapshot.docs.map((doc) => workoutFromDoc(doc));
+    return (workouts) ? workouts : null;
+}
+
 const getWorkoutById = async (id) => {
     const workoutRef =  db.collection('workouts').doc(id);
     const doc = await workoutRef.get()
@@ -60,5 +68,6 @@ module.exports = {
     getWorkoutByName,
     getWorkouts,
     addWorkout,
-    getWorkoutById
+    getWorkoutById,
+    getUserWorkouts
 };

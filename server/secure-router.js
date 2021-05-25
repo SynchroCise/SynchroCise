@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { addWorkout } = require('./workouts.js');
+const { addWorkout, getUserWorkouts } = require('./workouts.js');
 
 router.get(
   '/profile',
@@ -19,6 +19,12 @@ router.post(
     res.status(202).clearCookie('jwt').send('Cookie cleared')
   }
 )
+
+router.get('/getWorkouts', async (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  const workouts = await getUserWorkouts(req.user.id);
+  res.send(JSON.stringify(workouts));
+});
 
 router.post('/addWorkout', async (req, res, next) => {
   res.setHeader('Content-Type', 'text/plain');

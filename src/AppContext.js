@@ -18,7 +18,7 @@ const AppContextProvider = ({children}) => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [roomProps, setRoomProps] = useState({
     workoutType: 'vid', // 'yt', 'custom',
-    workout: {"workoutName": "", "exercises": [{"time": 1, "exercise":""}]},
+    workout: {"workoutName": "", "exercises": [{"time": 1, "exercise":""}], "id": ""},
     playWorkoutState: false,
     workoutNumber: 0,
     workoutCounter: -1
