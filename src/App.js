@@ -30,12 +30,12 @@ const App = () => {
           <AppContextProvider>
             <Router>
               <Switch>
-                <Route path={RoutesEnum.Room} component={Room} />
+                <Route path={`${RoutesEnum.Room}/:roomCode?`} component={Room}/>
                 <>
                   <Navbar />
                   <Route path={RoutesEnum.Home} exact component={Home} />
-                  <Route path={RoutesEnum.CreateRoom} component={CreateRoom} />
-                  <Route path={RoutesEnum.JoinRoom} component={JoinRoom} />
+                  <Route path={`${RoutesEnum.CreateRoom}`} component={CreateRoom} />
+                  <Route path={`${RoutesEnum.JoinRoom}/:roomCode?`} component={JoinRoom} />
                   <Route path={RoutesEnum.CreateWorkout} component={CreateWorkout} />
                 </>
               </Switch>
