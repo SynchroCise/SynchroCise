@@ -13,8 +13,8 @@ import { makeStyles } from "@material-ui/core/styles";
 
 
 // this component renders form to be passed to VideoChat.js
-const JoinRoom = () => {
-  const {connecting,username, roomName, handleUsernameChange, handleSetRoom, handleRoomTitle, handleSetConnecting} = useContext(AppContext)
+const JoinRoom = (props) => {
+  const {connecting,username, roomName, handleUsernameChange, handleSetRoom, handleRoomTitle, handleSetConnecting, handleSetRoomName} = useContext(AppContext)
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [vid, setVid] = useState(true);
@@ -26,17 +26,20 @@ const JoinRoom = () => {
 
   // create local video track
   useEffect(() => {
+    if (!roomName) return;
+    let isMounted = true;
     async function getLocalVideoTrack() {
       const videoTrack = await Video.createLocalVideoTrack();
-      setVideoTracks(() => [...videoTracks, videoTrack]);
+      if(isMounted) { setVideoTracks(() => [...videoTracks, videoTrack]); }
     }
     async function getLocalAudioTrack() {
       const audioTrack = await Video.createLocalAudioTrack();
-      setAudioTracks(() => [...audioTracks, audioTrack]);
+      if(isMounted) { setAudioTracks(() => [...audioTracks, audioTrack]); }
     }
     getLocalVideoTrack()
     getLocalAudioTrack()
-  }, [])
+    return () => { isMounted = false }
+  }, [roomName])
 
   useEffect(() => {
     const videoTrack = videoTracks[0];
@@ -47,6 +50,32 @@ const JoinRoom = () => {
       };
     }
   }, [videoTracks]);
+
+  // initializes roomcode
+  useEffect(() => {
+    const checkRoom = async () => {
+      const roomCode = await checkRoomExists(props.match.params.roomCode);
+      if (!roomCode) {
+        alert('Room Code does not exist!');
+        history.push(RoutesEnum.Home);
+      } else {
+        handleSetRoomName(roomCode)
+      }
+    };
+    checkRoom();
+  }, []);
+
+  const checkRoomExists = async (roomCode) => {
+    if (!roomCode) return null
+    const res = await fetch(`/api/rooms?sid_or_name=${roomCode}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const resp = await res.json()
+    return (res.ok) ? resp.id : null
+  }
 
   const handleMic = () => {
     audioTracks.forEach(track => {
@@ -90,13 +119,13 @@ const JoinRoom = () => {
         name: roomName,
         tracks: videoTracks.concat(audioTracks)
       })
-        .then((room) => {
+        .then(async (room) => {
           room.localParticipant.tracks.forEach(localTracks => {
             localTracks.setPriority('low')
           });
           handleSetConnecting(false);
-          handleSetRoom(room);
-          history.push(RoutesEnum.Room)
+          await handleSetRoom(room);
+          history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`)
         })
         .catch((err) => {
           console.error(err);
