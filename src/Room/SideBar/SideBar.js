@@ -29,12 +29,13 @@ const SideBar = ({
 
     useEffect(() => {
         if(playWorkoutState){
-            workoutCounter > 0 && setTimeout(() => setWorkoutCounter(workoutCounter - 1), 1000);
+            const timer = workoutCounter > 0 && setTimeout(() => setWorkoutCounter(workoutCounter - 1), 1000);
             if(workoutCounter <= 0 && workoutNumber < workout.exercises.length-1) {
                 setWorkoutNumber(workoutNumber + 1)
                 setWorkoutTime(workout.exercises[workoutNumber].time);
                 setWorkoutCounter(workout.exercises[workoutNumber].time);
             }
+            return () => clearTimeout(timer)
         }
     }, [workoutCounter, playWorkoutState, workoutNumber, workoutTime]);
 
