@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
+import './Participant.scss';
 
 // import "../../media/CoLab.css";
 
@@ -75,8 +76,11 @@ const Participant = ({ participant }) => {
 
   return (
     <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%">
-      <div>{participant.identity}</div>
-      <video ref={videoRef} autoPlay={true}  style={{flexGrow: 1, maxWidth:"100%", minHeight: 0}}/>
+      {/* <div className='name'>{participant.identity}</div> */}
+      <video ref={videoRef} autoPlay={true}  style={{position: "relative", flexGrow: 1, maxWidth:"100%", minHeight: 0}}/>
+      <div className="name">
+        <Typography color="secondary">{participant.identity}</Typography>
+      </div>
       <audio ref={audioRef} autoPlay={true} muted={true} />
     </Box>
   );
