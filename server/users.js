@@ -6,7 +6,7 @@ const isValidPassword = async (user, password) => {
     return await bcrypt.compare(password, user.password);
 }
 
-const userFromDoc = (doc) => ({
+const userFromDoc = (doc) => ((doc.data()) ? {
     id: doc.id,
     name: doc.data().displayName,
     email: doc.data().email,
@@ -16,7 +16,7 @@ const userFromDoc = (doc) => ({
     isLeader: doc.data().isLeader,
     socketId: doc.data().socketId,
     isTemp: doc.data().isTemp
-});
+}: null);
 
 const checkUser = ({ name, room }) => {
     name = name.trim().toLowerCase();
@@ -46,6 +46,7 @@ const addUser = async ({ socketId, name, room, sid, userId }) => {
         const userRef = db.collection('users').doc(userId);
         await userRef.set({
             isLeader: isLeader,
+            displayName: name,
             twilioRoomSid: room,
             twilioUserSid: sid,
             socketId: socketId
@@ -131,6 +132,17 @@ const getLeadersInRoom = async (room) => {
     return users.filter(user => user.isLeader === true)
 }
 
+const getUsersById = async (ids) => {
+    if (ids.length > 10) {
+        console.log('Greater than 10 documents!')
+        return null;
+    }
+    const userRefs = ids.map((id) => db.collection('users').doc(id))
+    const docs = await db.getAll(...userRefs)
+    const users = docs.map((doc) => userFromDoc(doc))
+    return users
+};
+
 module.exports = { 
     checkUser, 
     addUser, 
@@ -143,5 +155,6 @@ module.exports = {
     getLeadersInRoom,
     createUserLogin,
     getUserByEmail,
-    isValidPassword
+    isValidPassword,
+    getUsersById
 };

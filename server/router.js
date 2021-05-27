@@ -7,6 +7,7 @@ const router = express.Router();
 require('./auth');
 
 const { getWorkouts, getWorkoutByName } = require('./workouts.js');
+const { getUserById } = require('./users.js');
 const { addRoom, getRoomCode, getRoomsByCode} = require('./rooms.js');
 const { reservationsUrl } = require('twilio/lib/jwt/taskrouter/util');
 ;
@@ -56,6 +57,7 @@ router.get('/api/workouts', async (req, res) => {
 router.get('/api/rooms', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   const roomCode = req.query.sid_or_name;
+  if (!roomCode) return res.status(400).send('Invalid sid_or_name')
   room = (await getRoomsByCode(roomCode))[0];
   if (room != undefined){
     res.send(JSON.stringify(room));
@@ -67,6 +69,7 @@ router.get('/api/rooms', async (req, res) => {
 router.get('/api/roomCode', (req, res) => {
   res.setHeader('Content-Type', 'text/plain');
   const roomCode = getRoomCode();
+  if (!roomCode) return res.status(400).send('Invalid roomCode')
   if (roomCode){
     res.send(roomCode);
   } else {
@@ -79,6 +82,18 @@ router.post('/api/rooms', async (req, res) => {
   const room = req.body;
   const [code, roomCode] = await addRoom(room.name, room.sid, room.workoutID, room.workoutType);
   res.status(code).send(roomCode);
+});
+
+router.get('/api/displayName', async (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  const id = req.body.id;
+  if (!id) return res.status(400).send('Invalid id')
+  const user = await getUserById(id);
+  if (user){
+    res.send(JSON.stringify({name: user.name}));
+  } else {
+    res.status(400).send('Unable to obtain display name')
+  }
 });
 
 // AUTHENTICATION
