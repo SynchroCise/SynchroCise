@@ -1,14 +1,10 @@
 import React, {useState, useEffect, useContext} from "react";
-import TimerProgressBar from "./TimerProgressBar/TimerProgressBar"
-import { defaultWorkout } from "../CustomWorkout/DefaultWorkout"
+
 import { AppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
-import pause from "../../media/pause.png";
-import play from "../../media/play.png";
 import { Drawer, Typography, LinearProgress, IconButton, Box, Grid , Divider, Tab, Tabs} from '@material-ui/core';
 import {PlayArrow, Pause} from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
-import { sckt } from '../../Socket';
 
 const SideBar = ({
     currUser,
@@ -29,12 +25,13 @@ const SideBar = ({
 
     useEffect(() => {
         if(playWorkoutState){
-            workoutCounter > 0 && setTimeout(() => setWorkoutCounter(workoutCounter - 1), 1000);
+            const timer = workoutCounter > 0 && setTimeout(() => setWorkoutCounter(workoutCounter - 1), 1000);
             if(workoutCounter <= 0 && workoutNumber < workout.exercises.length-1) {
                 setWorkoutNumber(workoutNumber + 1)
                 setWorkoutTime(workout.exercises[workoutNumber].time);
                 setWorkoutCounter(workout.exercises[workoutNumber].time);
             }
+            return () => clearTimeout(timer)
         }
     }, [workoutCounter, playWorkoutState, workoutNumber, workoutTime]);
 
@@ -135,8 +132,8 @@ const SideBar = ({
                             onChange={(event, value) => { handleChange(value) }}
                             aria-label="disabled tabs example"
                         >
-                            <Tab value={0} label="Custom Workout"/>
-                            <Tab value={1} label="Follow a Youtube Video"/>
+                            <Tab value={0} label="Custom"/>
+                            <Tab value={1} label="Youtube"/>
                         </Tabs>
                     </Grid>
                     <Grid container item style={{height:"40%", width: "100%"}} justify="space-between" direction="column">

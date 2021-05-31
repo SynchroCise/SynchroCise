@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { sckt } from '../../../Socket';
 import ChatInput from './ChatInput/ChatInput';
 import Messages from './Messages/Messages';
-import { Box, Divider } from '@material-ui/core';
+import { Box, Divider, Typography } from '@material-ui/core';
 import {AppContext} from "../../../AppContext"
 
 
@@ -27,6 +27,7 @@ const Chat = ({ currUser, users }) => {
 
     return (
         <Box height="100%" style={{maxHeight: "100%", overflowY: 'scroll'}} display="flex" flexDirection="column">
+            <Typography variant={'h6'}>Chat</Typography>
             <Messages messages={messages} currUser={currUser} users={users}/>
             <Divider/>
             <ChatInput message={message} setMessage={setMessage} sendMessage={sendMessage} />

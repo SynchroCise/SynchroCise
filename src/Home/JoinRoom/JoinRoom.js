@@ -50,6 +50,7 @@ const JoinRoom = (props) => {
       };
     }
   }, [videoTracks]);
+  console.log(roomName)
 
   // initializes roomcode
   useEffect(() => {
@@ -151,9 +152,9 @@ const JoinRoom = (props) => {
   }));
   const classes = useStyles();
   return (
-    <Box display="flex" alignItems="center" justifyContent="center" mx={15} my={6}>
+    <Box display="flex" alignItems="center" justifyContent="center" mx={15} my={3}>
       <form onSubmit={handleSubmit}>
-        <Grid container justify="center" spacing={4} wrap="nowrap">
+        <Grid container justify="center" spacing={2} wrap="nowrap">
           <Grid item xs={1} >
             <IconButton
               className={classes.blackButton}
@@ -163,9 +164,9 @@ const JoinRoom = (props) => {
           </Grid>
           <Grid container item xs spacing={2}>
             <Grid item xs={12}>
-              <Box mb={4}>
+              <Box mb={2}>
                 <Typography variant="h4">
-                  Room: {roomName.substring(0, 6).toUpperCase()}
+                  {"Room: " + roomName.substring(0, 6).toUpperCase()}
                 </Typography>
               </Box>
             </Grid>
@@ -174,7 +175,7 @@ const JoinRoom = (props) => {
             <Grid item xs={6}>Test User</Grid>
             <Grid item xs={6}>Test Workout!</Grid>
             <Grid item xs={5}>
-              <Box mt={4}>
+              <Box mt={1}>
                 <TextField
                   placeholder="Username"
                   variant="outlined"
@@ -192,7 +193,7 @@ const JoinRoom = (props) => {
                 placeholder="Room Code:"
                 variant="outlined"
                 fullWidth
-                value={roomName.substring(0, 6).toUpperCase()}
+                value={"Room Code: " + roomName.substring(0, 6).toUpperCase()}
                 disabled
               />
             </Grid>
@@ -200,12 +201,12 @@ const JoinRoom = (props) => {
             <Grid item xs={12}><hr/></Grid>
             <Grid item xs={12}>
               <Box display="flex" justifyContent="center">
-                <Typography variant="h4">How you'll appear</Typography>
+                <Typography variant="h5">How you'll appear</Typography>
               </Box>
             </Grid>
             <Grid item xs={12}>
               <Box display="flex" justifyContent="center" ref={videoContainerRef}>
-                {(videoRef) ? <video ref={videoRef} autoPlay={true}  style={{width: "100%", maxHeight: "100%"}}/> : ''}
+              {(videoRef) ? <video ref={videoRef} autoPlay={true} style={{width: "40%", maxHeight: "40%"}}/> : ''}
               </Box>
             </Grid>
             <Grid item xs={1}>

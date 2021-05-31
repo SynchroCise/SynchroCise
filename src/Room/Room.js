@@ -263,7 +263,7 @@ const Room = (props) => {
   const remoteParticipants = () => {
     if (!room) return;
     if (participants.length < 1) {
-      return `No Other Participants`;
+      return <Typography color="secondary">No Other Participants</Typography>;
     }
     let all_participants = [...participants, room.localParticipant];
     all_participants = (workoutType == 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
@@ -358,7 +358,7 @@ const Room = (props) => {
 
   return (
     <React.Fragment>
-      <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`} height="100%">
+      <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`} height="100%" bgcolor="text.primary">
         <Grid container style={{height:"100vh"}}>
           <Grid item xs={12} style={{height: "70%", width:"100%"}}>
             {room && (workoutType == 'vid') ? leaderParticipant() : 
@@ -379,10 +379,10 @@ const Room = (props) => {
           <Grid item container xs={12} style={{height: "10%", width:"100%"}} alignItems="center">
             <Grid item xs={4}>
               <Box display="flex" justifyContent="flex-start" alignItems="center">
-                <IconButton onClick={handleVid}>
+                <IconButton color="secondary" size="medium" onClick={handleVid}>
                   {vid ? <Videocam/> : <VideocamOff/>}
                 </IconButton>
-                <IconButton onClick={handleMic}>
+                <IconButton color="secondary" size="medium" onClick={handleMic}>
                   {mic ? <Mic/> : <MicOff/>}
                 </IconButton>
                 {/* <IconButton>
@@ -391,25 +391,25 @@ const Room = (props) => {
               </Box>
             </Grid>
             <Grid item xs={4}>
-              <Box display="flex" justifyContent="center" alignItems="center">
-                <IconButton onClick={() => handleParticipantPage(-1)}>
-                  <ArrowBack/>
+              <Box display="flex" justifyContent="center" alignItems="center" l={3} r={3}>
+                <IconButton color="secondary" size="medium" onClick={() => handleParticipantPage(-1)}>
+                  <ArrowBack style={{fill: "white"}}/>
                 </IconButton>
-                {participants.length + leaderParticipantIDs.length}/{participants.length + leaderParticipantIDs.length} participants {participantPage}
-                <IconButton onClick={() => handleParticipantPage(1)}>
-                  <ArrowForward/>
+                <Typography color="secondary"> {participants.length + leaderParticipantIDs.length}/{participants.length + leaderParticipantIDs.length} participants {participantPage} </Typography>
+                <IconButton color="secondary" size="medium"  onClick={() => handleParticipantPage(1)}>
+                  <ArrowForward style={{fill: "white"}}/>
                 </IconButton>
               </Box>
             </Grid>
             <Grid item xs={4}>
               <Box display="flex" justifyContent="flex-end" alignItems="center">
-                <IconButton>
+                <IconButton color="secondary" size="medium">
                   <Apps/>
                 </IconButton>
-                <IconButton>
+                <IconButton color="secondary" size="medium">
                   <Fullscreen/>
                 </IconButton>
-                <IconButton onClick={handleOpenSideBar}>
+                <IconButton color="secondary" size="medium" onClick={handleOpenSideBar}>
                   {openSideBar ? <ChevronRight /> : <ChevronLeft />}
                 </IconButton>
               </Box>
