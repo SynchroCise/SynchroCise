@@ -125,7 +125,7 @@ const CreateRoom = () => {
             </IconButton>
           </TableCell>
           <TableCell className={classes.tableCell} onClick={handleSelect(index)}>{row.workoutName}</TableCell>
-          <TableCell className={classes.tableCell} onClick={handleSelect(index)} align="right">{row.userId}</TableCell>
+          <TableCell className={classes.tableCell} onClick={handleSelect(index)} align="right">{row.displayName}</TableCell>
           <TableCell className={classes.tableCell} onClick={handleSelect(index)} align="right">{fancyTimeFormat(row.exercises.reduce((a, b) => a + parseInt(b.time), 0))}</TableCell>
         </TableRow>
         <TableRow>
