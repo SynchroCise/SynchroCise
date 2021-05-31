@@ -38,6 +38,15 @@ const createUserLogin = async ({email, password, displayName}) => {
     return { user, message:'success' }
 };
 
+const createTempUser = async (name) => {
+    const docRef = await db.collection('users').add({
+        createdTime: timestamp.now(),
+        displayName: name,
+        isTemp: true
+    }).catch(error => console.log(error));
+    return docRef.id
+}
+
 const addUser = async ({ socketId, name, room, sid, userId }) => {
     isLeader = ((await getLeadersInRoom(room)).length > 0) ? false : true;
     const logInUser = (userId) ? (await getUserById(userId)) : false
@@ -51,7 +60,7 @@ const addUser = async ({ socketId, name, room, sid, userId }) => {
             twilioUserSid: sid,
             socketId: socketId
         }, { merge: true }).catch( error => console.log(error));
-        return {user: logInUser}
+        return {user: (await getUserById(userId)) }
     } else {
         const docRef = await db.collection('users').add({
             createdTime: timestamp.now(),
@@ -156,5 +165,6 @@ module.exports = {
     createUserLogin,
     getUserByEmail,
     isValidPassword,
-    getUsersById
+    getUsersById,
+    createTempUser
 };

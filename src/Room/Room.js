@@ -36,7 +36,7 @@ const Room = (props) => {
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
-  const { roomName, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
+  const { username, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
   const [vid, setVid] = useState((room) ? room.localParticipant.videoTracks.values().next().value.isTrackEnabled : false);
   const [mic, setMic] = useState((room) ? room.localParticipant.audioTracks.values().next().value.isTrackEnabled : false);
   const loadingRoomData = useRef(true);
@@ -127,7 +127,7 @@ const Room = (props) => {
   const sendVideoState = ({ eventName, eventParams }) => {
     if (!room) return;
     let params = {
-      name: room.localParticipant.identity,
+      name: username,
       room: room.sid,
       eventName: eventName,
       eventParams: eventParams
@@ -230,7 +230,7 @@ const Room = (props) => {
   useEffect(() => {
     if (!room) return;
     const sid = room.localParticipant.sid;
-    const name = room.localParticipant.identity
+    const name = username;
 
     sckt.socket.emit('join', { name, room: room.sid, sid, userId}, ({ id }) => {
       // updateCurrUser({ id });

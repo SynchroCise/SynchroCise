@@ -7,7 +7,7 @@ const router = express.Router();
 require('./auth');
 
 const { getWorkouts, getWorkoutByName } = require('./workouts.js');
-const { getUserById } = require('./users.js');
+const { getUserById, createTempUser } = require('./users.js');
 const { addRoom, getRoomCode, getRoomsByCode} = require('./rooms.js');
 const { reservationsUrl } = require('twilio/lib/jwt/taskrouter/util');
 ;
@@ -70,11 +70,7 @@ router.get('/api/roomCode', (req, res) => {
   res.setHeader('Content-Type', 'text/plain');
   const roomCode = getRoomCode();
   if (!roomCode) return res.status(400).send('Invalid roomCode')
-  if (roomCode){
-    res.send(roomCode);
-  } else {
-    res.status(400).send('')
-  }
+  res.send(roomCode);
 });
 
 router.post('/api/rooms', async (req, res) => {
@@ -84,9 +80,19 @@ router.post('/api/rooms', async (req, res) => {
   res.status(code).send(roomCode);
 });
 
+router.post('/api/createTempUser', async (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  const name = req.body.name;
+  console.log(req.body)
+  if (!name) return res.status(400).send('Invalid name')
+  const userCode = await createTempUser(name)
+  if (!userCode) return res.status(400).send('Invalid userCode')
+  res.send(userCode);
+});
+
 router.get('/api/displayName', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
-  const id = req.body.id;
+  const id = req.query.id;
   if (!id) return res.status(400).send('Invalid id')
   const user = await getUserById(id);
   if (user){

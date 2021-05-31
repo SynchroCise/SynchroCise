@@ -13,7 +13,7 @@ const SideBar = ({
     drawerWidth,
     room
 }) => {
-    const {workout, openSideBar, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, workoutType, setWorkoutType, roomName} = useContext(AppContext)
+    const {username, workout, openSideBar, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, workoutType, setWorkoutType, roomName} = useContext(AppContext)
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { return workout.exercise }));
 
@@ -124,7 +124,7 @@ const SideBar = ({
             <Box mx={2} my={2} height="100%">
                 <Grid container className={classes.fullHeight}  wrap="wrap">
                     <Grid item style={{height:"10%", width:"100%"}}>
-                        <Typography variant="body1">Room: {roomName.substring(0, 6).toUpperCase()}, User: {room.localParticipant.identity}</Typography>
+                        <Typography variant="body1">Room: {roomName.substring(0, 6).toUpperCase()}, User: {username}</Typography>
                         <Tabs
                             indicatorColor="primary"
                             textColor="primary"

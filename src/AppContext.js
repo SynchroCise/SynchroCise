@@ -16,6 +16,7 @@ const AppContextProvider = ({children}) => {
   const [userId, setUserId] = useState('')
   const [openAuthDialog, setOpenAuthDialog] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [roomProps, setRoomProps] = useState({
     workoutType: 'vid', // 'yt', 'custom',
     workout: {"workoutName": "", "exercises": [{"time": 1, "exercise":""}], "id": ""},
@@ -35,7 +36,7 @@ const AppContextProvider = ({children}) => {
 
   const sendRoomState = ({ eventName, eventParams }, callback) => {
     let params = {
-      name: room.localParticipant.identity,
+      name: username,
       room: room.sid,
       eventName: eventName,
       eventParams: eventParams
@@ -119,6 +120,20 @@ const AppContextProvider = ({children}) => {
     setRoomState('make_custom')
   }
 
+  const createTempUser = async (name) => {
+    const res = await fetch(`/api/createTempUser`, { 
+      method: "POST", 
+      body: JSON.stringify({ name }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!res.ok) return null
+    const userCode = await res.text();
+    setUserId(userCode)
+    return userCode
+  }
+
   const handleRoomNameChange = useCallback((event) => {
     handleSetRoomName(event.target.value);
   }, []);
@@ -129,17 +144,20 @@ const AppContextProvider = ({children}) => {
     });
     if (!res.ok) {
       setUserId('');
+      setIsLoggedIn(false);
       return false;
     }
     const resp = await res.json()
     setUserId(resp.user.id)
     setUsername(resp.user.displayName)
+    setIsLoggedIn(true);
     return true;
   }
   const handleLogout = async () => {
     const res = await fetch('/user/logout', { method: "POST" });
     if (res.ok) {
       setUserId('');
+      setIsLoggedIn(false);
     }
   }
 
@@ -176,7 +194,7 @@ const AppContextProvider = ({children}) => {
   }, [room, handleLeaveRoom]);
 
   useEffect(() => {
-    if (!userId) {
+    if (!isLoggedIn) {
       checkLoggedIn()
     }
   }, [])
@@ -214,6 +232,8 @@ const AppContextProvider = ({children}) => {
         isSignUp,
         handleSetIsSignUp,
         handleSetUserId,
+        isLoggedIn,
+        setIsLoggedIn,
         disconnectRoom,
         joinRoom,
         handleUsernameChange,
@@ -227,7 +247,8 @@ const AppContextProvider = ({children}) => {
         updateRoomProps,
         videoProps,
         updateVideoProps,
-        sendRoomState
+        sendRoomState,
+        createTempUser
       }}>
           {children}
       </AppContext.Provider>

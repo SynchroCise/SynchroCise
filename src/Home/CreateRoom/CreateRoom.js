@@ -17,14 +17,18 @@ import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward, KeyboardA
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const {userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom} = useContext(AppContext)
+  const {userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn} = useContext(AppContext)
   const history = useHistory()
   const [selectedWorkout, setSelectedWorkout] = useState(0);
   const [defaultWorkout, setDefaultWorkout] = useState([]);
 
+  // intialize custom room code
   useEffect(() => {
-    makeCustomRoom()
-    if (userId) {
+    makeCustomRoom();
+  }, []);
+  // initialize workouts and userId
+  useEffect(() => {
+    if (isLoggedIn) {
       fetch("/user/getWorkouts", {
         method: "GET",
         headers: {
@@ -34,18 +38,20 @@ const CreateRoom = () => {
         setDefaultWorkout(res)
         handleSetWorkout(res[selectedWorkout])
       });
+    } else {
+      setDefaultWorkout([])
     }
-  }, [userId]);
+  }, [isLoggedIn]);
    
   const handleSubmit = useCallback(
     async (event) => {
       event.preventDefault();
       handleSetConnecting(true);
-  
+      const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
       const data = await fetch("/video/token", {
         method: "POST",
         body: JSON.stringify({
-          identity: username,
+          identity: tempUserId,
           room: roomName,
         }),
         headers: {
@@ -209,7 +215,7 @@ const CreateRoom = () => {
   )
 
   const handleAddWorkout = () => {
-    if (userId) {
+    if (isLoggedIn) {
       history.push(RoutesEnum.CreateWorkout);
     } else {
       handleSetOpenAuthDialog(true);
