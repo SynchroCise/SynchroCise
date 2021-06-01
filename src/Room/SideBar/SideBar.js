@@ -139,7 +139,7 @@ const SideBar = ({
             <Box mx={2} my={2} height="100%">
                 <Grid container className={classes.fullHeight}  wrap="wrap">
                     <Grid item style={{height:"7%", width:"100%"}}>
-                        <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}, User: {room.localParticipant.identity}</Typography>
+                        <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}</Typography>
                         <Tabs
                             indicatorColor="primary"
                             textColor="primary"
