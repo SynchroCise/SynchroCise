@@ -16,6 +16,7 @@ const SideBar = ({
     const {workout, openSideBar, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, workoutType, setWorkoutType, roomName} = useContext(AppContext)
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { return workout.exercise }));
+    const [sideBarType, setSideBarType] = useState(0);
 
     useEffect(() => {
         setWorkoutTime(workout.exercises[workoutNumber].time);
@@ -63,11 +64,7 @@ const SideBar = ({
         }, () => setPlayWorkoutState(startWorkoutState));
     }
     const handleChange = (value) => {
-        const newWorkoutType = value ? 'yt' : 'vid';
-        sendRoomState({
-          eventName: 'syncWorkoutType',
-          eventParams: { workoutType: newWorkoutType }
-        }, () => {setWorkoutType(newWorkoutType)});
+        setSideBarType(value);
     }
 
     const TimerProgressBarMarkup = isYoutube ? <></> : (
@@ -112,6 +109,15 @@ const SideBar = ({
         }));
     const classes = useStyles();
 
+    const sideBarContentMarkup = sideBarType ? 
+        <Grid item>
+            {TimerProgressBarMarkup}
+            {exerciseListMarkup}
+        </Grid> : <Chat
+            currUser={currUser}
+            users={users}
+        />
+
     return (
         <Drawer
         variant="persistent"
@@ -123,31 +129,20 @@ const SideBar = ({
           }}>
             <Box mx={2} my={2} height="100%">
                 <Grid container className={classes.fullHeight}  wrap="wrap">
-                    <Grid item style={{height:"10%", width:"100%"}}>
+                    <Grid item style={{height:"7%", width:"100%"}}>
                         <Typography variant="body1">Room: {roomName.substring(0, 6).toUpperCase()}, User: {room.localParticipant.identity}</Typography>
                         <Tabs
                             indicatorColor="primary"
                             textColor="primary"
-                            value={workoutType == 'yt' ? 1 : 0}
+                            value={sideBarType}
                             onChange={(event, value) => { handleChange(value) }}
-                            aria-label="disabled tabs example"
                         >
-                            <Tab value={0} label="Custom"/>
-                            <Tab value={1} label="Youtube"/>
+                            <Tab value={0} label="Chat"/>
+                            <Tab value={1} label="Workout"/>
                         </Tabs>
                     </Grid>
-                    <Grid container item style={{height:"40%", width: "100%"}} justify="space-between" direction="column">
-                        <Grid item>
-                            {TimerProgressBarMarkup}
-                            {exerciseListMarkup}
-                        </Grid>
-                        <Grid item><Divider /></Grid>
-                    </Grid>
-                    <Grid item style={{height:"50%", width:"100%"}}>
-                        <Chat
-                            currUser={currUser}
-                            users={users}
-                        />
+                    <Grid container item style={{height:"90%", width: "100%"}} justify="space-between" direction="column">
+                        {sideBarContentMarkup}
                     </Grid>
                 </Grid>
             </Box>

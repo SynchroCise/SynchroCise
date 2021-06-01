@@ -27,7 +27,6 @@ const Chat = ({ currUser, users }) => {
 
     return (
         <Box height="100%" style={{maxHeight: "100%", overflowY: 'scroll'}} display="flex" flexDirection="column">
-            <Typography variant={'h6'}>Chat</Typography>
             <Messages messages={messages} currUser={currUser} users={users}/>
             <Divider/>
             <ChatInput message={message} setMessage={setMessage} sendMessage={sendMessage} />
