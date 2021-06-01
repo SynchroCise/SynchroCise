@@ -3,8 +3,8 @@ import Participant from "./Participant/Participant";
 import SideBar from "./SideBar/SideBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AppContext } from "./../AppContext";
-import {Paper, Tab, Tabs, Grid, Typography, Box, IconButton} from '@material-ui/core';
-import { ArrowForward, ArrowBack, Videocam, VideocamOff, Mic, MicOff, CallEnd, Fullscreen, Apps, ChevronLeft, ChevronRight } from '@material-ui/icons';
+import {Paper, Tab, Tabs, Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles} from '@material-ui/core';
+import { ArrowForward, ArrowBack, Videocam, VideocamOff, Mic, MicOff, CallEnd, Fullscreen, Apps, ChevronLeft, ChevronRight, YouTube, FitnessCenter} from '@material-ui/icons';
 import {
   faMicrophone,
   faVideo,
@@ -347,6 +347,20 @@ const Room = (props) => {
   }));
   const classes = useStyles();
 
+  const handleChangeWorkoutType = (value) => {
+    const newWorkoutType = value ? 'yt' : 'vid';
+    sendRoomState({
+      eventName: 'syncWorkoutType',
+      eventParams: { workoutType: newWorkoutType }
+    }, () => {setWorkoutType(newWorkoutType)});
+  }
+
+  const CustomBottomNavigationAction = withStyles({
+    root: {
+      backgroundColor: 'rgba(0, 0, 0, 0.87)',
+      color: 'white'
+    },
+  })(BottomNavigationAction);
 
   // check if room exists
   // TODO: Add loading screen. https://stackoverflow.com/questions/56861580/how-can-i-redirect-before-render
@@ -403,12 +417,25 @@ const Room = (props) => {
             </Grid>
             <Grid item xs={4}>
               <Box display="flex" justifyContent="flex-end" alignItems="center">
-                <IconButton color="secondary" size="medium">
+                {/* <IconButton color="secondary" size="medium">
                   <Apps/>
                 </IconButton>
                 <IconButton color="secondary" size="medium">
                   <Fullscreen/>
-                </IconButton>
+                </IconButton> */}
+
+                <BottomNavigation
+                  value={workoutType == 'yt' ? 1 : 0}
+                  onChange={(event, newValue) => {
+                    handleChangeWorkoutType(newValue);
+                  }}
+                  showLabels
+                  className={classes.root}
+                  color="secondary" 
+                >
+                  <CustomBottomNavigationAction label="Custom" icon={<FitnessCenter />} />
+                  <CustomBottomNavigationAction color="secondary" label="Youtube" icon={<YouTube/>} />
+                </BottomNavigation>
                 <IconButton color="secondary" size="medium" onClick={handleOpenSideBar}>
                   {openSideBar ? <ChevronRight /> : <ChevronLeft />}
                 </IconButton>
