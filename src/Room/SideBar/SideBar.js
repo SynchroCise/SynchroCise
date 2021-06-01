@@ -3,7 +3,7 @@ import React, {useState, useEffect, useContext} from "react";
 import { AppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
 import { Drawer, Typography, LinearProgress, IconButton, Box, Grid , Divider, Tab, Tabs} from '@material-ui/core';
-import {PlayArrow, Pause} from '@material-ui/icons';
+import {PlayArrow, Pause, Link} from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
 
 const SideBar = ({
@@ -118,6 +118,15 @@ const SideBar = ({
             users={users}
         />
 
+    const roomCode = roomName.substring(0, 6).toUpperCase();
+
+    const copyRoomCodeButtonMarkup = (
+        <IconButton color="primary" onClick={navigator.clipboard.writeText(roomCode)}>
+            <Link />
+        </IconButton>
+    )
+
+
     return (
         <Drawer
         variant="persistent"
@@ -130,7 +139,7 @@ const SideBar = ({
             <Box mx={2} my={2} height="100%">
                 <Grid container className={classes.fullHeight}  wrap="wrap">
                     <Grid item style={{height:"7%", width:"100%"}}>
-                        <Typography variant="body1">Room: {roomName.substring(0, 6).toUpperCase()}, User: {room.localParticipant.identity}</Typography>
+                        <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}, User: {room.localParticipant.identity}</Typography>
                         <Tabs
                             indicatorColor="primary"
                             textColor="primary"
