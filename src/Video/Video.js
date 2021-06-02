@@ -89,7 +89,7 @@ const Video = ({ log, videoProps, updateVideoProps, playerRef, sendVideoState, l
     // }, [videoProps.playing])
 
     return (
-        <div style={{display: "flex", height:"100%", flexDirection: "column"}}>
+        <div style={{display: "flex", height:"100%", flexDirection: "column", justifyContent: "center"}}>
             <VideoSearch
                 addVideoToQueue={addVideoToQueue}
                 playVideoFromSearch={playVideoFromSearch}

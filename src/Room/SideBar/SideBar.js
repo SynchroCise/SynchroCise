@@ -3,7 +3,7 @@ import React, {useState, useEffect, useContext} from "react";
 import { AppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
 import { Drawer, Typography, LinearProgress, IconButton, Box, Grid , Divider, Tab, Tabs} from '@material-ui/core';
-import {PlayArrow, Pause} from '@material-ui/icons';
+import {PlayArrow, Pause, Link} from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
 
 const SideBar = ({
@@ -16,6 +16,7 @@ const SideBar = ({
     const {workout, openSideBar, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, workoutType, setWorkoutType, roomName} = useContext(AppContext)
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { return workout.exercise }));
+    const [sideBarType, setSideBarType] = useState(0);
 
     useEffect(() => {
         setWorkoutTime(workout.exercises[workoutNumber].time);
@@ -63,16 +64,14 @@ const SideBar = ({
         }, () => setPlayWorkoutState(startWorkoutState));
     }
     const handleChange = (value) => {
-        const newWorkoutType = value ? 'yt' : 'vid';
-        sendRoomState({
-          eventName: 'syncWorkoutType',
-          eventParams: { workoutType: newWorkoutType }
-        }, () => {setWorkoutType(newWorkoutType)});
+        setSideBarType(value);
     }
 
     const TimerProgressBarMarkup = isYoutube ? <></> : (
         <React.Fragment>
-            <Box display="flex" justifyContent="flex-end"><Typography variant="body1">{workoutCounter}s</Typography></Box>
+            <Box display="flex" justifyContent="flex-end" paddingTop={4} >
+                <Typography variant="body1">{workoutCounter}s</Typography>
+            </Box>
             <div><LinearProgress variant="determinate" value={workoutCounter/workoutTime * 100} /></div>
             <Box display="flex" justifyContent="flex-end">
                 <IconButton
@@ -112,6 +111,25 @@ const SideBar = ({
         }));
     const classes = useStyles();
 
+    const sideBarContentMarkup = sideBarType ? 
+        <Chat
+            currUser={currUser}
+            users={users}
+        /> : 
+        <Grid item>
+            {TimerProgressBarMarkup}
+            {exerciseListMarkup}
+        </Grid> 
+
+    const roomCode = roomName.substring(0, 6).toUpperCase();
+
+    const copyRoomCodeButtonMarkup = (
+        <IconButton color="primary" onClick={() => navigator.clipboard.writeText(roomCode)}>
+            <Link />
+        </IconButton>
+    )
+
+
     return (
         <Drawer
         variant="persistent"
@@ -123,31 +141,20 @@ const SideBar = ({
           }}>
             <Box mx={2} my={2} height="100%">
                 <Grid container className={classes.fullHeight}  wrap="wrap">
-                    <Grid item style={{height:"10%", width:"100%"}}>
-                        <Typography variant="body1">Room: {roomName.substring(0, 6).toUpperCase()}, User: {room.localParticipant.identity}</Typography>
+                    <Grid item style={{height:"7%", width:"100%"}}>
+                        <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}</Typography>
                         <Tabs
                             indicatorColor="primary"
                             textColor="primary"
-                            value={workoutType == 'yt' ? 1 : 0}
+                            value={sideBarType}
                             onChange={(event, value) => { handleChange(value) }}
-                            aria-label="disabled tabs example"
                         >
-                            <Tab value={0} label="Custom"/>
-                            <Tab value={1} label="Youtube"/>
+                            <Tab value={0} label="Workout"/>
+                            <Tab value={1} label="Chat"/>
                         </Tabs>
                     </Grid>
-                    <Grid container item style={{height:"40%", width: "100%"}} justify="space-between" direction="column">
-                        <Grid item>
-                            {TimerProgressBarMarkup}
-                            {exerciseListMarkup}
-                        </Grid>
-                        <Grid item><Divider /></Grid>
-                    </Grid>
-                    <Grid item style={{height:"50%", width:"100%"}}>
-                        <Chat
-                            currUser={currUser}
-                            users={users}
-                        />
+                    <Grid container item style={{height:"90%", width: "100%"}} justify="space-between" direction="column">
+                        {sideBarContentMarkup}
                     </Grid>
                 </Grid>
             </Box>
