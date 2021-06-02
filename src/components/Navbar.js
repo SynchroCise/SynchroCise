@@ -8,7 +8,7 @@ import {AppContext} from "../AppContext"
 
 
 const Navbar = () => {
-  const {userId, handleSetOpenAuthDialog, handleSetIsSignUp, handleLogout} = useContext(AppContext)
+  const {isLoggedIn, handleSetOpenAuthDialog, handleSetIsSignUp, handleLogout} = useContext(AppContext)
 
   const handleLoginDialogClick = (val) => {
     handleSetIsSignUp(val);
@@ -21,7 +21,7 @@ const Navbar = () => {
         <Typography variant="h5" style={{flexGrow: 1}} color="secondary">
           SynchroCise
         </Typography>
-        {(userId) ? (<Button onClick={handleLogout}>Logout</Button>) : 
+        {(isLoggedIn) ? (<Button onClick={handleLogout}>Logout</Button>) : 
         (
           <div>
             <Button onClick={() => handleLoginDialogClick(false)}>Sign In</Button>

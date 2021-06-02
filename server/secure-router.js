@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { addWorkout, getUserWorkouts } = require('./workouts.js');
+const { getUsersById } = require('./users.js');
+
 
 router.get(
   '/profile',
@@ -23,6 +25,10 @@ router.post(
 router.get('/getWorkouts', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   const workouts = await getUserWorkouts(req.user.id);
+  if (workouts.length > 10) return workouts
+  const ids = workouts.map((workout) => workout.userId);
+  const names_list = await getUsersById(ids)
+  workouts.forEach((o, i, a) => a[i] = {...o, "displayName": names_list[i].name})
   res.send(JSON.stringify(workouts));
 });
 

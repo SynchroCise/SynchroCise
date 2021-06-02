@@ -14,7 +14,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 // this component renders form to be passed to VideoChat.js
 const JoinRoom = (props) => {
-  const {connecting,username, roomName, handleUsernameChange, handleSetRoom, handleRoomTitle, handleSetConnecting, handleSetRoomName} = useContext(AppContext)
+  const {connecting, username, roomName, handleUsernameChange, handleSetRoom, isLoggedIn, handleSetConnecting, handleSetRoomName, createTempUser, userId} = useContext(AppContext)
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [vid, setVid] = useState(true);
@@ -50,9 +50,8 @@ const JoinRoom = (props) => {
       };
     }
   }, [videoTracks]);
-  console.log(roomName)
 
-  // initializes roomcode
+  // initializes roomcode and userId
   useEffect(() => {
     const checkRoom = async () => {
       const roomCode = await checkRoomExists(props.match.params.roomCode);
@@ -101,10 +100,11 @@ const JoinRoom = (props) => {
         history.push(RoutesEnum.Home)
         return;
       }
+      const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
       const data = await fetch("/video/token", {
         method: "POST",
         body: JSON.stringify({
-          identity: username,
+          identity: tempUserId,
           room: roomName,
         }),
         headers: {
