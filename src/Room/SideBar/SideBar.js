@@ -69,7 +69,9 @@ const SideBar = ({
 
     const TimerProgressBarMarkup = isYoutube ? <></> : (
         <React.Fragment>
-            <Box display="flex" justifyContent="flex-end"><Typography variant="body1">{workoutCounter}s</Typography></Box>
+            <Box display="flex" justifyContent="flex-end" paddingTop={4} >
+                <Typography variant="body1">{workoutCounter}s</Typography>
+            </Box>
             <div><LinearProgress variant="determinate" value={workoutCounter/workoutTime * 100} /></div>
             <Box display="flex" justifyContent="flex-end">
                 <IconButton
@@ -110,18 +112,19 @@ const SideBar = ({
     const classes = useStyles();
 
     const sideBarContentMarkup = sideBarType ? 
+        <Chat
+            currUser={currUser}
+            users={users}
+        /> : 
         <Grid item>
             {TimerProgressBarMarkup}
             {exerciseListMarkup}
-        </Grid> : <Chat
-            currUser={currUser}
-            users={users}
-        />
+        </Grid> 
 
     const roomCode = roomName.substring(0, 6).toUpperCase();
 
     const copyRoomCodeButtonMarkup = (
-        <IconButton color="primary" onClick={navigator.clipboard.writeText(roomCode)}>
+        <IconButton color="primary" onClick={() => navigator.clipboard.writeText(roomCode)}>
             <Link />
         </IconButton>
     )
@@ -146,8 +149,8 @@ const SideBar = ({
                             value={sideBarType}
                             onChange={(event, value) => { handleChange(value) }}
                         >
-                            <Tab value={0} label="Chat"/>
-                            <Tab value={1} label="Workout"/>
+                            <Tab value={0} label="Workout"/>
+                            <Tab value={1} label="Chat"/>
                         </Tabs>
                     </Grid>
                     <Grid container item style={{height:"90%", width: "100%"}} justify="space-between" direction="column">
