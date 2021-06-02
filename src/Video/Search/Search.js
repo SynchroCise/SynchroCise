@@ -9,7 +9,7 @@ import {
 // import './Search.scss';
 import SearchResults from './SearchResults/SearchResults';
 import { store } from 'react-notifications-component';
-import { TextField} from '@material-ui/core';
+import { Box, TextField, withStyles} from '@material-ui/core';
 import moment from 'moment'
 
 require('dotenv').config()
@@ -102,17 +102,34 @@ const VideoSearch = ({ addVideoToQueue, playVideoFromSearch, updateVideoProps })
         });
     }
 
+    const CustomTextField = withStyles({
+        root: {
+            '& .MuiInputBase-root': {
+              color: 'white',
+            },
+            "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+                borderColor: "gray"
+              },
+          },
+         
+      })(TextField);
+
     return (
         <div className="videoSearchContainer">
-            <TextField
-                placeholder='Paste Youtube Link Here!'
-                value={searchInput}
-                onChange={e => setSearchInput(e.target.value)}
-                onKeyPress={e => e.key === 'Enter' ? handlePlay(e) : null}
-                disabled={loading}
-                error={errSearch != ''}
-                helperText={errSearch}
-            />
+            <Box width="75%">
+                <CustomTextField
+                    placeholder='Paste Youtube Link Here!'
+                    value={searchInput}
+                    onChange={e => setSearchInput(e.target.value)}
+                    onKeyPress={e => e.key === 'Enter' ? handlePlay(e) : null}
+                    disabled={loading}
+                    error={errSearch != ''}
+                    helperText={errSearch}
+                    variant="outlined"
+                    fullWidth
+                />
+            </Box>
+            
             {/* <Input
                 fluid
                 id='searchInput'
