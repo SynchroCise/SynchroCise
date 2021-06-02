@@ -101,7 +101,7 @@ const CreateRoom = () => {
           handleSetConnecting(false);
         });
     },
-    [roomName, username, workout]
+    [isLoggedIn, roomName, username, workout]
   );
 
   const handleSelect = value => () => {
@@ -295,7 +295,7 @@ const CreateRoom = () => {
             </Grid>
             <Grid item xs={12}>
               {
-                (userId) ? <Box width="100%">{workoutListMarkup}</Box> : null
+                (isLoggedIn) ? <Box width="100%">{workoutListMarkup}</Box> : null
               }
             </Grid>
           </Grid>

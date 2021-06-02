@@ -133,7 +133,7 @@ const JoinRoom = (props) => {
           handleSetConnecting(false);
         });
     },
-    [roomName, username]
+    [isLoggedIn, roomName, username, videoTracks, audioTracks]
   );
   const useStyles = makeStyles(theme => ({
     containedButton: {
