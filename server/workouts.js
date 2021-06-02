@@ -20,7 +20,8 @@ const getWorkouts = async () => {
 
 const getUserWorkouts = async (userId) => {
     const workoutRef = db.collection('workouts');
-    const snapshot = await workoutRef.where('userId', '==', userId).orderBy('createdTime', 'desc').limit(5).get();
+    const snapshot = await workoutRef.where('isDeleted', '!=', true).orderBy('isDeleted', 'desc'
+    ).where('userId', '==', userId).orderBy('createdTime', 'desc').limit(5).get()
     if (snapshot.empty) return []
     const workouts = snapshot.docs.map((doc) => workoutFromDoc(doc));
     return (workouts) ? workouts : null;
@@ -37,6 +38,13 @@ const getWorkoutById = async (id) => {
     return workout
 };
 
+const setDeleteWorkout = (workoutId) => {
+    const workoutRef = db.collection('workouts').doc(workoutId);
+    workoutRef.set({
+        isDeleted: true
+    }, { merge: true }).catch(error => console.log(error))
+}
+
 const addWorkout = async (workoutName, exercises, userId) => {
     if (workoutName == undefined || exercises == undefined || exercises.length == 0) {
         return [400, 'Invalid Workout']
@@ -50,7 +58,8 @@ const addWorkout = async (workoutName, exercises, userId) => {
         createdTime: timestamp.now(),
         exercises: exercises,
         workoutName: workoutName,
-        userId: userId
+        userId: userId,
+        isDeleted: false
     }).catch(error => {return [400, 'ERROR']});
     return [200, 'Success']
 };
@@ -69,5 +78,6 @@ module.exports = {
     getWorkouts,
     addWorkout,
     getWorkoutById,
-    getUserWorkouts
+    getUserWorkouts,
+    setDeleteWorkout
 };

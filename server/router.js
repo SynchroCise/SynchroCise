@@ -6,8 +6,8 @@ const config = require('./config');
 const router = express.Router();
 require('./auth');
 
-const { getWorkouts, getWorkoutByName } = require('./workouts.js');
 const { getUserById, createTempUser } = require('./users.js');
+const { getWorkouts, getWorkoutByName, setDeleteWorkout } = require('./workouts.js');
 const { addRoom, getRoomCode, getRoomsByCode} = require('./rooms.js');
 const { reservationsUrl } = require('twilio/lib/jwt/taskrouter/util');
 ;
@@ -51,6 +51,11 @@ router.get('/api/workouts', async (req, res) => {
     const newWorkout = await getWorkoutByName(workoutName)
     res.send(newWorkout);
   }
+});
+
+router.post('/api/deleteWorkout', async (req, res) => {
+  const workoutId = req.body.workoutId;
+  if (workoutId) setDeleteWorkout(workoutId);
 });
 
 // ROOMS

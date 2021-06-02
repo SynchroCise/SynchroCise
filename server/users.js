@@ -146,6 +146,7 @@ const getUsersById = async (ids) => {
         console.log('Greater than 10 documents!')
         return null;
     }
+    if (ids.length == 0) return []
     const userRefs = ids.map((id) => db.collection('users').doc(id))
     const docs = await db.getAll(...userRefs)
     const users = docs.map((doc) => userFromDoc(doc))
