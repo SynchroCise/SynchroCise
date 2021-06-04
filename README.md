@@ -85,5 +85,35 @@ npm run dev
 
 This will open in your browser at [localhost:3000](http://localhost:3000). Enjoy!
 
+## Deploy to GCP instructions
+
+1. Get credentials to Google Container Registry
+```
+gcloud auth configure-docker
+
+```
+2. Build Docker image with tag and push
+```
+docker build -t gcr.io/[PROJECT_ID]/app:v1 .
+docker push gcr.io/[PROJECT_ID]/app:v1
+```
+3. Connect to kubernetes cluster navigating to GCP -> Kubernetes Engine -> Connect
+4. Create Deployment and service 
+```
+kubectl apply -f deployment.yaml --record
+```
+5. Check deployment process / pods (containers)
+```
+kubectl get deployments
+kubectl get pods
+```
+6. Check service and copy external IP address (LoadBalancer)
+```
+kubectl get services
+```
+7. Open in browser:
+```
+http://<EXTERNAL-IP>:3001
+```
 ## Check out our devpost!
 [Click Me!](https://devpost.com/software/colab-qfjwod)
