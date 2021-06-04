@@ -10,7 +10,7 @@ const { getWorkouts, getWorkoutByName } = require('./workouts.js');
 const { getUserById, createTempUser } = require('./users.js');
 const { addRoom, getRoomCode, getRoomsByCode} = require('./rooms.js');
 const { reservationsUrl } = require('twilio/lib/jwt/taskrouter/util');
-;
+
 const sendTokenResponse = (token, res) => {
   res.set('Content-Type', 'application/json');
   res.send(
