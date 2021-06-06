@@ -12,7 +12,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { FormControlLabel, Switch, IconButton, ListItem, ListItemText, Box, Typography, TextField, InputAdornment, Grid,} from '@material-ui/core';
 import { Table, TableBody, TableCell, TableHead, TableRow, Collapse } from '@material-ui/core';
 
-import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward, KeyboardArrowDown, KeyboardArrowUp, Close } from '@material-ui/icons';
 
 
 // this component renders form to be passed to VideoChat.js
@@ -109,6 +109,23 @@ const CreateRoom = () => {
     handleSetWorkout(defaultWorkout[value])
   }
 
+  const handleDeleteWorkout = async (workoutId) => {
+    const result = window.confirm("Are you sure you want to delete this workout?")
+    if (!result) return;
+    fetch('/api/deleteWorkout', {
+      method: "POST",
+      body: JSON.stringify({workoutId}),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const i = defaultWorkout.findIndex(element => element.id === workoutId);
+    const array = [...defaultWorkout];
+    if (i === -1) return;
+    array.splice(i, 1)
+    setDefaultWorkout(array)
+  };
+
   const Row = ({row, index}) => {
     const [open, setOpen] = useState(false);
     return (
@@ -127,6 +144,11 @@ const CreateRoom = () => {
           <TableCell className={classes.tableCell} onClick={handleSelect(index)}>{row.workoutName}</TableCell>
           <TableCell className={classes.tableCell} onClick={handleSelect(index)} align="right">{row.displayName}</TableCell>
           <TableCell className={classes.tableCell} onClick={handleSelect(index)} align="right">{fancyTimeFormat(row.exercises.reduce((a, b) => a + parseInt(b.time), 0))}</TableCell>
+          <TableCell padding='checkbox'>
+            <IconButton onClick={() => handleDeleteWorkout(row.id)}>
+              <Close/>
+            </IconButton>
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
