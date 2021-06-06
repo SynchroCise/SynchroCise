@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const pino = require('express-pino-logger')();
 var cookieParser = require('cookie-parser');
+const path = require('path');
 
 const {
     checkUser,
@@ -208,10 +209,14 @@ io.on('connection', (socket) => {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(pino);
+app.use(cors())
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, '../server/build')));
 app.use('/', router);
 app.use('/user', passport.authenticate('jwt', { session: false }), secureRoute);
-app.use(cors())
+app.get('/*', (req,res) => {
+    res.sendFile(path.join(__dirname, '../server/build/index.html'));
+});
 
 
 server.listen(3001, () =>
