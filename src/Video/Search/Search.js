@@ -1,13 +1,10 @@
 import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
-import { Input } from 'semantic-ui-react';
+import React, { useRef, useState } from 'react';
 import {
     youtube_parser,
     getVideoType,
     isValidURL
 } from '../../utils/video';
-// import './Search.scss';
-import SearchResults from './SearchResults/SearchResults';
 import { store } from 'react-notifications-component';
 import { Box, TextField, withStyles} from '@material-ui/core';
 import moment from 'moment'
@@ -17,8 +14,6 @@ require('dotenv').config()
 const VideoSearch = ({ addVideoToQueue, playVideoFromSearch, updateVideoProps }) => {
     const [searchInput, setSearchInput] = useState('');
     const [loading, setLoading] = useState(false);
-    const [searchResults, setSearchResults] = useState([]);
-    const [page, setPage] = useState(1);
     const [errSearch, setErrSearch] = useState("")
     const baseURL = 'https://www.googleapis.com/youtube/v3/videos';
     const lastSearch = useRef('');
@@ -123,7 +118,7 @@ const VideoSearch = ({ addVideoToQueue, playVideoFromSearch, updateVideoProps })
                     onChange={e => setSearchInput(e.target.value)}
                     onKeyPress={e => e.key === 'Enter' ? handlePlay(e) : null}
                     disabled={loading}
-                    error={errSearch != ''}
+                    error={errSearch !== ''}
                     helperText={errSearch}
                     variant="outlined"
                     fullWidth

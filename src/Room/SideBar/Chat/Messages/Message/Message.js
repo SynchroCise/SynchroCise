@@ -1,17 +1,13 @@
 import React from 'react';
-import ReactEmoji from 'react-emoji';
-// import { getAvatarUrl } from '../../../../../utils/userInfo';
-// import './Message.scss';
 import { Grid, Box, Typography } from '@material-ui/core';
 import moment from 'moment'
 
 const Message = ({ message: { user, text }, currUser, users }) => {
-    const getNameById = (id) => {
-        console.log(currUser)
-        const existingUser = users.find(x => x.sid === id);
-        if (existingUser) return existingUser.identity;
-        return 'fail';
-    }
+    // const getNameById = (id) => {
+    //     const existingUser = users.find(x => x.sid === id);
+    //     if (existingUser) return existingUser.identity;
+    //     return 'fail';
+    // }
     return (
         <Box width="100%">
             <Grid container justify="space-between"> 

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Icon, Input } from 'semantic-ui-react';
 import { TextField} from '@material-ui/core';
 
 // import './ChatInput.scss';

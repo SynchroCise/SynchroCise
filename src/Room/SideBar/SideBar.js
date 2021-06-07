@@ -2,8 +2,8 @@ import React, {useState, useEffect, useContext} from "react";
 
 import { AppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
-import { Drawer, Typography, LinearProgress, IconButton, Box, Grid , Divider, Tab, Tabs} from '@material-ui/core';
-import {PlayArrow, Pause, Link} from '@material-ui/icons';
+import { Drawer, Typography, LinearProgress, IconButton, Box, Grid, Tab, Tabs} from '@material-ui/core';
+import { PlayArrow, Pause, Link } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
 
 const SideBar = ({
@@ -13,14 +13,14 @@ const SideBar = ({
     drawerWidth,
     room
 }) => {
-    const {username, workout, openSideBar, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, workoutType, setWorkoutType, roomName} = useContext(AppContext)
+    const {workout, openSideBar, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, roomName} = useContext(AppContext)
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { return workout.exercise }));
     const [sideBarType, setSideBarType] = useState(0);
 
     useEffect(() => {
         setWorkoutTime(workout.exercises[workoutNumber].time);
-        if (workoutCounter == -1) setWorkoutCounter(workout.exercises[0].time);
+        if (workoutCounter === -1) setWorkoutCounter(workout.exercises[0].time);
         setNextUpExercise(workout.exercises.map((workout, index) => { return workout.exercise }));
     }, [workout]);
 
@@ -44,10 +44,8 @@ const SideBar = ({
             <Typography variant="body1">Next Up</Typography>
             {
                 nextUpExercise && nextUpExercise.length > 1 && typeof nextUpExercise != 'string' ? (
-                    nextUpExercise.map((exercise, index) => {
-                        if (index > workoutNumber) {
-                            return (<Typography key={index} variant="body2">{exercise}</Typography>)
-                        }
+                    nextUpExercise.filter((exercise, index) => {return index > workoutNumber}).map((exercise, index) => {
+                        return (<Typography key={index} variant="body2">{exercise}</Typography>)
                     })
                 ) : (
                     <Typography variant="body2">{nextUpExercise}</Typography>

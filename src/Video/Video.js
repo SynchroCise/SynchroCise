@@ -17,7 +17,7 @@ const Video = ({ log, videoProps, updateVideoProps, playerRef, sendVideoState, l
     }
     const modifyVideoState = (paramsToChange) => {
         if (playerRef.current !== null) {
-            const { playing, seekTime, playbackRate } = paramsToChange;
+            const { playing, seekTime } = paramsToChange;
             if (playing !== undefined) {
                 updateVideoProps({ playing });
                 // } else if (playbackRate !== undefined) {

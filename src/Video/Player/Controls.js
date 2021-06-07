@@ -1,6 +1,4 @@
 import React, { forwardRef } from "react";
-
-import { Icon } from 'semantic-ui-react';
 import { Slider, Rail, Tracks } from "react-compound-slider";
 import { TooltipRail, SliderRail, Track } from "./Slider";
 import { formatTimestamp } from '../../utils/video';

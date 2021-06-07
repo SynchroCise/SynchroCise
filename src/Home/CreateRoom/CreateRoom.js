@@ -1,15 +1,10 @@
 import React, {useContext, useCallback, useState, useEffect} from "react";
 import {useHistory} from 'react-router-dom'
-// import "../../media/CoLab.css";
-import youtubeimg from "../../media/workout.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import {AppContext} from "../../AppContext"
 import { RoutesEnum } from '../../App'
 import Video from "twilio-video";
-// import { defaultWorkout } from "../../Room/CustomWorkout/DefaultWorkout"
 import { makeStyles } from "@material-ui/core/styles";
-import { FormControlLabel, Switch, IconButton, ListItem, ListItemText, Box, Typography, TextField, InputAdornment, Grid,} from '@material-ui/core';
+import { FormControlLabel, Switch, IconButton, Box, Typography, TextField, InputAdornment, Grid,} from '@material-ui/core';
 import { Table, TableBody, TableCell, TableHead, TableRow, Collapse } from '@material-ui/core';
 
 import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward, KeyboardArrowDown, KeyboardArrowUp, Close } from '@material-ui/icons';
@@ -74,7 +69,6 @@ const CreateRoom = () => {
           room.localParticipant.tracks.forEach(localTracks => {
             localTracks.setPriority('high')
           });
-
           // Creates a room in the server
           fetch("/api/rooms", {
             method: "POST",
@@ -135,7 +129,7 @@ const CreateRoom = () => {
           classes={{ hover: classes.hover, selected: classes.selected }}
           className={classes.tableRow}
           hover
-          selected={index == selectedWorkout}>
+          selected={index === selectedWorkout}>
           <TableCell padding='checkbox'>
             <IconButton onClick={() => setOpen(!open)}>
               {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}

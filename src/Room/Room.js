@@ -1,34 +1,14 @@
 import React, { useEffect, useContext, useState, useRef } from "react";
 import Participant from "./Participant/Participant";
 import SideBar from "./SideBar/SideBar";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AppContext } from "./../AppContext";
-import {Paper, Tab, Tabs, Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles} from '@material-ui/core';
-import { ArrowForward, ArrowBack, Videocam, VideocamOff, Mic, MicOff, CallEnd, Fullscreen, Apps, ChevronLeft, ChevronRight, YouTube, FitnessCenter} from '@material-ui/icons';
-import {
-  faMicrophone,
-  faVideo,
-  faArrowLeft,
-  faArrowRight,
-  faExpandAlt,
-  faVideoSlash,
-  faMicrophoneSlash,
-} from "@fortawesome/free-solid-svg-icons";
+import { AppContext } from "../AppContext";
+import {Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles} from '@material-ui/core';
+import { ArrowForward, ArrowBack, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter} from '@material-ui/icons';
 import Video from '../Video/Video';
 import { getVideoType } from '../utils/video';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
 import { Redirect} from "react-router-dom";
-
-
-
-const VideoElement = <FontAwesomeIcon icon={faVideo} />;
-const VideoElementMuted = <FontAwesomeIcon icon={faVideoSlash} />;
-const MicElement = <FontAwesomeIcon icon={faMicrophone} />;
-const leftElement = <FontAwesomeIcon icon={faArrowLeft} />;
-const rightElement = <FontAwesomeIcon icon={faArrowRight} />;
-const fullElement = <FontAwesomeIcon icon={faExpandAlt} />;
-const MicElementMuted = <FontAwesomeIcon icon={faMicrophoneSlash} />;
 
 // using roomName and token, we will create a room
 const Room = (props) => {
@@ -36,10 +16,9 @@ const Room = (props) => {
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
-  const { username, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
+  const { username, room, handleLeaveRoom, userId, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
   const [vid, setVid] = useState((room) ? room.localParticipant.videoTracks.values().next().value.isTrackEnabled : false);
   const [mic, setMic] = useState((room) ? room.localParticipant.audioTracks.values().next().value.isTrackEnabled : false);
-  const loadingRoomData = useRef(true);
 
   // Initializing Room Stuff
   useEffect(() => {
@@ -112,7 +91,7 @@ const Room = (props) => {
 
   const modifyVideoState = (paramsToChange) => {
     if (playerRef.current !== null) {
-      const { playing, seekTime, playbackRate } = paramsToChange;
+      const { playing, seekTime } = paramsToChange;
       if (playing !== undefined) {
         updateVideoProps({ playing });
         // } else if (playbackRate !== undefined) {
@@ -252,9 +231,9 @@ const Room = (props) => {
   useEffect(() => {
     if (!room) return;
     let all_participants = [...participants, room.localParticipant];
-    all_participants = (workoutType == 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
+    all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
     const viewer_len = all_participants.slice(participantPage * ppp, participantPage * ppp + ppp).length
-    if (viewer_len == 0 && participantPage != 0) {
+    if (viewer_len === 0 && participantPage !== 0) {
       setParticipantPage(0)
     }
   }, [participants]);
@@ -266,7 +245,7 @@ const Room = (props) => {
       return <Typography color="secondary">No Other Participants</Typography>;
     }
     let all_participants = [...participants, room.localParticipant];
-    all_participants = (workoutType == 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
+    all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
     return all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
@@ -321,7 +300,7 @@ const Room = (props) => {
   const handleParticipantPage = (pageDelta) => {
     if (!room) return;
     let all_participants = [...participants, room.localParticipant];
-    all_participants = (workoutType == 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
+    all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
     const newPageNum = participantPage + pageDelta;
     if (all_participants.slice(newPageNum * ppp, newPageNum * ppp + ppp).length > 0) {
       setParticipantPage(newPageNum)
@@ -375,7 +354,7 @@ const Room = (props) => {
       <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`} height="100%" bgcolor="text.primary">
         <Grid container style={{height:"100vh"}}>
           <Grid item xs={12} style={{height: "70%", width:"100%"}}>
-            {room && (workoutType == 'vid') ? leaderParticipant() : 
+            {room && (workoutType === 'vid') ? leaderParticipant() : 
             <Video
               log={log}
               room={room}
@@ -425,7 +404,7 @@ const Room = (props) => {
                 </IconButton> */}
 
                 <BottomNavigation
-                  value={workoutType == 'yt' ? 1 : 0}
+                  value={workoutType === 'yt' ? 1 : 0}
                   onChange={(event, newValue) => {
                     handleChangeWorkoutType(newValue);
                   }}
@@ -448,7 +427,7 @@ const Room = (props) => {
         handleLeaveRoom={handleLeaveRoom}
         currUser={room.localParticipant}
         users={participants}
-        isYoutube={workoutType == 'yt' ? 1 : 0}
+        isYoutube={workoutType === 'yt' ? 1 : 0}
         drawerWidth={drawerWidth}
         room={room}
       />

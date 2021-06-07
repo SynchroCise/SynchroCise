@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { sckt } from '../../../Socket';
 import ChatInput from './ChatInput/ChatInput';
 import Messages from './Messages/Messages';
-import { Box, Divider, Typography } from '@material-ui/core';
+import { Box, Divider } from '@material-ui/core';
 import {AppContext} from "../../../AppContext"
 
 
