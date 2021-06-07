@@ -43,7 +43,7 @@ const CreateRoom = () => {
       event.preventDefault();
       handleSetConnecting(true);
       const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
-      const data = await fetch("/video/token", {
+      const tok_res = await fetch("/video/token", {
         method: "POST",
         body: JSON.stringify({
           identity: tempUserId,
@@ -52,8 +52,10 @@ const CreateRoom = () => {
         headers: {
           "Content-Type": "application/json",
         },
-      }).then((res) => res.json());
-      Video.connect(data.token, {
+      })
+      if (!tok_res.ok) { handleSetConnecting(false); return; }
+      const data = await tok_res.json();
+      const room = await Video.connect(data.token, {
         name: roomName,
         bandwidthProfile: {
           mode: 'collaboration',
@@ -64,38 +66,29 @@ const CreateRoom = () => {
             low: {width: 320, height: 240}
           }
         }
-      })
-        .then((room) => {
-          room.localParticipant.tracks.forEach(localTracks => {
-            localTracks.setPriority('high')
-          });
-          // Creates a room in the server
-          fetch("/api/rooms", {
-            method: "POST",
-            body: JSON.stringify({
-              name: room.name,
-              sid: room.sid,
-              workoutID: workout.id,
-              workoutType: 'vid',
-            }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }).then((res) => res.text().then((res) => {
-            handleSetRoom(room);
-            handleSetConnecting(false);
-            history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`)
-          })).catch((err) => {
-            console.error(err);
-            handleSetConnecting(false);
-          });
-        })
-        .catch((err) => {
-          console.error(err);
-          handleSetConnecting(false);
-        });
-    },
-    [isLoggedIn, roomName, username, workout]
+      });
+      if (!room) { handleSetConnecting(false); return; }
+      room.localParticipant.tracks.forEach(localTracks => {
+        localTracks.setPriority('high')
+      });
+      // Creates a room in the server
+      const room_res = await fetch("/api/rooms", {
+        method: "POST",
+        body: JSON.stringify({
+          name: room.name,
+          sid: room.sid,
+          workoutID: workout.id,
+          workoutType: 'vid',
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!room_res.ok) { handleSetConnecting(false); return; }
+      handleSetRoom(room);
+      handleSetConnecting(false);
+      history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`)
+    }, [isLoggedIn, roomName, username, workout]
   );
 
   const handleSelect = value => () => {
