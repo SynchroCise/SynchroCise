@@ -17,7 +17,7 @@ const {
     getLeadersInRoom,
     getUsersBySocketId
 } = require('./users.js');
-const { getActiveRooms, getRoomsBySID, updateRoomData } = require('./rooms.js');
+const { getActiveRooms, getRoomsBySID, updateRoomData, removeRoom } = require('./rooms.js');
 const { getWorkoutById } = require('./workouts.js');
 
 
@@ -42,7 +42,7 @@ io.on('connection', (socket) => {
         return callback();
     });
     socket.on('join', async ({ name, room, sid, userId }, callback) => {
-        const { user, error } = await addUser({ socketId:socket.id, name, room, sid, userId });
+        const { user, error } = await addUser({ socketId: socket.id, name, room, sid, userId });
         if (error) return callback('Firebase connection failed');
 
         socket.emit('message', { user: { name: 'admin' }, text: `Hi ${user.name}! Welcome to your new room! You can invite your friends to watch with you by sending them the link to this page.` });
@@ -68,27 +68,20 @@ io.on('connection', (socket) => {
         socket.join(user.room);
         // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
 
-        callback({id: user.id});
+        callback({ id: user.id });
     });
     socket.on('disconnect', async () => {
+        console.log("removing user")
         const user = await removeUser(socket.id);
+        if (user.isLeader) {
+            const room = await removeRoom(user.room);
+        }
         if (user && user.length > 0) {
             socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has left` });
             // socket.broadcast.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
             let leaderList = (await getLeadersInRoom(user.room)).map((obj) => obj.sid);
             io.to(user.room).emit('leader', leaderList);
         }
-    });
-    socket.on('leaveRoom', async ({ room }) => {
-        const user = await removeUser(socket.id);
-        if (user && user.length > 0) {
-            socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has left` });
-            // socket.broadcast.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
-
-            let leaderList = (await getLeadersInRoom(user.room)).map((obj) => obj.sid);
-            io.to(user.room).emit('leader', leaderList);
-        }
-        socket.leave(room);
     });
 
     /** ROOM DATA */
@@ -133,7 +126,7 @@ io.on('connection', (socket) => {
     // });
 
     /** SENDING MESSAGES */
-    socket.on('sendMessage', async ({message, userSid}, callback) => {
+    socket.on('sendMessage', async ({ message, userSid }, callback) => {
         const user = (await getUsersBySid(userSid))[0];
         if (user) {
             io.to(user.room).emit('message', { user: user, text: message });
@@ -214,11 +207,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../server/build')));
 app.use('/', router);
 app.use('/user', passport.authenticate('jwt', { session: false }), secureRoute);
-app.get('/*', (req,res) => {
+app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname, '../server/build/index.html'));
 });
 
 
 server.listen(3001, () =>
-  console.log('Express server is running on localhost:3001')
+    console.log('Express server is running on localhost:3001')
 );
