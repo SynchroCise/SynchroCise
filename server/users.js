@@ -1,5 +1,5 @@
 const { UserBindingInstance } = require('twilio/lib/rest/chat/v2/service/user/userBinding');
-const { db, timestamp } = require('./firebase.js');
+const {db, timestamp} = require('./firebase.js');
 const bcrypt = require('bcrypt');
 
 const isValidPassword = async (user, password) => {
@@ -16,7 +16,7 @@ const userFromDoc = (doc) => ((doc.data()) ? {
     isLeader: doc.data().isLeader,
     socketId: doc.data().socketId,
     isTemp: doc.data().isTemp
-} : null);
+}: null);
 
 const checkUser = ({ name, room }) => {
     name = name.trim().toLowerCase();
@@ -27,15 +27,15 @@ const checkUser = ({ name, room }) => {
     return {};
 }
 
-const createUserLogin = async ({ email, password, displayName }) => {
+const createUserLogin = async ({email, password, displayName}) => {
     const existUser = await getUserByEmail(email);
     if (existUser && existUser.length > 0) return false
     const hash = await bcrypt.hash(password, 10);
     const userRef = db.collection('users').doc()
-    const user = { createdTime: timestamp.now(), email, password: hash, displayName }
-    await userRef.set(user, { merge: true }).catch(error => console.log(error));
+    const user = { createdTime: timestamp.now(), email, password:hash, displayName }
+    await userRef.set(user, { merge: true }).catch( error => console.log(error));
     user['id'] = userRef.id
-    return { user, message: 'success' }
+    return { user, message:'success' }
 };
 
 const createTempUser = async (name) => {
@@ -59,8 +59,8 @@ const addUser = async ({ socketId, name, room, sid, userId }) => {
             twilioRoomSid: room,
             twilioUserSid: sid,
             socketId: socketId
-        }, { merge: true }).catch(error => console.log(error));
-        return { user: (await getUserById(userId)) }
+        }, { merge: true }).catch( error => console.log(error));
+        return {user: (await getUserById(userId)) }
     } else {
         const docRef = await db.collection('users').add({
             createdTime: timestamp.now(),
@@ -73,7 +73,7 @@ const addUser = async ({ socketId, name, room, sid, userId }) => {
         }).catch(error => console.log(error));
         const user = await getUserById(docRef.id)
         return { user };
-    }
+    }    
 };
 
 const removeUser = async (socketId) => {
@@ -89,7 +89,7 @@ const removeUser = async (socketId) => {
             twilioRoomSid: "",
             twilioUserSid: "",
             socketId: ""
-        }, { merge: true }).catch(error => console.log(error));
+        }, { merge: true }).catch( error => console.log(error));
     }
     const leaders = await getLeadersInRoom(userToRemove.room)
     const users = await getUsersInRoom(userToRemove.room)
@@ -100,7 +100,7 @@ const removeUser = async (socketId) => {
 };
 
 const getUserById = async (id) => {
-    const userRef = db.collection('users').doc(id);
+    const userRef =  db.collection('users').doc(id);
     const doc = await userRef.get()
     if (!doc.exists) {
         console.log('No such document!');
@@ -111,10 +111,10 @@ const getUserById = async (id) => {
 };
 
 const setLeaderStatus = async (id, isLeader) => {
-    const userRef = db.collection('users').doc(id);
+    const userRef =  db.collection('users').doc(id);
     const doc = await userRef.set({
         isLeader: isLeader
-    }, { merge: true });
+    }, {merge: true});
 
 }
 
@@ -153,11 +153,11 @@ const getUsersById = async (ids) => {
     return users
 };
 
-module.exports = {
-    checkUser,
-    addUser,
-    removeUser,
-    getUserById,
+module.exports = { 
+    checkUser, 
+    addUser, 
+    removeUser, 
+    getUserById, 
     getUsersInRoom,
     getUsersBySocketId,
     getUsersByName,
