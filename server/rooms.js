@@ -1,6 +1,6 @@
 const rooms = [];
 const { WorkOutlineRounded } = require('@material-ui/icons');
-const {db, timestamp} = require('./firebase.js');
+const { db, timestamp } = require('./firebase.js');
 
 const getRoomCode = () => db.collection('rooms').doc().id;
 
@@ -21,7 +21,7 @@ const addRoom = async (roomId, roomSid, workoutId, workoutType) => {
         twilioRoomSid: roomSid,
         workoutId: workoutId,
         workoutType: workoutType,
-    }).catch(error => {return [400, 'ERROR']});
+    }).catch(error => { return [400, 'ERROR'] });
     return [200, 'Success']
 };
 
@@ -37,7 +37,7 @@ const addRoom = async (roomId, roomSid, workoutId, workoutType) => {
 // };
 
 const getRoomById = async (id) => {
-    const roomRef =  db.collection('rooms').doc(id);
+    const roomRef = db.collection('rooms').doc(id);
     const doc = await roomRef.get()
     if (!doc.exists) {
         console.log('No such document!');
@@ -51,7 +51,7 @@ const getRoomsByX = async (key, value) => {
     const roomsRef = db.collection('rooms');
     const snapshot = await roomsRef.where(key, '==', value).orderBy('createdTime', 'desc').get();
     if (snapshot.empty) return []
-    const rooms = snapshot.docs.map((doc) => roomFromDoc(doc));
+    const rooms = snapshot.docs.map(roomFromDoc);
     return (rooms) ? rooms : null;
 }
 
@@ -68,12 +68,12 @@ const updateRoomData = async (name, workoutID, workoutType) => {
     const rooms = await getRoomsByCode(name);
     const roomObj = rooms[0]
 
-    if (roomObj && !(roomObj.workoutType == workoutType && roomObj.workoutId == workoutID)){
+    if (roomObj && !(roomObj.workoutType == workoutType && roomObj.workoutId == workoutID)) {
         const docRef = db.collection('rooms').doc(roomObj.id);
         const res = await docRef.set({
             workoutId: workoutID,
             workoutType: workoutType
-        }, {merge: true}).catch(error => {return [400, 'ERROR']});
+        }, { merge: true }).catch(error => { return [400, 'ERROR'] });
         roomObj['workoutId'] = workoutID;
         roomObj['workoutType'] = workoutType;
     }
@@ -101,4 +101,12 @@ function getActiveRooms(io) {
     return activeRooms;
 }
 
-module.exports = { getActiveRooms, addRoom, getRoomsBySID, getRoomById, getRoomsByCode, updateRoomData, getRoomCode};
+const removeRoom = async (roomId) => {
+    let roomToRemove = (await getRoomsBySID(roomId));
+    if (!roomToRemove || roomToRemove.length == 0) return roomToRemove
+    roomToRemove = roomToRemove[0]
+    const roomref = await db.collection('rooms').doc(roomToRemove.id).delete();
+    return roomToRemove
+}
+
+module.exports = { getActiveRooms, addRoom, getRoomsBySID, getRoomById, getRoomsByCode, updateRoomData, getRoomCode, removeRoom };
