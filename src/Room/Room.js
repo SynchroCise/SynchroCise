@@ -251,8 +251,8 @@ const Room = (props) => {
   // handels leader leaves server
   useEffect(() => {
     const handler = () => {
-      console.log("awef")
       alert('Room has closed due to leader leaving')
+      alert('Room has closed due to leader leaving');
       window.location.replace('/');
     }
     sckt.socket.on('killroom', handler);
