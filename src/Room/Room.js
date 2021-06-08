@@ -251,7 +251,6 @@ const Room = (props) => {
   // handels leader leaves server
   useEffect(() => {
     const handler = () => {
-      alert('Room has closed due to leader leaving')
       alert('Room has closed due to leader leaving');
       window.location.replace('/');
     }
