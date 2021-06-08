@@ -313,7 +313,7 @@ const CreateRoom = () => {
               <IconButton
                 color="primary"
                 className={classes.containedButton}
-                disabled={!roomName}
+                disabled={!roomName || connecting}
                 type="submit">
                 <ArrowForward/>
               </IconButton>

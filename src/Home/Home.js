@@ -24,28 +24,22 @@ const Home = () => {
   const handleCreateRoom = () =>{
     history.push(RoutesEnum.CreateRoom)
   }
-  const handleJoinRoom = (event) => {
-    fetch(`/api/rooms?sid_or_name=${roomName}`, {
+  const handleJoinRoom = async (event) => {
+    event.preventDefault();
+    const res = await fetch(`/api/rooms?sid_or_name=${roomName}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((res) => {
-      if (res.ok) {
-        res.json().then((room) => {
-          joinRoom()
-          handleSetRoomName(room.id)
-          history.push(`${RoutesEnum.JoinRoom}/${room.id.substring(0, 6).toUpperCase()}`)
-        });
-      } else {
-        res.text().then((res) => {
-          setErrMessage(res)
-        });
-      }
-    }).catch((err) => {
-      console.error(err);
-    });
-    event.preventDefault();
+    })
+    if (!res.ok) {
+      const errText = await res.text()
+      setErrMessage(errText)
+    }
+    const room = await res.json();
+    joinRoom()
+    handleSetRoomName(room.id)
+    history.push(`${RoutesEnum.JoinRoom}/${room.id.substring(0, 6).toUpperCase()}`);
   }
 
   return (

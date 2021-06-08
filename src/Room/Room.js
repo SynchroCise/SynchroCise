@@ -90,17 +90,17 @@ const Room = (props) => {
   const drawerWidth = 300;
 
   const modifyVideoState = (paramsToChange) => {
-    if (playerRef.current !== null) {
-      const { playing, seekTime } = paramsToChange;
-      if (playing !== undefined) {
-        updateVideoProps({ playing });
-        // } else if (playbackRate !== undefined) {
-        //     player.setPlaybackRate(playbackRate);
-      }
-      if (seekTime !== undefined) {
-        playerRef.current.seekTo(seekTime);
-      }
+    if (playerRef.current !== null) return;
+    const { playing, seekTime } = paramsToChange;
+    if (playing !== undefined) {
+      updateVideoProps({ playing });
+      // } else if (playbackRate !== undefined) {
+      //     player.setPlaybackRate(playbackRate);
     }
+    if (seekTime !== undefined) {
+      playerRef.current.seekTo(seekTime);
+    }
+    
   } 
   
   const sendVideoState = ({ eventName, eventParams }) => {
@@ -246,6 +246,7 @@ const Room = (props) => {
     }
     let all_participants = [...participants, room.localParticipant];
     all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
+    console.log(all_participants)
     return all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (

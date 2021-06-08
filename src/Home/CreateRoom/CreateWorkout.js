@@ -57,25 +57,22 @@ const CreateWorkout = () => {
     setExercises(newArr)
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     handleSetConnecting(true);
     setSelectedExercise(null);
-    if (exercises.length > 0 && badExerciseIndices.length === 0) {
-      const newWorkout = { workoutName, exercises }
-      fetch("/user/addWorkout", {
-        method: "POST",
-        body: JSON.stringify(newWorkout),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((res) => res.text()).then((res) => {
-        handleSetConnecting(false)
-        history.push(RoutesEnum.CreateRoom)
-      });
-    } else {
-      handleSetConnecting(false);
-    }
+    if (!(exercises.length > 0 && badExerciseIndices.length === 0)) { handleSetConnecting(false); return; }
+    const newWorkout = { workoutName, exercises }
+    const res = await fetch("/user/addWorkout", {
+      method: "POST",
+      body: JSON.stringify(newWorkout),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!res.ok) { handleSetConnecting(false); return; }
+    handleSetConnecting(false)
+    history.push(RoutesEnum.CreateRoom)
   }
 
   const handleSelected = (index) => {
