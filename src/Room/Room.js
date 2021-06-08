@@ -3,8 +3,8 @@ import Participant from "./Participant/Participant";
 import SideBar from "./SideBar/SideBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AppContext } from "./../AppContext";
-import {Paper, Tab, Tabs, Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles} from '@material-ui/core';
-import { ArrowForward, ArrowBack, Videocam, VideocamOff, Mic, MicOff, CallEnd, Fullscreen, Apps, ChevronLeft, ChevronRight, YouTube, FitnessCenter} from '@material-ui/icons';
+import { Paper, Tab, Tabs, Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles } from '@material-ui/core';
+import { ArrowForward, ArrowBack, Videocam, VideocamOff, Mic, MicOff, CallEnd, Fullscreen, Apps, ChevronLeft, ChevronRight, YouTube, FitnessCenter } from '@material-ui/icons';
 import {
   faMicrophone,
   faVideo,
@@ -18,7 +18,7 @@ import Video from '../Video/Video';
 import { getVideoType } from '../utils/video';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
-import { Redirect} from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 
 
@@ -36,7 +36,7 @@ const Room = (props) => {
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
-  const { username, room, handleLeaveRoom, workout, userId ,handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
+  const { username, room, handleLeaveRoom, workout, userId, handleSetWorkout, openSideBar, handleOpenSideBar, roomProps, updateRoomProps, workoutType, setWorkoutType, videoProps, updateVideoProps, sendRoomState } = useContext(AppContext);
   const [vid, setVid] = useState((room) ? room.localParticipant.videoTracks.values().next().value.isTrackEnabled : false);
   const [mic, setMic] = useState((room) ? room.localParticipant.audioTracks.values().next().value.isTrackEnabled : false);
   const loadingRoomData = useRef(true);
@@ -82,18 +82,18 @@ const Room = (props) => {
     };
     const receiveRoomStateHandler = ({ name, room, eventName, eventParams = {} }) => {
       const { playWorkoutState, workout, workoutType } = eventParams;
-        switch (eventName) {
-          case 'syncWorkoutState':
-              updateRoomProps({ playWorkoutState });
-              break;
-          case 'syncWorkoutType':
-              updateRoomProps({ workoutType });
-              break;
-          case 'syncWorkout':
-              updateRoomProps({ workout });
-              break;
-          default:
-              break;
+      switch (eventName) {
+        case 'syncWorkoutState':
+          updateRoomProps({ playWorkoutState });
+          break;
+        case 'syncWorkoutType':
+          updateRoomProps({ workoutType });
+          break;
+        case 'syncWorkout':
+          updateRoomProps({ workout });
+          break;
+        default:
+          break;
       }
     }
     sckt.socket.on('receiveRoomState', receiveRoomStateHandler)
@@ -122,8 +122,8 @@ const Room = (props) => {
         playerRef.current.seekTo(seekTime);
       }
     }
-  } 
-  
+  }
+
   const sendVideoState = ({ eventName, eventParams }) => {
     if (!room) return;
     let params = {
@@ -232,7 +232,7 @@ const Room = (props) => {
     const sid = room.localParticipant.sid;
     const name = username;
 
-    sckt.socket.emit('join', { name, room: room.sid, sid, userId}, ({ id }) => {
+    sckt.socket.emit('join', { name, room: room.sid, sid, userId }, ({ id }) => {
       // updateCurrUser({ id });
       // setTimeout(() => {
       //   setIsJoined(true);
@@ -245,6 +245,17 @@ const Room = (props) => {
       setLeaderParticipantIDs([...leaderList]);
     }
     sckt.socket.on('leader', handler);
+    return () => sckt.socket.off('leader', handler);
+  }, []);
+
+  // handels leader leaves server
+  useEffect(() => {
+    const handler = () => {
+      console.log("awef")
+      alert('Room has closed due to leader leaving')
+      window.location.replace('/');
+    }
+    sckt.socket.on('killroom', handler);
     return () => sckt.socket.off('leader', handler);
   }, []);
 
@@ -270,7 +281,7 @@ const Room = (props) => {
     return all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
-        <Grid item xs={3} key={index} style={{height:"100%"}}>
+        <Grid item xs={3} key={index} style={{ height: "100%" }}>
           <Participant participant={participant} key={participant.sid} />
         </Grid>
       ));
@@ -352,7 +363,7 @@ const Room = (props) => {
     sendRoomState({
       eventName: 'syncWorkoutType',
       eventParams: { workoutType: newWorkoutType }
-    }, () => {setWorkoutType(newWorkoutType)});
+    }, () => { setWorkoutType(newWorkoutType) });
   }
 
   const CustomBottomNavigationAction = withStyles({
@@ -372,32 +383,32 @@ const Room = (props) => {
 
   return (
     <React.Fragment>
-      <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`} height="100%" bgcolor="text.primary">
-        <Grid container style={{height:"100vh"}}>
-          <Grid item xs={12} style={{height: "70%", width:"100%"}}>
-            {room && (workoutType == 'vid') ? leaderParticipant() : 
-            <Video
-              log={log}
-              room={room}
-              videoProps={videoProps}
-              updateVideoProps={updateVideoProps}
-              playerRef={playerRef}
-              sendVideoState={sendVideoState}
-              loadVideo={loadVideo}
-              playVideoFromSearch={playVideoFromSearch}
-            />}
+      <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`} height="100%" bgcolor="text.primary">
+        <Grid container style={{ height: "100vh" }}>
+          <Grid item xs={12} style={{ height: "70%", width: "100%" }}>
+            {room && (workoutType == 'vid') ? leaderParticipant() :
+              <Video
+                log={log}
+                room={room}
+                videoProps={videoProps}
+                updateVideoProps={updateVideoProps}
+                playerRef={playerRef}
+                sendVideoState={sendVideoState}
+                loadVideo={loadVideo}
+                playVideoFromSearch={playVideoFromSearch}
+              />}
           </Grid>
-          <Grid item container xs={12} style={{height: "20%", width:"100%"}}>
+          <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
             {remoteParticipants()}
           </Grid>
-          <Grid item container xs={12} style={{height: "10%", width:"100%"}} alignItems="center">
+          <Grid item container xs={12} style={{ height: "10%", width: "100%" }} alignItems="center">
             <Grid item xs={4}>
               <Box display="flex" justifyContent="flex-start" alignItems="center">
                 <IconButton color="secondary" size="medium" onClick={handleVid}>
-                  {vid ? <Videocam/> : <VideocamOff/>}
+                  {vid ? <Videocam /> : <VideocamOff />}
                 </IconButton>
                 <IconButton color="secondary" size="medium" onClick={handleMic}>
-                  {mic ? <Mic/> : <MicOff/>}
+                  {mic ? <Mic /> : <MicOff />}
                 </IconButton>
                 {/* <IconButton>
                   <CallEnd></CallEnd>
@@ -407,11 +418,11 @@ const Room = (props) => {
             <Grid item xs={4}>
               <Box display="flex" justifyContent="center" alignItems="center" l={3} r={3}>
                 <IconButton color="secondary" size="medium" onClick={() => handleParticipantPage(-1)}>
-                  <ArrowBack style={{fill: "white"}}/>
+                  <ArrowBack style={{ fill: "white" }} />
                 </IconButton>
                 <Typography color="secondary"> {participants.length + leaderParticipantIDs.length}/{participants.length + leaderParticipantIDs.length} participants {participantPage} </Typography>
-                <IconButton color="secondary" size="medium"  onClick={() => handleParticipantPage(1)}>
-                  <ArrowForward style={{fill: "white"}}/>
+                <IconButton color="secondary" size="medium" onClick={() => handleParticipantPage(1)}>
+                  <ArrowForward style={{ fill: "white" }} />
                 </IconButton>
               </Box>
             </Grid>
@@ -431,10 +442,10 @@ const Room = (props) => {
                   }}
                   showLabels
                   className={classes.root}
-                  color="secondary" 
+                  color="secondary"
                 >
                   <CustomBottomNavigationAction label="Custom" icon={<FitnessCenter />} />
-                  <CustomBottomNavigationAction color="secondary" label="Youtube" icon={<YouTube/>} />
+                  <CustomBottomNavigationAction color="secondary" label="Youtube" icon={<YouTube />} />
                 </BottomNavigation>
                 <IconButton color="secondary" size="medium" onClick={handleOpenSideBar}>
                   {openSideBar ? <ChevronRight /> : <ChevronLeft />}
@@ -444,7 +455,7 @@ const Room = (props) => {
           </Grid>
         </Grid>
       </Box>
-      <SideBar 
+      <SideBar
         handleLeaveRoom={handleLeaveRoom}
         currUser={room.localParticipant}
         users={participants}
