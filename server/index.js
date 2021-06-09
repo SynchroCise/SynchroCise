@@ -45,14 +45,14 @@ io.on('connection', (socket) => {
         const { user, error } = await addUser({ socketId: socket.id, name, room, sid, userId });
         if (error) return callback('Firebase connection failed');
 
-        socket.emit('message', { user: { name: 'admin' }, text: `Hi ${user.name}! Welcome to your new room! You can invite your friends to watch with you by sending them the link to this page.` });
+        io.to(user.room).emit('message', { user: { name: 'admin' }, text: `Hi ${user.name}! Welcome to your new room! You can invite your friends to watch with you by sending them the link to this page.` });
 
         // let roomData = (await getRoomsBySID(user.room))[0];
         // roomData['workout'] = await getWorkoutById(roomData.workoutId)
         // socket.emit('roomData', roomData);
         let roomUsers = await getUsersInRoom(user.room)
         let leaderList = roomUsers.filter(user => user.isLeader === true).map((obj) => obj.sid);
-        socket.emit('leader', leaderList);
+        io.to(user.room).emit('leader', leaderList);
         // socket.emit('message', { user: { name: 'admin' }, text: `${process.env.CLIENT}/room/${user.room}` });
 
         socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has joined` });
@@ -74,6 +74,7 @@ io.on('connection', (socket) => {
         const user = await removeUser(socket.id);
         if (user.isLeader) {
             const room = await removeRoom(user.room);
+            io.to(user.room).emit('killroom');
         }
         if (user && user.length > 0) {
             socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has left` });
