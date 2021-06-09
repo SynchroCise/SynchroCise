@@ -3,7 +3,7 @@ import ExerciseList from "./ExerciseList/ExerciseList.js"
 import { sckt } from '../.././Socket';
 import { AppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
-import { Drawer, Typography, IconButton, Box, Grid, Tab, Tabs} from '@material-ui/core';
+import { Drawer, Typography, IconButton, Box, Grid, Tab, Tabs } from '@material-ui/core';
 import { Link } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -34,7 +34,7 @@ const SideBar = ({
     useEffect(() => {
         if (!playWorkoutState) return;
         const timer = workoutCounter > 0 && setTimeout(() => setWorkoutCounter(workoutCounter - 1), 1000);
-        if (!(workoutCounter <= 0 && workoutNumber < workout.exercises.length-1)) return;
+        if (!(workoutCounter <= 0 && workoutNumber < workout.exercises.length - 1)) return;
         setWorkoutNumber(workoutNumber + 1)
         setWorkoutTime(workout.exercises[workoutNumber].time);
         setWorkoutCounter(workout.exercises[workoutNumber].time);
@@ -82,8 +82,8 @@ const SideBar = ({
             users={users}
         /> :
         <Grid item>
-            {!isYoutube && <ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise}/>}
-        </Grid> 
+            {!isYoutube && <ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise} />}
+        </Grid>
 
     const roomCode = roomName.substring(0, 6).toUpperCase();
 
