@@ -5,7 +5,6 @@ import { AppContext } from "../AppContext";
 import {Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles} from '@material-ui/core';
 import { ArrowForward, ArrowBack, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter} from '@material-ui/icons';
 import Video from '../Video/Video';
-import { getVideoType } from '../utils/video';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
 import { Redirect} from "react-router-dom";
@@ -30,7 +29,7 @@ const Room = (props) => {
       sckt.socket.emit('sendRoomSync', params, (error) => { });
     };
     const getVideoSyncHandler = ({ id }) => {
-      log("New user needs videoProps to sync.", 'server');
+      console.log("New user needs videoProps to sync.", 'server');
       if (playerRef.current !== null) {
         let params = {
           id: id,
@@ -102,79 +101,6 @@ const Room = (props) => {
     }
     
   } 
-  
-  const sendVideoState = ({ eventName, eventParams }) => {
-    if (!room) return;
-    let params = {
-      name: username,
-      room: room.sid,
-      eventName: eventName,
-      eventParams: eventParams
-    };
-    sckt.socket.emit('sendVideoState', params, (error) => { });
-  };
-
-  const playVideoFromSearch = (searchItem) => {
-    const url = searchItem.video.url;
-    const videoType = getVideoType(url);
-    if (videoType !== null) {
-      updateVideoProps({ videoType });
-    }
-    // Handle playing video immediately
-    const { history } = videoProps;
-    loadVideo(searchItem, false);
-    sendVideoState({
-      eventName: "syncLoad",
-      eventParams: { searchItem, history: [searchItem, ...history] }
-    });
-    updateVideoProps({ history: [searchItem, ...history] });
-  }
-  const loadVideo = (searchItem, sync) => {
-    const { playing, seekTime, initVideo } = videoProps;
-    if ((playerRef.current !== null || !initVideo) && searchItem) {
-      if (!initVideo) updateVideoProps({ initVideo: true });
-      let videoUrl = searchItem.video.url;
-      if (sync) {
-        updateVideoProps({ url: videoUrl });
-        updateVideoProps({ playing });
-        updateVideoProps({ receiving: false });
-        playerRef.current.seekTo(seekTime, 'seconds');
-      } else {
-        updateVideoProps({ url: videoUrl });
-        updateVideoProps({ playing: true });
-        updateVideoProps({ receiving: false });
-      }
-      // sckt.socket.emit('updateRoomData', { video: searchItem }, (error) => { });
-    }
-  }
-  const log = (msg, type) => {
-    let baseStyles = [
-      "color: #fff",
-      "background-color: #444",
-      "padding: 2px 4px",
-      "border-radius: 2px"
-    ].join(';');
-    let serverStyles = [
-      "background-color: gray"
-    ].join(';');
-    let otherStyles = [
-      "color: #eee",
-      "background-color: red"
-    ].join(';');
-    let meStyles = [
-      "background-color: green"
-    ].join(';');
-    // Set style based on input type
-    let style = baseStyles + ';';
-    switch (type) {
-      case "server": style += serverStyles; break;
-      case "other": style += otherStyles; break;
-      case "me": style += meStyles; break;
-      case "none": style = ''; break;
-      default: break;
-    }
-    console.log(`%c${msg}`, style);
-  }
 
   // once room is rendered do below
   useEffect(() => {
@@ -255,7 +181,6 @@ const Room = (props) => {
         </Grid>
       ));
   };
-
 
   const leaderParticipant = () => {
     if (!room) return;
@@ -356,16 +281,7 @@ const Room = (props) => {
         <Grid container style={{height:"100vh"}}>
           <Grid item xs={12} style={{height: "70%", width:"100%"}}>
             {room && (workoutType === 'vid') ? leaderParticipant() : 
-            <Video
-              log={log}
-              room={room}
-              videoProps={videoProps}
-              updateVideoProps={updateVideoProps}
-              playerRef={playerRef}
-              sendVideoState={sendVideoState}
-              loadVideo={loadVideo}
-              playVideoFromSearch={playVideoFromSearch}
-            />}
+            <Video playerRef={playerRef}/>}
           </Grid>
           <Grid item container xs={12} style={{height: "20%", width:"100%"}}>
             {remoteParticipants()}

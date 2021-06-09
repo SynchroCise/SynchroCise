@@ -1,12 +1,60 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { sckt } from '../Socket';
 import { insert } from '../utils/video';
+import { AppContext } from "../AppContext";
+import { getVideoType } from '../utils/video';
 import VideoSearch from './Search/Search';
 import VideoPlayer from "./Player/Player";
 
 
 
-const Video = ({ log, videoProps, updateVideoProps, playerRef, sendVideoState, loadVideo, playVideoFromSearch }) => {
+const Video = ({ playerRef }) => {
+    const { username, room, videoProps, updateVideoProps } = useContext(AppContext);
+
+    const sendVideoState = ({ eventName, eventParams }) => {
+        if (!room) return;
+        let params = {
+          name: username,
+          room: room.sid,
+          eventName: eventName,
+          eventParams: eventParams
+        };
+        sckt.socket.emit('sendVideoState', params, (error) => { });
+    };
+    
+    const playVideoFromSearch = (searchItem) => {
+        const url = searchItem.video.url;
+        const videoType = getVideoType(url);
+        if (videoType !== null) {
+            updateVideoProps({ videoType });
+        }
+        // Handle playing video immediately
+        const { history } = videoProps;
+        loadVideo(searchItem, false);
+        sendVideoState({
+            eventName: "syncLoad",
+            eventParams: { searchItem, history: [searchItem, ...history] }
+        });
+        updateVideoProps({ history: [searchItem, ...history] });
+    }
+    const loadVideo = (searchItem, sync) => {
+        const { playing, seekTime, initVideo } = videoProps;
+        if ((playerRef.current !== null || !initVideo) && searchItem) {
+            if (!initVideo) updateVideoProps({ initVideo: true });
+            let videoUrl = searchItem.video.url;
+            if (sync) {
+            updateVideoProps({ url: videoUrl });
+            updateVideoProps({ playing });
+            updateVideoProps({ receiving: false });
+            playerRef.current.seekTo(seekTime, 'seconds');
+            } else {
+            updateVideoProps({ url: videoUrl });
+            updateVideoProps({ playing: true });
+            updateVideoProps({ receiving: false });
+            }
+            // sckt.socket.emit('updateRoomData', { video: searchItem }, (error) => { });
+        }
+    }
     const loadFromQueue = (queue, sync = false) => {
         let nextVideo = queue.shift(); // Remove from beginning of queue
         if (nextVideo !== undefined) {
