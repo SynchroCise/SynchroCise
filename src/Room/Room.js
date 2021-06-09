@@ -255,7 +255,7 @@ const Room = (props) => {
       window.location.replace('/');
     }
     sckt.socket.on('killroom', handler);
-    return () => sckt.socket.off('leader', handler);
+    return () => sckt.socket.off('killroom', handler);
   }, []);
 
   // resets participant page if there are no remote participants
