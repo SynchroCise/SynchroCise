@@ -1,17 +1,16 @@
 import React, {useContext, useCallback, useState, useEffect} from "react";
 import {useHistory} from 'react-router-dom'
-// import "../../media/CoLab.css";
 import {AppContext} from "../../AppContext"
 import { RoutesEnum } from '../../App'
 import { makeStyles } from "@material-ui/core/styles";
 import { IconButton, Box, Typography, TextField, InputAdornment, Grid, Button} from '@material-ui/core';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Collapse } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import { ArrowForward, Close, CreateOutlined, Add } from '@material-ui/icons';
 
 // this component renders form to be passed to VideoChat.js
 const CreateWorkout = () => {
   const history = useHistory()
-  const {connecting, username, workout, handleSetConnecting, handleSetWorkout} = useContext(AppContext)
+  const {connecting, handleSetConnecting} = useContext(AppContext)
   const [workoutName, setWorkoutName] = useState('')
   const [exercises, setExercises] = useState([{'exercise': '', 'time': ''}])
   const [selectedExercise, setSelectedExercise] = useState(0)
@@ -58,29 +57,25 @@ const CreateWorkout = () => {
     setExercises(newArr)
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     handleSetConnecting(true);
     setSelectedExercise(null);
-    if (exercises.length > 0 && badExerciseIndices.length == 0) {
-      const newWorkout = { workoutName, exercises }
-      fetch("/user/addWorkout", {
-        method: "POST",
-        body: JSON.stringify(newWorkout),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((res) => res.text()).then((res) => {
-        handleSetConnecting(false)
-        history.push(RoutesEnum.CreateRoom)
-      });
-    } else {
-      handleSetConnecting(false);
-    }
+    if (!(exercises.length > 0 && badExerciseIndices.length === 0)) { handleSetConnecting(false); return; }
+    const newWorkout = { workoutName, exercises }
+    const res = await fetch("/user/addWorkout", {
+      method: "POST",
+      body: JSON.stringify(newWorkout),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!res.ok) { handleSetConnecting(false); return; }
+    handleSetConnecting(false)
+    history.push(RoutesEnum.CreateRoom)
   }
 
   const handleSelected = (index) => {
-    const e = exercises[selectedExercise];
     setSelectedExercise(index)
   }
 
@@ -88,7 +83,7 @@ const CreateWorkout = () => {
     const newArr = [...exercises]
     newArr.splice(index, 1)
     setExercises(newArr)
-    if (selectedExercise == index) setSelectedExercise(null)
+    if (selectedExercise === index) setSelectedExercise(null)
     else if (selectedExercise > index) setSelectedExercise(selectedExercise - 1)
   }
   // updates bad indices
@@ -138,10 +133,10 @@ const CreateWorkout = () => {
               <Table>
                 <TableBody>
                   {exercises.map((exerciseRow, index) => (
-                    <TableRow key={index} hover selected={selectedExercise == index}
+                    <TableRow key={index} hover selected={selectedExercise === index}
                       className={(badExerciseIndices.includes(index) ? classes.errorRow : '')}>
                       {
-                        selectedExercise == index ? (
+                        selectedExercise === index ? (
                           <React.Fragment>
                             <TableCell>
                               <TextField

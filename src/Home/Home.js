@@ -1,8 +1,5 @@
 import React, {useContext, useState, useEffect}from "react";
 import {useHistory} from 'react-router-dom'
-// import "../media/CoLab.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import {AppContext} from "../AppContext"
 import { RoutesEnum } from '../App'
 import { Link, InputAdornment, Paper, IconButton, Button, TextField, Box, Typography, Grid } from '@material-ui/core';
@@ -15,8 +12,7 @@ import "aos/dist/aos.css";
 
 // this component renders form to be passed to VideoChat.js
 const Home = () => {
-  const {joinRoom, roomName, handleRoomNameChange, makeCustomRoom, handleSetRoomName} = useContext(AppContext)
-  const rightElement = <FontAwesomeIcon icon={faArrowRight} />;
+  const {joinRoom, roomName, handleRoomNameChange, handleSetRoomName} = useContext(AppContext)
   const history = useHistory()
   const [errMessage, setErrMessage] = useState('');
 
@@ -28,28 +24,22 @@ const Home = () => {
   const handleCreateRoom = () =>{
     history.push(RoutesEnum.CreateRoom)
   }
-  const handleJoinRoom = (event) => {
-    fetch(`/api/rooms?sid_or_name=${roomName}`, {
+  const handleJoinRoom = async (event) => {
+    event.preventDefault();
+    const res = await fetch(`/api/rooms?sid_or_name=${roomName}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((res) => {
-      if (res.ok) {
-        res.json().then((room) => {
-          joinRoom()
-          handleSetRoomName(room.id)
-          history.push(`${RoutesEnum.JoinRoom}/${room.id.substring(0, 6).toUpperCase()}`)
-        });
-      } else {
-        res.text().then((res) => {
-          setErrMessage(res)
-        });
-      }
-    }).catch((err) => {
-      console.error(err);
-    });
-    event.preventDefault();
+    })
+    if (!res.ok) {
+      const errText = await res.text()
+      setErrMessage(errText)
+    }
+    const room = await res.json();
+    joinRoom()
+    handleSetRoomName(room.id)
+    history.push(`${RoutesEnum.JoinRoom}/${room.id.substring(0, 6).toUpperCase()}`);
   }
 
   return (
@@ -77,7 +67,7 @@ const Home = () => {
               <Grid item xs={6}>
                 <Box display="flex" alignItems="flex-start" justifyContent="center">
                   <form onSubmit={handleJoinRoom}>
-                    <TextField required variant="outlined" placeholder="Room Code:" size='small' value={roomName} onChange={handleRoomNameChange} helperText={errMessage} error={errMessage != ''}
+                    <TextField required variant="outlined" placeholder="Room Code:" size='small' value={roomName} onChange={handleRoomNameChange} helperText={errMessage} error={errMessage !== ''}
                     InputProps={{endAdornment:
                       (<InputAdornment position="end">
                         <IconButton color="primary" edge="end" variant="contained" type="submit"><ArrowForward/></IconButton>
@@ -105,7 +95,7 @@ const Home = () => {
           </Grid>
           <Grid item xs={6}>
             <Paper elevation={2}>
-              <img src={mockDesign} style={{objectFit: "contain", maxWidth: "100%", maxHeight: "100%",}}></img>
+              <img src={mockDesign} alt="" style={{objectFit: "contain", maxWidth: "100%", maxHeight: "100%",}}></img>
             </Paper>
           </Grid>
         </Grid>
@@ -114,7 +104,7 @@ const Home = () => {
         <Grid container alignItems="center">
           <Grid item xs={8}>
             <Box>
-              <img src={mockDesignTwo} style={{objectFit: "contain", maxWidth: "100%", maxHeight: "100%",}}></img>
+              <img src={mockDesignTwo} alt="" style={{objectFit: "contain", maxWidth: "100%", maxHeight: "100%",}}></img>
             </Box>
           </Grid>
           <Grid item xs={4}>

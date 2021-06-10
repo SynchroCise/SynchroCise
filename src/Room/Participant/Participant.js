@@ -1,11 +1,8 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
-import {AppContext} from "../../AppContext"
+import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography } from '@material-ui/core';
 import './Participant.scss';
-// import "../../media/CoLab.css";
 
 const Participant = ({ participant }) => {
-  const {userId} = useContext(AppContext)
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [displayName, setDisplayName] = useState('');

@@ -1,16 +1,11 @@
 import React, {useContext, useCallback, useEffect, useState, useRef} from "react";
 import {useHistory} from 'react-router-dom'
-// import "../../media/CoLab.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import {AppContext} from "../../AppContext"
 import Video from "twilio-video";
 import { RoutesEnum } from '../../App'
-import { Link, InputAdornment, Paper, IconButton, Button, TextField, Box, Typography, Grid } from '@material-ui/core';
+import { IconButton, TextField, Box, Typography, Grid } from '@material-ui/core';
 import { ArrowBack, ArrowForward, Videocam, VideocamOff, Mic, MicOff } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
-
-
 
 // this component renders form to be passed to VideoChat.js
 const JoinRoom = (props) => {
@@ -101,7 +96,7 @@ const JoinRoom = (props) => {
         return;
       }
       const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
-      const data = await fetch("/video/token", {
+      const tok_res = await fetch("/video/token", {
         method: "POST",
         body: JSON.stringify({
           identity: tempUserId,
@@ -110,28 +105,20 @@ const JoinRoom = (props) => {
         headers: {
           "Content-Type": "application/json",
         },
-      }).then((res) => res.json());
-      // // Join the Room with the pre-acquired LocalTracks.
-      // const room = await connect('token', {
-      //   name: 'my-cool-room',
-      //   tracks
-      // });
-      Video.connect(data.token, {
+      });
+      if (!tok_res.ok) { handleSetConnecting(false); return; }
+      const data = await tok_res.json();
+      const room = await Video.connect(data.token, {
         name: roomName,
         tracks: videoTracks.concat(audioTracks)
       })
-        .then(async (room) => {
-          room.localParticipant.tracks.forEach(localTracks => {
-            localTracks.setPriority('low')
-          });
-          handleSetConnecting(false);
-          await handleSetRoom(room);
-          history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`)
-        })
-        .catch((err) => {
-          console.error(err);
-          handleSetConnecting(false);
-        });
+      if (!room) { handleSetConnecting(false); return; }
+      room.localParticipant.tracks.forEach(localTracks => {
+        localTracks.setPriority('low')
+      });
+      handleSetConnecting(false);
+      await handleSetRoom(room);
+      history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`);
     },
     [isLoggedIn, roomName, username, videoTracks, audioTracks]
   );
@@ -231,7 +218,8 @@ const JoinRoom = (props) => {
               <IconButton
                 color="primary"
                 className={classes.containedButton}
-                type="submit">
+                type="submit"
+                disabled={connecting}>
                 <ArrowForward/>
               </IconButton>
             </Box>

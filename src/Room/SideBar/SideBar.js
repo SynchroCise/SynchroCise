@@ -1,22 +1,21 @@
 import React, { useState, useEffect, useContext } from "react";
+import ExerciseList from "./ExerciseList/ExerciseList.js"
 import { sckt } from '../.././Socket';
 import { AppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
-import { Drawer, Typography, LinearProgress, IconButton, Box, Grid, Divider, Tab, Tabs } from '@material-ui/core';
-import { PlayArrow, Pause, Link } from '@material-ui/icons';
+import { Drawer, Typography, IconButton, Box, Grid, Tab, Tabs} from '@material-ui/core';
+import { Link } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
 
 const SideBar = ({
     currUser,
     users,
     isYoutube,
-    drawerWidth,
-    room
+    drawerWidth
 }) => {
-    const { username, workout, openSideBar, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, workoutType, setWorkoutType, roomName } = useContext(AppContext)
+    const { workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, roomName } = useContext(AppContext)
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { return workout.exercise }));
-    const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [sideBarType, setSideBarType] = useState(0);
 
@@ -28,67 +27,24 @@ const SideBar = ({
 
     useEffect(() => {
         setWorkoutTime(workout.exercises[workoutNumber].time);
-        if (workoutCounter == -1) setWorkoutCounter(workout.exercises[0].time);
+        if (workoutCounter === -1) setWorkoutCounter(workout.exercises[0].time);
         setNextUpExercise(workout.exercises.map((workout, index) => { return workout.exercise }));
     }, [workout]);
 
     useEffect(() => {
-        if (playWorkoutState) {
-            const timer = workoutCounter > 0 && setTimeout(() => setWorkoutCounter(workoutCounter - 1), 1000);
-            if (workoutCounter <= 0 && workoutNumber < workout.exercises.length - 1) {
-                setWorkoutNumber(workoutNumber + 1)
-                setWorkoutTime(workout.exercises[workoutNumber].time);
-                setWorkoutCounter(workout.exercises[workoutNumber].time);
-            }
-            return () => clearTimeout(timer)
-        }
+        if (!playWorkoutState) return;
+        const timer = workoutCounter > 0 && setTimeout(() => setWorkoutCounter(workoutCounter - 1), 1000);
+        if (!(workoutCounter <= 0 && workoutNumber < workout.exercises.length-1)) return;
+        setWorkoutNumber(workoutNumber + 1)
+        setWorkoutTime(workout.exercises[workoutNumber].time);
+        setWorkoutCounter(workout.exercises[workoutNumber].time);
+        return () => clearTimeout(timer)
     }, [workoutCounter, playWorkoutState, workoutNumber, workoutTime]);
 
-
-    const exerciseListMarkup = isYoutube ? <></> : (
-        <React.Fragment>
-            <Typography variant="body1">Now</Typography>
-            <Typography variant="h5">{workout.exercises[workoutNumber].exercise}</Typography>
-            <Typography variant="body1">Next Up</Typography>
-            {
-                nextUpExercise && nextUpExercise.length > 1 && typeof nextUpExercise != 'string' ? (
-                    nextUpExercise.map((exercise, index) => {
-                        if (index > workoutNumber) {
-                            return (<Typography key={index} variant="body2">{exercise}</Typography>)
-                        }
-                    })
-                ) : (
-                    <Typography variant="body2">{nextUpExercise}</Typography>
-                )
-            }
-        </React.Fragment>
-    )
-
-    const handleStartWorkout = () => {
-        var startWorkoutState = !playWorkoutState;
-        sendRoomState({
-            eventName: 'syncWorkoutState',
-            eventParams: { playWorkoutState: startWorkoutState }
-        }, () => setPlayWorkoutState(startWorkoutState));
-    }
     const handleChange = (value) => {
         setSideBarType(value);
     }
 
-    const TimerProgressBarMarkup = isYoutube ? <></> : (
-        <React.Fragment>
-            <Box display="flex" justifyContent="flex-end" paddingTop={4} >
-                <Typography variant="body1">{workoutCounter}s</Typography>
-            </Box>
-            <div><LinearProgress variant="determinate" value={workoutCounter / workoutTime * 100} /></div>
-            <Box display="flex" justifyContent="flex-end">
-                <IconButton
-                    onClick={handleStartWorkout}>
-                    {(playWorkoutState) ? <Pause /> : <PlayArrow />}
-                </IconButton>
-            </Box>
-        </React.Fragment>
-    )
     const useStyles = makeStyles(theme => ({
         drawerPaper: {
             width: drawerWidth,
@@ -126,10 +82,8 @@ const SideBar = ({
             users={users}
         /> :
         <Grid item>
-            {TimerProgressBarMarkup}
-            {exerciseListMarkup}
-        </Grid>
-
+            {!isYoutube && <ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise}/>}
+        </Grid> 
 
     const roomCode = roomName.substring(0, 6).toUpperCase();
 

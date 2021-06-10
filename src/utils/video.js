@@ -21,13 +21,10 @@ const validateYouTubeUrl = (url) => {
 }
 // Very general URL validation
 const validateVimeoUrl = (url) => {
-    return /^(http\:\/\/|https\:\/\/)?(www\.)?(vimeo\.com\/)/.test(url);
+    return /^(http:\/\/|https:\/\/)?(www\.)?(vimeo\.com\/)/.test(url);
 }
 const validateTwitchUrl = (url) => {
-    return /^(http\:\/\/|https\:\/\/)?(www\.)?(twitch\.tv\/)/.test(url);
-}
-const validateSoundCloudUrl = (url) => {
-    return /((https:\/\/)|(http:\/\/)|(www.)|(m\.)|(\s))+(soundcloud.com\/)+[a-zA-Z0-9\-\.]+(\/)+[a-zA-Z0-9\-\.]+/.test(url);
+    return /^(http:\/\/|https:\/\/)?(www\.)?(twitch\.tv\/)/.test(url);
 }
 
 const formatTimestamp = (seconds) => {
