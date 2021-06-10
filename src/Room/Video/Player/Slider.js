@@ -1,6 +1,6 @@
 import React, { Fragment, Component } from "react";
 import PropTypes from "prop-types";
-import { formatTimestamp } from '../../utils/video';
+import { formatTimestamp } from '../../../utils/video';
 
 const themeColor = '#43a3f0';
 const sliderBg = '#ffffff40';

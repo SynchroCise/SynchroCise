@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import { Slider, Rail, Tracks } from "react-compound-slider";
 import { TooltipRail, SliderRail, Track } from "./Slider";
-import { formatTimestamp } from '../../utils/video';
+import { formatTimestamp } from '../../../utils/video';
 import {PlayArrow, Pause, VolumeOff, VolumeUp, VolumeDown, Fullscreen, FullscreenExit} from '@material-ui/icons';
 import {IconButton} from '@material-ui/core'
 

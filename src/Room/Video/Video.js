@@ -1,8 +1,8 @@
 import React, { useEffect, useContext } from "react";
-import { sckt } from '../Socket';
-import { insert } from '../utils/video';
-import { AppContext } from "../AppContext";
-import { getVideoType } from '../utils/video';
+import { sckt } from '../../Socket';
+import { insert } from '../../utils/video';
+import { AppContext } from "../../AppContext";
+import { getVideoType } from '../../utils/video';
 import VideoSearch from './Search/Search';
 import VideoPlayer from "./Player/Player";
 

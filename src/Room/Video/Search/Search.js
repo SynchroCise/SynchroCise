@@ -4,7 +4,7 @@ import {
     youtube_parser,
     getVideoType,
     isValidURL
-} from '../../utils/video';
+} from '../../../utils/video';
 import { store } from 'react-notifications-component';
 import { Box, TextField, withStyles} from '@material-ui/core';
 import moment from 'moment'

@@ -4,7 +4,7 @@ import SideBar from "./SideBar/SideBar";
 import { AppContext } from "../AppContext";
 import {Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles} from '@material-ui/core';
 import { ArrowForward, ArrowBack, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter} from '@material-ui/icons';
-import Video from '../Video/Video';
+import Video from './Video/Video';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
 import { Redirect} from "react-router-dom";
