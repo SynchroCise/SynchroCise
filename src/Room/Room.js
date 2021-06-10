@@ -260,7 +260,6 @@ const Room = (props) => {
         users={participants}
         isYoutube={workoutType === 'yt' ? 1 : 0}
         drawerWidth={drawerWidth}
-        room={room}
       />
     </React.Fragment>
   );

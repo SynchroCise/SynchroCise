@@ -10,8 +10,7 @@ const SideBar = ({
     currUser,
     users,
     isYoutube,
-    drawerWidth,
-    room
+    drawerWidth
 }) => {
     const {workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, roomName} = useContext(AppContext)
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
