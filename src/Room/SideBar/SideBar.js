@@ -1,9 +1,9 @@
-import React, {useState, useEffect, useContext} from "react";
-
+import React, { useState, useEffect, useContext } from "react";
+import { sckt } from '../.././Socket';
 import { AppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
-import { Drawer, Typography, LinearProgress, IconButton, Box, Grid , Divider, Tab, Tabs} from '@material-ui/core';
-import {PlayArrow, Pause, Link} from '@material-ui/icons';
+import { Drawer, Typography, LinearProgress, IconButton, Box, Grid, Divider, Tab, Tabs } from '@material-ui/core';
+import { PlayArrow, Pause, Link } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
 
 const SideBar = ({
@@ -13,10 +13,18 @@ const SideBar = ({
     drawerWidth,
     room
 }) => {
-    const {username, workout, openSideBar, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, workoutType, setWorkoutType, roomName} = useContext(AppContext)
+    const { username, workout, openSideBar, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, workoutType, setWorkoutType, roomName } = useContext(AppContext)
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { return workout.exercise }));
+    const [message, setMessage] = useState('');
+    const [messages, setMessages] = useState([]);
     const [sideBarType, setSideBarType] = useState(0);
+
+    useEffect(() => {
+        const handler = (message) => setMessages(messages => [...messages, message]);
+        sckt.socket.on('message', handler);
+        return () => sckt.socket.off('message', handler);
+    }, []);
 
     useEffect(() => {
         setWorkoutTime(workout.exercises[workoutNumber].time);
@@ -25,9 +33,9 @@ const SideBar = ({
     }, [workout]);
 
     useEffect(() => {
-        if(playWorkoutState){
+        if (playWorkoutState) {
             const timer = workoutCounter > 0 && setTimeout(() => setWorkoutCounter(workoutCounter - 1), 1000);
-            if(workoutCounter <= 0 && workoutNumber < workout.exercises.length-1) {
+            if (workoutCounter <= 0 && workoutNumber < workout.exercises.length - 1) {
                 setWorkoutNumber(workoutNumber + 1)
                 setWorkoutTime(workout.exercises[workoutNumber].time);
                 setWorkoutCounter(workout.exercises[workoutNumber].time);
@@ -55,7 +63,7 @@ const SideBar = ({
             }
         </React.Fragment>
     )
-    
+
     const handleStartWorkout = () => {
         var startWorkoutState = !playWorkoutState;
         sendRoomState({
@@ -72,11 +80,11 @@ const SideBar = ({
             <Box display="flex" justifyContent="flex-end" paddingTop={4} >
                 <Typography variant="body1">{workoutCounter}s</Typography>
             </Box>
-            <div><LinearProgress variant="determinate" value={workoutCounter/workoutTime * 100} /></div>
+            <div><LinearProgress variant="determinate" value={workoutCounter / workoutTime * 100} /></div>
             <Box display="flex" justifyContent="flex-end">
                 <IconButton
                     onClick={handleStartWorkout}>
-                    {(playWorkoutState) ? <Pause/> : <PlayArrow/>}
+                    {(playWorkoutState) ? <Pause /> : <PlayArrow />}
                 </IconButton>
             </Box>
         </React.Fragment>
@@ -108,18 +116,20 @@ const SideBar = ({
         blackButton: {
             color: "black",
         },
-        }));
+    }));
     const classes = useStyles();
 
-    const sideBarContentMarkup = sideBarType ? 
+    const sideBarContentMarkup = sideBarType ?
         <Chat
+            messages={messages}
             currUser={currUser}
             users={users}
-        /> : 
+        /> :
         <Grid item>
             {TimerProgressBarMarkup}
             {exerciseListMarkup}
-        </Grid> 
+        </Grid>
+
 
     const roomCode = roomName.substring(0, 6).toUpperCase();
 
@@ -132,16 +142,16 @@ const SideBar = ({
 
     return (
         <Drawer
-        variant="persistent"
-        anchor="right"
-        open={openSideBar}
-        className={classes.drawer}
-        classes={{
-            paper: classes.drawerPaper,
-          }}>
+            variant="persistent"
+            anchor="right"
+            open={openSideBar}
+            className={classes.drawer}
+            classes={{
+                paper: classes.drawerPaper,
+            }}>
             <Box mx={2} my={2} height="100%">
-                <Grid container className={classes.fullHeight}  wrap="wrap">
-                    <Grid item style={{height:"7%", width:"100%"}}>
+                <Grid container className={classes.fullHeight} wrap="wrap">
+                    <Grid item style={{ height: "7%", width: "100%" }}>
                         <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}</Typography>
                         <Tabs
                             indicatorColor="primary"
@@ -149,11 +159,11 @@ const SideBar = ({
                             value={sideBarType}
                             onChange={(event, value) => { handleChange(value) }}
                         >
-                            <Tab value={0} label="Workout"/>
-                            <Tab value={1} label="Chat"/>
+                            <Tab value={0} label="Workout" />
+                            <Tab value={1} label="Chat" />
                         </Tabs>
                     </Grid>
-                    <Grid container item style={{height:"90%", width: "100%"}} justify="space-between" direction="column">
+                    <Grid container item style={{ height: "90%", width: "100%" }} justify="space-between" direction="column">
                         {sideBarContentMarkup}
                     </Grid>
                 </Grid>
