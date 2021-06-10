@@ -1,10 +1,10 @@
-import React, { useState, createContext, useCallback, useEffect} from 'react';
+import React, { useState, createContext, useCallback, useEffect } from 'react';
 import { sckt } from './Socket';
 
 
-const AppContext = createContext([{}, () => {}]);
+const AppContext = createContext([{}, () => { }]);
 
-const AppContextProvider = ({children}) => {
+const AppContextProvider = ({ children }) => {
   const [room, setRoom] = useState(null);
   const [connecting, setConnecting] = useState(false);
   const [username, setUsername] = useState("");
@@ -19,7 +19,7 @@ const AppContextProvider = ({children}) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [roomProps, setRoomProps] = useState({
     workoutType: 'vid', // 'yt', 'custom',
-    workout: {"workoutName": "", "exercises": [{"time": 1, "exercise":""}], "id": ""},
+    workout: { "workoutName": "", "exercises": [{ "time": 1, "exercise": "" }], "id": "" },
     playWorkoutState: false,
     workoutNumber: 0,
     workoutCounter: -1
@@ -52,13 +52,13 @@ const AppContextProvider = ({children}) => {
     setVideoProps((prev) => ({ ...prev, ...paramsToChange }));
   }
 
-  const setWorkoutType = (workoutType) => updateRoomProps({workoutType});
+  const setWorkoutType = (workoutType) => updateRoomProps({ workoutType });
 
-  const setPlayWorkoutState = (playWorkoutState) => updateRoomProps({playWorkoutState});
+  const setPlayWorkoutState = (playWorkoutState) => updateRoomProps({ playWorkoutState });
 
-  const setWorkoutCounter = (workoutCounter) => updateRoomProps({workoutCounter});
+  const setWorkoutCounter = (workoutCounter) => updateRoomProps({ workoutCounter });
 
-  const setWorkoutNumber = (workoutNumber) => updateRoomProps({workoutNumber});
+  const setWorkoutNumber = (workoutNumber) => updateRoomProps({ workoutNumber });
 
   const handleSetRoom = (room) => setRoom(room)
 
@@ -72,7 +72,7 @@ const AppContextProvider = ({children}) => {
 
   const handleSetRoomTitle = (roomTitle) => setRoomTitle(roomTitle)
 
-  const handleSetWorkout = (workout) => updateRoomProps({workout})
+  const handleSetWorkout = (workout) => updateRoomProps({ workout })
 
   const handleOpenSideBar = () => setOpenSideBar(!openSideBar)
 
@@ -97,7 +97,8 @@ const AppContextProvider = ({children}) => {
 
   const joinRoom = () => {
     // check if room exists here TODO
-    setRoomState('join')
+    setRoomState('join');
+
   }
 
   const handleUsernameChange = useCallback((event) => {
@@ -109,8 +110,8 @@ const AppContextProvider = ({children}) => {
   }, []);
 
   const makeCustomRoom = async (event) => {
-    const res = await fetch('/api/roomCode', { 
-      method: "GET", 
+    const res = await fetch('/api/roomCode', {
+      method: "GET",
       headers: {
         "Content-Type": "text/plain",
       },
@@ -121,8 +122,8 @@ const AppContextProvider = ({children}) => {
   }
 
   const createTempUser = async (name) => {
-    const res = await fetch(`/api/createTempUser`, { 
-      method: "POST", 
+    const res = await fetch(`/api/createTempUser`, {
+      method: "POST",
       body: JSON.stringify({ name }),
       headers: {
         "Content-Type": "application/json",
@@ -169,29 +170,16 @@ const AppContextProvider = ({children}) => {
           trackPub.track.stop();
         });
         prevRoom.disconnect();
+        window.location.reload();
+        window.removeEventListener("popstate", handleLeaveRoom);
       }
       return null;
     });
   }, []);
 
   useEffect(() => {
-    if (room) {
-      const tidyUp = (event) => {
-        if (event.persisted) {
-          return;
-        }
-        if (room) {
-          handleLeaveRoom();
-        }
-      };
-      window.addEventListener("pagehide", tidyUp);
-      window.addEventListener("beforeunload", tidyUp);
-      return () => {
-        window.removeEventListener("pagehide", tidyUp);
-        window.removeEventListener("beforeunload", tidyUp);
-      };
-    }
-  }, [room, handleLeaveRoom]);
+    window.addEventListener("popstate", handleLeaveRoom);
+  }, [room]);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -201,57 +189,57 @@ const AppContextProvider = ({children}) => {
 
 
   return (
-      <AppContext.Provider value={{
-        room,
-        handleSetRoom,
-        connecting,
-        handleSetConnecting,
-        username,
-        handleSetUsername,
-        roomName,
-        handleSetRoomName,
-        roomState,
-        handleSetRoomState,
-        roomTitle,
-        handleSetRoomTitle,
-        workout: roomProps.workout,
-        handleSetWorkout,
-        workoutType: roomProps.workoutType,
-        setWorkoutType,
-        playWorkoutState: roomProps.playWorkoutState,
-        setPlayWorkoutState,
-        workoutCounter: roomProps.workoutCounter,
-        setWorkoutCounter,
-        workoutNumber: roomProps.workoutNumber,
-        setWorkoutNumber,
-        openSideBar,
-        handleOpenSideBar,
-        userId,
-        openAuthDialog,
-        handleSetOpenAuthDialog,
-        isSignUp,
-        handleSetIsSignUp,
-        handleSetUserId,
-        isLoggedIn,
-        setIsLoggedIn,
-        disconnectRoom,
-        joinRoom,
-        handleUsernameChange,
-        handleRoomTitle,
-        makeCustomRoom,
-        handleRoomNameChange,
-        handleLeaveRoom,
-        checkLoggedIn,
-        handleLogout,
-        roomProps,
-        updateRoomProps,
-        videoProps,
-        updateVideoProps,
-        sendRoomState,
-        createTempUser
-      }}>
-          {children}
-      </AppContext.Provider>
+    <AppContext.Provider value={{
+      room,
+      handleSetRoom,
+      connecting,
+      handleSetConnecting,
+      username,
+      handleSetUsername,
+      roomName,
+      handleSetRoomName,
+      roomState,
+      handleSetRoomState,
+      roomTitle,
+      handleSetRoomTitle,
+      workout: roomProps.workout,
+      handleSetWorkout,
+      workoutType: roomProps.workoutType,
+      setWorkoutType,
+      playWorkoutState: roomProps.playWorkoutState,
+      setPlayWorkoutState,
+      workoutCounter: roomProps.workoutCounter,
+      setWorkoutCounter,
+      workoutNumber: roomProps.workoutNumber,
+      setWorkoutNumber,
+      openSideBar,
+      handleOpenSideBar,
+      userId,
+      openAuthDialog,
+      handleSetOpenAuthDialog,
+      isSignUp,
+      handleSetIsSignUp,
+      handleSetUserId,
+      isLoggedIn,
+      setIsLoggedIn,
+      disconnectRoom,
+      joinRoom,
+      handleUsernameChange,
+      handleRoomTitle,
+      makeCustomRoom,
+      handleRoomNameChange,
+      handleLeaveRoom,
+      checkLoggedIn,
+      handleLogout,
+      roomProps,
+      updateRoomProps,
+      videoProps,
+      updateVideoProps,
+      sendRoomState,
+      createTempUser
+    }}>
+      {children}
+    </AppContext.Provider>
   );
 };
 

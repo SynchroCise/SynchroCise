@@ -1,5 +1,6 @@
-import React, {useState, useEffect, useContext} from "react";
+import React, { useState, useEffect, useContext } from "react";
 import ExerciseList from "./ExerciseList/ExerciseList.js"
+import { sckt } from '../.././Socket';
 import { AppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
 import { Drawer, Typography, IconButton, Box, Grid, Tab, Tabs} from '@material-ui/core';
@@ -12,10 +13,17 @@ const SideBar = ({
     isYoutube,
     drawerWidth
 }) => {
-    const {workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, roomName} = useContext(AppContext)
+    const { workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, roomName } = useContext(AppContext)
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { return workout.exercise }));
+    const [messages, setMessages] = useState([]);
     const [sideBarType, setSideBarType] = useState(0);
+
+    useEffect(() => {
+        const handler = (message) => setMessages(messages => [...messages, message]);
+        sckt.socket.on('message', handler);
+        return () => sckt.socket.off('message', handler);
+    }, []);
 
     useEffect(() => {
         setWorkoutTime(workout.exercises[workoutNumber].time);
@@ -64,14 +72,15 @@ const SideBar = ({
         blackButton: {
             color: "black",
         },
-        }));
+    }));
     const classes = useStyles();
 
-    const sideBarContentMarkup = sideBarType ? 
+    const sideBarContentMarkup = sideBarType ?
         <Chat
+            messages={messages}
             currUser={currUser}
             users={users}
-        /> : 
+        /> :
         <Grid item>
             {!isYoutube && <ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise}/>}
         </Grid> 
@@ -87,16 +96,16 @@ const SideBar = ({
 
     return (
         <Drawer
-        variant="persistent"
-        anchor="right"
-        open={openSideBar}
-        className={classes.drawer}
-        classes={{
-            paper: classes.drawerPaper,
-          }}>
+            variant="persistent"
+            anchor="right"
+            open={openSideBar}
+            className={classes.drawer}
+            classes={{
+                paper: classes.drawerPaper,
+            }}>
             <Box mx={2} my={2} height="100%">
-                <Grid container className={classes.fullHeight}  wrap="wrap">
-                    <Grid item style={{height:"7%", width:"100%"}}>
+                <Grid container className={classes.fullHeight} wrap="wrap">
+                    <Grid item style={{ height: "7%", width: "100%" }}>
                         <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}</Typography>
                         <Tabs
                             indicatorColor="primary"
@@ -104,11 +113,11 @@ const SideBar = ({
                             value={sideBarType}
                             onChange={(event, value) => { handleChange(value) }}
                         >
-                            <Tab value={0} label="Workout"/>
-                            <Tab value={1} label="Chat"/>
+                            <Tab value={0} label="Workout" />
+                            <Tab value={1} label="Chat" />
                         </Tabs>
                     </Grid>
-                    <Grid container item style={{height:"90%", width: "100%"}} justify="space-between" direction="column">
+                    <Grid container item style={{ height: "90%", width: "100%" }} justify="space-between" direction="column">
                         {sideBarContentMarkup}
                     </Grid>
                 </Grid>

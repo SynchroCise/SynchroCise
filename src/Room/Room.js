@@ -3,11 +3,11 @@ import Participant from "./Participant/Participant";
 import SideBar from "./SideBar/SideBar";
 import BottomControl from "./BottomControl/BottomControl"
 import { AppContext } from "../AppContext";
-import {Grid, Typography, Box} from '@material-ui/core';
+import { Grid, Typography, Box } from '@material-ui/core';
 import Video from './Video/Video';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
-import { Redirect} from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 // using roomName and token, we will create a room
 const Room = (props) => {
@@ -58,18 +58,18 @@ const Room = (props) => {
     };
     const receiveRoomStateHandler = ({ name, room, eventName, eventParams = {} }) => {
       const { playWorkoutState, workout, workoutType } = eventParams;
-        switch (eventName) {
-          case 'syncWorkoutState':
-              updateRoomProps({ playWorkoutState });
-              break;
-          case 'syncWorkoutType':
-              updateRoomProps({ workoutType });
-              break;
-          case 'syncWorkout':
-              updateRoomProps({ workout });
-              break;
-          default:
-              break;
+      switch (eventName) {
+        case 'syncWorkoutState':
+          updateRoomProps({ playWorkoutState });
+          break;
+        case 'syncWorkoutType':
+          updateRoomProps({ workoutType });
+          break;
+        case 'syncWorkout':
+          updateRoomProps({ workout });
+          break;
+        default:
+          break;
       }
     }
     sckt.socket.on('receiveRoomState', receiveRoomStateHandler)
@@ -135,7 +135,7 @@ const Room = (props) => {
     const sid = room.localParticipant.sid;
     const name = username;
 
-    sckt.socket.emit('join', { name, room: room.sid, sid, userId}, ({ id }) => {
+    sckt.socket.emit('join', { name, room: room.sid, sid, userId }, ({ id }) => {
       // updateCurrUser({ id });
       // setTimeout(() => {
       //   setIsJoined(true);
@@ -149,6 +149,16 @@ const Room = (props) => {
     }
     sckt.socket.on('leader', handler);
     return () => sckt.socket.off('leader', handler);
+  }, []);
+
+  // handels leader leaves server
+  useEffect(() => {
+    const handler = () => {
+      alert('Room has closed due to leader leaving');
+      window.location.replace('/');
+    }
+    sckt.socket.on('killroom', handler);
+    return () => sckt.socket.off('killroom', handler);
   }, []);
 
   // resets participant page if there are no remote participants
@@ -174,7 +184,7 @@ const Room = (props) => {
     return all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
-        <Grid item xs={3} key={index} style={{height:"100%"}}>
+        <Grid item xs={3} key={index} style={{ height: "100%" }}>
           <Participant participant={participant} key={participant.sid} />
         </Grid>
       ));
@@ -240,7 +250,7 @@ const Room = (props) => {
             {room && (workoutType === 'vid') ? leaderParticipant() : 
             <Video playerRef={playerRef}/>}
           </Grid>
-          <Grid item container xs={12} style={{height: "20%", width:"100%"}}>
+          <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
             {remoteParticipants()}
           </Grid>
           <Grid item container xs={12} style={{height: "10%", width:"100%"}} alignItems="center">
@@ -254,7 +264,7 @@ const Room = (props) => {
           </Grid>
         </Grid>
       </Box>
-      <SideBar 
+      <SideBar
         handleLeaveRoom={handleLeaveRoom}
         currUser={room.localParticipant}
         users={participants}
