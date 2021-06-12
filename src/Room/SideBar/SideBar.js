@@ -7,8 +7,6 @@ import { Drawer, Typography, IconButton, Box, Grid, Tab, Tabs } from '@material-
 import { Link } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from 'prop-types';
-
-
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
 
@@ -22,7 +20,7 @@ function TabPanel(props) {
         >
             {value === index && (
                 <Box style={{ height: "100%" }}>
-                    <Typography style={{ height: "100%" }}>{children}</Typography>
+                    <div style={{ height: "100%" }}>{children}</div>
                 </Box>
             )}
         </div>
@@ -143,7 +141,7 @@ const SideBar = ({
             classes={{
                 paper: classes.drawerPaper,
             }}>
-            <Box mx={2} my={2} height="95%" id="boxout">
+            <Box mx={2} my={2} height="95%">
                 <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}</Typography>
                 <Tabs
                     indicatorColor="primary"

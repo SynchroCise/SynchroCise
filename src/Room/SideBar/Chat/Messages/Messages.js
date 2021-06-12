@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 // import './Messages.scss';
 
-const Messages = ({ messages, currUser, users }) => {
+const Messages = ({ messages, currUser, users, times }) => {
     const useStyles = makeStyles(theme => ({
         messages: {
             flexDirection: "column",

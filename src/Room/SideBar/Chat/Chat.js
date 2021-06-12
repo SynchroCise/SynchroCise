@@ -19,7 +19,7 @@ const Chat = ({ messages, currUser, users }) => {
 
     return (
         <div style={{ height: "100%", maxHeight: "100%" }} display="flex">
-            <div style={{ height: "95%", maxHeight: "95%", overflowY: 'scroll' }} display="flex" flexDirection="column" id="chat">
+            <div style={{ height: "95%", maxHeight: "95%", overflowY: 'scroll' }} display="flex" id="chat">
                 <Messages messages={messages} currUser={currUser} users={users} />
                 <Divider />
             </div>

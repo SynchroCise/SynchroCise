@@ -128,8 +128,9 @@ io.on('connection', (socket) => {
     /** SENDING MESSAGES */
     socket.on('sendMessage', async ({ message, userSid }, callback) => {
         const user = (await getUsersBySid(userSid))[0];
+        let time = new Date();
         if (user) {
-            io.to(user.room).emit('message', { user: user, text: message });
+            io.to(user.room).emit('message', { user: user, text: message, time: time.getHours() + ":" + time.getMinutes() });
             // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)});
         }
         callback();

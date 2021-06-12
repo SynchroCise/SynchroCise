@@ -1,23 +1,23 @@
 import React from 'react';
 import { Grid, Box, Typography } from '@material-ui/core';
-import moment from 'moment'
 
-const Message = ({ message: { user, text }, currUser, users }) => {
+const Message = ({ message: { user, text, time }, currUser, users }) => {
     // const getNameById = (id) => {
     //     const existingUser = users.find(x => x.sid === id);
     //     if (existingUser) return existingUser.identity;
     //     return 'fail';
     // }
+
     return (
         <Box width="100%">
-            <Grid container justify="space-between"> 
+            <Grid container justify="space-between">
                 <Typography variant="body1" align="left" color="primary">{user.name}</Typography>
-                <Typography variant="body2" align="right" color="textSecondary">{moment().format('h:mm')}</Typography>
+                <Typography variant="body2" align="right" color="textSecondary">{time}</Typography>
             </Grid>
             <Typography variant="body2">{text}</Typography>
         </Box>
         // user.sid === currUser.sid ? (
-            
+
         //     <div className='messageContainer justifyEnd'>
         //         {/* <p className='sentText pr-10'>{trimmedCurrUser}</p> */}
         //         <div className='messageBox backgroundBlue'>
