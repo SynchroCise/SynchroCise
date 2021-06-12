@@ -3,9 +3,51 @@ import ExerciseList from "./ExerciseList/ExerciseList.js"
 import { sckt } from '../.././Socket';
 import { AppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
-import { Drawer, Typography, IconButton, Box, Grid, Tab, Tabs} from '@material-ui/core';
+import { Drawer, Typography, IconButton, Box, Grid, Tab, Tabs } from '@material-ui/core';
 import { Link } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
+import PropTypes from 'prop-types';
+
+
+function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box style={{ height: "100%" }}>
+                    <Typography style={{ height: "100%" }}>{children}</Typography>
+                </Box>
+            )}
+        </div>
+    );
+}
+
+TabPanel.propTypes = {
+    children: PropTypes.node,
+    index: PropTypes.any.isRequired,
+    value: PropTypes.any.isRequired,
+};
+
+function a11yProps(index) {
+    return {
+        id: `simple-tab-${index}`,
+        'aria-controls': `simple-tabpanel-${index}`,
+    };
+}
+
+// const useStyles = makeStyles((theme) => ({
+//     root: {
+//         flexGrow: 1,
+//         backgroundColor: theme.palette.background.paper,
+//     },
+// }));
 
 const SideBar = ({
     currUser,
@@ -19,8 +61,13 @@ const SideBar = ({
     const [messages, setMessages] = useState([]);
     const [sideBarType, setSideBarType] = useState(0);
 
+    //Also does scrolliung
     useEffect(() => {
-        const handler = (message) => setMessages(messages => [...messages, message]);
+        const handler = (message) => {
+            setMessages(messages => [...messages, message]);
+            let cht = document.getElementById("chat");
+            cht.scrollTop = cht.scrollHeight;
+        }
         sckt.socket.on('message', handler);
         return () => sckt.socket.off('message', handler);
     }, []);
@@ -34,7 +81,7 @@ const SideBar = ({
     useEffect(() => {
         if (!playWorkoutState) return;
         const timer = workoutCounter > 0 && setTimeout(() => setWorkoutCounter(workoutCounter - 1), 1000);
-        if (!(workoutCounter <= 0 && workoutNumber < workout.exercises.length-1)) return;
+        if (!(workoutCounter <= 0 && workoutNumber < workout.exercises.length - 1)) return;
         setWorkoutNumber(workoutNumber + 1)
         setWorkoutTime(workout.exercises[workoutNumber].time);
         setWorkoutCounter(workout.exercises[workoutNumber].time);
@@ -75,15 +122,8 @@ const SideBar = ({
     }));
     const classes = useStyles();
 
-    const sideBarContentMarkup = sideBarType ?
-        <Chat
-            messages={messages}
-            currUser={currUser}
-            users={users}
-        /> :
-        <Grid item>
-            {!isYoutube && <ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise}/>}
-        </Grid> 
+    // const sideBarContentMarkup = sideBarType ?
+    //    :
 
     const roomCode = roomName.substring(0, 6).toUpperCase();
 
@@ -103,24 +143,29 @@ const SideBar = ({
             classes={{
                 paper: classes.drawerPaper,
             }}>
-            <Box mx={2} my={2} height="100%">
-                <Grid container className={classes.fullHeight} wrap="wrap">
-                    <Grid item style={{ height: "7%", width: "100%" }}>
-                        <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}</Typography>
-                        <Tabs
-                            indicatorColor="primary"
-                            textColor="primary"
-                            value={sideBarType}
-                            onChange={(event, value) => { handleChange(value) }}
-                        >
-                            <Tab value={0} label="Workout" />
-                            <Tab value={1} label="Chat" />
-                        </Tabs>
+            <Box mx={2} my={2} height="95%" id="boxout">
+                <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}</Typography>
+                <Tabs
+                    indicatorColor="primary"
+                    textColor="primary"
+                    value={sideBarType}
+                    onChange={(event, value) => { handleChange(value) }}
+                >
+                    <Tab value={0} label="Workout"  {...a11yProps(0)} />
+                    <Tab value={1} label="Chat"  {...a11yProps(1)} />
+                </Tabs>
+                <TabPanel value={sideBarType} index={0}>
+                    <Grid item>
+                        {!isYoutube && <ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise} />}
                     </Grid>
-                    <Grid container item style={{ height: "90%", width: "100%" }} justify="space-between" direction="column">
-                        {sideBarContentMarkup}
-                    </Grid>
-                </Grid>
+                </TabPanel>
+                <TabPanel value={sideBarType} index={1} style={{ height: "80%" }} id="TabPanelChat">
+                    <Chat
+                        messages={messages}
+                        currUser={currUser}
+                        users={users}
+                    />
+                </TabPanel>
             </Box>
         </Drawer>
     );

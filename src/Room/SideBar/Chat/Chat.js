@@ -2,9 +2,8 @@ import React, { useState, useContext } from "react";
 import { sckt } from '../../../Socket';
 import ChatInput from './ChatInput/ChatInput';
 import Messages from './Messages/Messages';
-import { Box, Divider } from '@material-ui/core';
+import { Divider } from '@material-ui/core';
 import { AppContext } from "../../../AppContext"
-
 
 const Chat = ({ messages, currUser, users }) => {
     const { room } = useContext(AppContext)
@@ -19,11 +18,13 @@ const Chat = ({ messages, currUser, users }) => {
     }
 
     return (
-        <Box height="100%" style={{ maxHeight: "100%", overflowY: 'scroll' }} display="flex" flexDirection="column">
-            <Messages messages={messages} currUser={currUser} users={users} />
-            <Divider />
+        <div style={{ height: "100%", maxHeight: "100%" }} display="flex">
+            <div style={{ height: "95%", maxHeight: "95%", overflowY: 'scroll' }} display="flex" flexDirection="column" id="chat">
+                <Messages messages={messages} currUser={currUser} users={users} />
+                <Divider />
+            </div>
             <ChatInput message={message} setMessage={setMessage} sendMessage={sendMessage} />
-        </Box>
+        </div>
     );
 }
 
