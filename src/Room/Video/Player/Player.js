@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactPlayer from "react-player";
 import screenful from "screenfull";
 import Controls from "./Controls";
@@ -96,7 +96,7 @@ function Player({ videoProps, sendVideoState, updateVideoProps, loadVideo, loadF
         }
     };
 
-    const handleRewind = () => {
+    const handleRewind = useCallback(() => {
         let newTime = playerRef.current.getCurrentTime() - 10;
         if (newTime < 0) newTime = 0;
         playerRef.current.seekTo(newTime);
@@ -105,9 +105,9 @@ function Player({ videoProps, sendVideoState, updateVideoProps, loadVideo, loadF
             eventName: 'syncPlay',
             eventParams: { seekTime: newTime }
         });
-    };
+    }, [playerRef, sendVideoState, state]);
 
-    const handleFastForward = () => {
+    const handleFastForward = useCallback(() => {
         let newTime = playerRef.current.getCurrentTime() + 10;
         if (duration && newTime > duration) newTime = duration;
         playerRef.current.seekTo(newTime);
@@ -116,7 +116,7 @@ function Player({ videoProps, sendVideoState, updateVideoProps, loadVideo, loadF
             eventName: 'syncPlay',
             eventParams: { seekTime: newTime }
         });
-    };
+    }, [duration, playerRef, sendVideoState, state]);
 
     const handleProgress = (changeState) => {
         if (count > 1) {
@@ -196,7 +196,7 @@ function Player({ videoProps, sendVideoState, updateVideoProps, loadVideo, loadF
     useEffect(() => {
         if (!iOS())
             screenful.on('change', () => setState({ ...state, isFullscreen: screenful.isFullscreen }));
-    }, [])
+    }, [state])
 
     const showControls = () => {
         if (isVideoStarted || iOS()) {
@@ -257,7 +257,7 @@ function Player({ videoProps, sendVideoState, updateVideoProps, loadVideo, loadF
         e = e || window.event;
         return (e.key || e.keyCode || e.which);
     }
-    const setKeyboardShortcuts = (e) => {
+    const setKeyboardShortcuts = useCallback((e) => {
         e.preventDefault();
         let key = code(e);
         // console.log(key);
@@ -298,7 +298,7 @@ function Player({ videoProps, sendVideoState, updateVideoProps, loadVideo, loadF
             // if (isFinite(key)) {
             // }
         }
-    }
+    }, [handleFastForward, handleRewind]);
     useEffect(() => {
         // let clickCount = 0;
         // let singleClickTimer;
@@ -326,7 +326,7 @@ function Player({ videoProps, sendVideoState, updateVideoProps, loadVideo, loadF
         return () => {
             document.removeEventListener('click', handleClickFocus);
         }
-    }, []);
+    }, [setKeyboardShortcuts]);
 
     return (
         <>

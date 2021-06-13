@@ -22,7 +22,7 @@ const Participant = ({ participant }) => {
       }
     }
     setName()
-  }, [])
+  }, [participant.identity])
 
   // creates ref to html element
   const videoRef = useRef();
