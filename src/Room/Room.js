@@ -12,12 +12,12 @@ import { Redirect } from "react-router-dom";
 // using roomName and token, we will create a room
 const Room = (props) => {
   const [participants, setParticipants] = useState([]);
-  const [nameArr, setNameArray] = useState([{}]);
   const [particiapntsComponent, setParticipantsComponent] = useState(<Typography color="secondary">Loading</Typography>);
   const [participantPage, setParticipantPage] = useState(0);
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
   const ppp = 4; // participants per page
   const { username, room, handleLeaveRoom, userId, openSideBar, roomProps, updateRoomProps, workoutType, videoProps, updateVideoProps } = useContext(AppContext);
+  const [nameArr, setNameArray] = useState([room ? { name: username, sid: room.localParticipant.sid } : {}]);
 
   // Initializing Room Stuff
   useEffect(() => {
@@ -84,23 +84,6 @@ const Room = (props) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (!room) return;
-    const gettingNames = async () => {
-      const res = await fetch("/api/displayNameInRoom?rid=" + room.sid, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (res.ok) {
-        const names = await res.json();
-        names.push({ name: username, sid: room.localParticipant.sid })
-        setNameArray(names);
-      }
-    }
-    gettingNames();
-  }, [room]);
 
   useEffect(() => {
     const handler = ({ name, sid }) => {
@@ -143,6 +126,8 @@ const Room = (props) => {
       setParticipants((prevParticipants) =>
         prevParticipants.filter((p) => p !== participant)
       );
+      setNameArray((prevParticipants) =>
+        prevParticipants.filter((p) => p.sid !== participant.sid));
     };
 
     room.on("participantConnected", participantConnected);
@@ -153,6 +138,23 @@ const Room = (props) => {
       room.off("participantConnected", participantConnected);
       room.off("participantDisconnected", participantDisconnected);
     };
+  }, [room]);
+
+  useEffect(() => {
+    if (!room) return;
+    const gettingNames = async () => {
+      const res = await fetch("/api/displayNameInRoom?rid=" + room.sid, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const names = await res.json();
+        setNameArray((oldArray) => oldArray.concat(names));
+      }
+    }
+    gettingNames();
   }, [room]);
 
   // joins the room through sockets
@@ -203,7 +205,10 @@ const Room = (props) => {
   useEffect(() => {
     if (!room) return;
     let all_participants = [...participants, room.localParticipant];
-    //all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
+    all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
+    console.log("participants")
+    all_participants.map((p) => console.log(p.sid))
+    console.log(nameArr)
     setParticipantsComponent(all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
@@ -212,7 +217,7 @@ const Room = (props) => {
         </Grid>
       )));
 
-  }, [nameArr, participants])
+  }, [nameArr]);
 
   const leaderParticipant = () => {
     if (!room) return;
