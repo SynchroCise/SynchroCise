@@ -64,7 +64,9 @@ const SideBar = ({
         const handler = (message) => {
             setMessages(messages => [...messages, message]);
             let cht = document.getElementById("chat");
-            if (cht) cht.scrollTop = cht.scrollHeight;
+            if (cht) {
+                cht.scrollTop = cht.scrollHeight;
+            }
         }
         sckt.socket.on('message', handler);
         return () => sckt.socket.off('message', handler);
@@ -74,7 +76,7 @@ const SideBar = ({
         setWorkoutTime(workout.exercises[workoutNumber].time);
         if (workoutCounter === -1) setWorkoutCounter(workout.exercises[0].time);
         setNextUpExercise(workout.exercises.map((workout, index) => { return workout.exercise }));
-    }, [workout, workoutCounter, setWorkoutCounter, workoutNumber]);
+    }, [workout]);
 
     useEffect(() => {
         if (!playWorkoutState) return;
@@ -84,7 +86,7 @@ const SideBar = ({
         setWorkoutTime(workout.exercises[workoutNumber].time);
         setWorkoutCounter(workout.exercises[workoutNumber].time);
         return () => clearTimeout(timer)
-    }, [workoutCounter, playWorkoutState, workoutNumber, workoutTime, setWorkoutCounter, setWorkoutNumber, workout.exercises]);
+    }, [workoutCounter, playWorkoutState, workoutNumber, workoutTime]);
 
     const handleChange = (value) => {
         setSideBarType(value);

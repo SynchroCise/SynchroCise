@@ -86,7 +86,7 @@ const VideoSearch = ({ addVideoToQueue, playVideoFromSearch, updateVideoProps })
                 },
                 "video" : {
                     "id": response.data.items[0].id,
-                    "thumbnails": response.data.items[0].snippet.thumbnails.default.url,
+                    "thumbnails": response.data.items[0].snippet.thumbnails.standard.url,
                     "title": response.data.items[0].snippet.title,
                     "url": `https://www.youtube.com/watch?v=${response.data.items[0].id}`,
                     "upload_date": moment(response.data.items[0].snippet.publishedAt).fromNow(),

@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from "react";
+import React, {useContext, useCallback, useState, useEffect} from "react";
 import {useHistory} from 'react-router-dom'
 import {AppContext} from "../../AppContext"
 import { RoutesEnum } from '../../App'
@@ -19,7 +19,7 @@ const CreateRoom = () => {
   // intialize custom room code
   useEffect(() => {
     makeCustomRoom();
-  }, [makeCustomRoom]);
+  }, []);
   // initialize workouts and userId
   useEffect(() => {
     if (isLoggedIn) {
@@ -35,58 +35,60 @@ const CreateRoom = () => {
     } else {
       setWorkoutList([])
     }
-  }, [isLoggedIn, selectedWorkout, handleSetWorkout]);
+  }, [isLoggedIn]);
    
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    handleSetConnecting(true);
-    const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
-    const tok_res = await fetch("/video/token", {
-      method: "POST",
-      body: JSON.stringify({
-        identity: tempUserId,
-        room: roomName,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    if (!tok_res.ok) { handleSetConnecting(false); return; }
-    const data = await tok_res.json();
-    const room = await Video.connect(data.token, {
-      name: roomName,
-      bandwidthProfile: {
-        mode: 'collaboration',
-        maxSubscriptionBitrate: 2400000,
-        renderDimensions: {
-          high: {width: 1080, height: 720},
-          standard: {width: 640, height: 480},
-          low: {width: 320, height: 240}
+  const handleSubmit = useCallback(
+    async (event) => {
+      event.preventDefault();
+      handleSetConnecting(true);
+      const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
+      const tok_res = await fetch("/video/token", {
+        method: "POST",
+        body: JSON.stringify({
+          identity: tempUserId,
+          room: roomName,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      if (!tok_res.ok) { handleSetConnecting(false); return; }
+      const data = await tok_res.json();
+      const room = await Video.connect(data.token, {
+        name: roomName,
+        bandwidthProfile: {
+          mode: 'collaboration',
+          maxSubscriptionBitrate: 2400000,
+          renderDimensions: {
+            high: {width: 1080, height: 720},
+            standard: {width: 640, height: 480},
+            low: {width: 320, height: 240}
+          }
         }
-      }
-    });
-    if (!room) { handleSetConnecting(false); return; }
-    room.localParticipant.tracks.forEach(localTracks => {
-      localTracks.setPriority('high')
-    });
-    // Creates a room in the server
-    const room_res = await fetch("/api/rooms", {
-      method: "POST",
-      body: JSON.stringify({
-        name: room.name,
-        sid: room.sid,
-        workoutID: workout.id,
-        workoutType: 'vid',
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!room_res.ok) { handleSetConnecting(false); return; }
-    handleSetRoom(room);
-    handleSetConnecting(false);
-    history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`)
-  }
+      });
+      if (!room) { handleSetConnecting(false); return; }
+      room.localParticipant.tracks.forEach(localTracks => {
+        localTracks.setPriority('high')
+      });
+      // Creates a room in the server
+      const room_res = await fetch("/api/rooms", {
+        method: "POST",
+        body: JSON.stringify({
+          name: room.name,
+          sid: room.sid,
+          workoutID: workout.id,
+          workoutType: 'vid',
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!room_res.ok) { handleSetConnecting(false); return; }
+      handleSetRoom(room);
+      handleSetConnecting(false);
+      history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`)
+    }, [isLoggedIn, roomName, username, workout]
+  );
 
   const useStyles = makeStyles(theme => ({
     containedButton: {
