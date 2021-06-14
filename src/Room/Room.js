@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState, useRef } from "react";
+import React, { useEffect, useContext, useState, useRef, useCallback } from "react";
 import Participant from "./Participant/Participant";
 import SideBar from "./SideBar/SideBar";
 import BottomControl from "./BottomControl/BottomControl"
@@ -20,6 +20,19 @@ const Room = (props) => {
   const [nameArr, setNameArray] = useState([room ? { name: username, sid: room.localParticipant.sid } : {}]);
 
   // Initializing Room Stuff
+  const modifyVideoState = useCallback((paramsToChange) => {
+    if (playerRef.current !== null) return;
+    const { playing, seekTime } = paramsToChange;
+    if (playing !== undefined) {
+      updateVideoProps({ playing });
+      // } else if (playbackRate !== undefined) {
+      //     player.setPlaybackRate(playbackRate);
+    }
+    if (seekTime !== undefined) {
+      playerRef.current.seekTo(seekTime);
+    }
+  }, [updateVideoProps]);
+
   useEffect(() => {
     const getRoomSyncHandler = ({ id }) => {
       let params = {
@@ -82,7 +95,7 @@ const Room = (props) => {
       sckt.socket.off("startRoomSync", startRoomSyncHandler);
       sckt.socket.off("startVideoSync", startVideoSyncHandler);
     }
-  }, []);
+  }, [modifyVideoState, updateVideoProps, updateRoomProps]);
 
 
   useEffect(() => {
@@ -97,19 +110,6 @@ const Room = (props) => {
   // sending sync video
   const playerRef = useRef(null);
   const drawerWidth = 300;
-
-  const modifyVideoState = (paramsToChange) => {
-    if (playerRef.current !== null) return;
-    const { playing, seekTime } = paramsToChange;
-    if (playing !== undefined) {
-      updateVideoProps({ playing });
-      // } else if (playbackRate !== undefined) {
-      //     player.setPlaybackRate(playbackRate);
-    }
-    if (seekTime !== undefined) {
-      playerRef.current.seekTo(seekTime);
-    }
-  }
 
   // once room is rendered do below
   useEffect(() => {
@@ -169,7 +169,7 @@ const Room = (props) => {
       //   setIsJoined(true);
       // }, 750);
     });
-  }, []);
+  }, [room, userId, username]);
 
   // handles leader changes from server
   useEffect(() => {
@@ -199,7 +199,7 @@ const Room = (props) => {
     if (viewer_len === 0 && participantPage !== 0) {
       setParticipantPage(0)
     }
-  }, [participants]);
+  }, [participants, leaderParticipantIDs, participantPage, room, workoutType]);
 
   // show all the particpants in the room
   useEffect(() => {

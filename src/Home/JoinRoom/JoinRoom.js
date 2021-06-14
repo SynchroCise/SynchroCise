@@ -1,4 +1,4 @@
-import React, {useContext, useCallback, useEffect, useState, useRef} from "react";
+import React, {useContext, useEffect, useState, useRef} from "react";
 import {useHistory} from 'react-router-dom'
 import {AppContext} from "../../AppContext"
 import Video from "twilio-video";
@@ -25,11 +25,11 @@ const JoinRoom = (props) => {
     let isMounted = true;
     async function getLocalVideoTrack() {
       const videoTrack = await Video.createLocalVideoTrack();
-      if(isMounted) { setVideoTracks(() => [...videoTracks, videoTrack]); }
+      if(isMounted) { setVideoTracks((prevVideoTrack) => [...prevVideoTrack, ...videoTrack]); }
     }
     async function getLocalAudioTrack() {
       const audioTrack = await Video.createLocalAudioTrack();
-      if(isMounted) { setAudioTracks(() => [...audioTracks, audioTrack]); }
+      if(isMounted) { setAudioTracks((prevAudioTrack) => [...prevAudioTrack, ...audioTrack]); }
     }
     getLocalVideoTrack()
     getLocalAudioTrack()
@@ -58,7 +58,7 @@ const JoinRoom = (props) => {
       }
     };
     checkRoom();
-  }, []);
+  }, [history, handleSetRoomName, props.match.params.roomCode]);
 
   const checkRoomExists = async (roomCode) => {
     if (!roomCode) return null
@@ -86,42 +86,39 @@ const JoinRoom = (props) => {
     setVid(!vid);
   };
 
-  const handleSubmit = useCallback(
-    async (event) => {
-      event.preventDefault();
-      handleSetConnecting(true);
-      if (!roomName) {
-        handleSetConnecting(false);
-        history.push(RoutesEnum.Home)
-        return;
-      }
-      const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
-      const tok_res = await fetch("/video/token", {
-        method: "POST",
-        body: JSON.stringify({
-          identity: tempUserId,
-          room: roomName,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!tok_res.ok) { handleSetConnecting(false); return; }
-      const data = await tok_res.json();
-      const room = await Video.connect(data.token, {
-        name: roomName,
-        tracks: videoTracks.concat(audioTracks)
-      })
-      if (!room) { handleSetConnecting(false); return; }
-      room.localParticipant.tracks.forEach(localTracks => {
-        localTracks.setPriority('low')
-      });
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    handleSetConnecting(true);
+    if (!roomName) {
       handleSetConnecting(false);
-      await handleSetRoom(room);
-      history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`);
-    },
-    [isLoggedIn, roomName, username, videoTracks, audioTracks]
-  );
+      history.push(RoutesEnum.Home)
+      return;
+    }
+    const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
+    const tok_res = await fetch("/video/token", {
+      method: "POST",
+      body: JSON.stringify({
+        identity: tempUserId,
+        room: roomName,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!tok_res.ok) { handleSetConnecting(false); return; }
+    const data = await tok_res.json();
+    const room = await Video.connect(data.token, {
+      name: roomName,
+      tracks: videoTracks.concat(audioTracks)
+    })
+    if (!room) { handleSetConnecting(false); return; }
+    room.localParticipant.tracks.forEach(localTracks => {
+      localTracks.setPriority('low')
+    });
+    handleSetConnecting(false);
+    await handleSetRoom(room);
+    history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`);
+  }
   const useStyles = makeStyles(theme => ({
     containedButton: {
       backgroundColor: theme.palette.primary.main,

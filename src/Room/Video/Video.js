@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useCallback } from "react";
 import { sckt } from '../../Socket';
 import { insert } from '../../utils/video';
 import { AppContext } from "../../AppContext";
@@ -11,7 +11,7 @@ import VideoPlayer from "./Player/Player";
 const Video = ({ playerRef }) => {
     const { username, room, videoProps, updateVideoProps } = useContext(AppContext);
 
-    const sendVideoState = ({ eventName, eventParams }) => {
+    const sendVideoState = useCallback(({ eventName, eventParams }) => {
         if (!room) return;
         let params = {
           name: username,
@@ -20,24 +20,9 @@ const Video = ({ playerRef }) => {
           eventParams: eventParams
         };
         sckt.socket.emit('sendVideoState', params, (error) => { });
-    };
-    
-    const playVideoFromSearch = (searchItem) => {
-        const url = searchItem.video.url;
-        const videoType = getVideoType(url);
-        if (videoType !== null) {
-            updateVideoProps({ videoType });
-        }
-        // Handle playing video immediately
-        const { history } = videoProps;
-        loadVideo(searchItem, false);
-        sendVideoState({
-            eventName: "syncLoad",
-            eventParams: { searchItem, history: [searchItem, ...history] }
-        });
-        updateVideoProps({ history: [searchItem, ...history] });
-    }
-    const loadVideo = (searchItem, sync) => {
+    }, [room, username]);
+
+    const loadVideo = useCallback((searchItem, sync) => {
         const { playing, seekTime, initVideo } = videoProps;
         if ((playerRef.current !== null || !initVideo) && searchItem) {
             if (!initVideo) updateVideoProps({ initVideo: true });
@@ -54,16 +39,33 @@ const Video = ({ playerRef }) => {
             }
             // sckt.socket.emit('updateRoomData', { video: searchItem }, (error) => { });
         }
-    }
-    const loadFromQueue = (queue, sync = false) => {
+    }, [playerRef, updateVideoProps, videoProps]);
+    
+    const playVideoFromSearch = useCallback((searchItem) => {
+        const url = searchItem.video.url;
+        const videoType = getVideoType(url);
+        if (videoType !== null) {
+            updateVideoProps({ videoType });
+        }
+        // Handle playing video immediately
+        const { history } = videoProps;
+        loadVideo(searchItem, false);
+        sendVideoState({
+            eventName: "syncLoad",
+            eventParams: { searchItem, history: [searchItem, ...history] }
+        });
+        updateVideoProps({ history: [searchItem, ...history] });
+    }, [loadVideo, sendVideoState, videoProps, updateVideoProps]);
+
+    const loadFromQueue = useCallback((queue, sync = false) => {
         let nextVideo = queue.shift(); // Remove from beginning of queue
         if (nextVideo !== undefined) {
             loadVideo(nextVideo, sync);
             updateVideoProps({ queue });
             updateVideoProps({ history: [nextVideo, ...videoProps.history] });
         }
-    }
-    const modifyVideoState = (paramsToChange) => {
+    }, [loadVideo, updateVideoProps, videoProps.history]);
+    const modifyVideoState = useCallback((paramsToChange) => {
         if (playerRef.current !== null) {
             const { playing, seekTime } = paramsToChange;
             if (playing !== undefined) {
@@ -75,8 +77,8 @@ const Video = ({ playerRef }) => {
                 playerRef.current.seekTo(seekTime);
             }
         }
-    }
-    const addVideoToQueue = (searchItem) => {
+    }, [playerRef, updateVideoProps]);
+    const addVideoToQueue = useCallback((searchItem) => {
         let { queue } = videoProps;
         let updatedQueue = insert(queue, queue.length, searchItem)
         sendVideoState({
@@ -87,7 +89,7 @@ const Video = ({ playerRef }) => {
             }
         });
         updateVideoProps({ queue: updatedQueue });
-    }
+    }, [sendVideoState, updateVideoProps, videoProps]);
 
     useEffect(() => {
         // Update single value in videoProps from other user
@@ -130,7 +132,7 @@ const Video = ({ playerRef }) => {
         return () => {
             sckt.socket.off('receiveVideoState', receiveVideoStateHandler);
         };
-    }, []);
+    }, [loadFromQueue, loadVideo, modifyVideoState, updateVideoProps]);
 
     // useEffect(() => {
     //     console.log(videoProps.playing);
