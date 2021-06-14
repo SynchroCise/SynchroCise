@@ -115,10 +115,7 @@ router.get('/api/displayNameInRoom', async (req, res) => {
   let userArr = []
   if (!id) return res.status(400).send('Invalid id')
   const users = await getUsersInRoom(id);
-
   users.map((user) => userArr.push({ name: user.name, sid: user.sid }))
-  console.log(userArr);
-
   if (users) {
     res.send(JSON.stringify(userArr));
   } else {

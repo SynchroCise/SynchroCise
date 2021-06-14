@@ -12,7 +12,6 @@ import { Redirect } from "react-router-dom";
 // using roomName and token, we will create a room
 const Room = (props) => {
   const [participants, setParticipants] = useState([]);
-  const [nameArr, setNameArr] = useState([])
   const [particiapntsComponent, setParticipantsComponent] = useState(<Typography color="secondary">Loading</Typography>);
   const [participantPage, setParticipantPage] = useState(0);
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
@@ -107,11 +106,7 @@ const Room = (props) => {
     if (!room) return;
     // if participant connects or disconnects update room properties
     const participantConnected = (participant) => {
-      setParticipants((prevParticipants) =>
-        [...prevParticipants, participant].filter(
-          (v, i, a) => a.indexOf(v) === i
-        )
-      );
+      setParticipants((prevParticipants) => [...prevParticipants, participant]);
     };
 
     const participantDisconnected = (participant) => {
@@ -179,8 +174,6 @@ const Room = (props) => {
     if (!room) return;
     let all_participants = [...participants, room.localParticipant];
     all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
-    console.log("PARTICIPANTS")
-    console.log(all_participants)
     const participantsComponent = async () => {
       const res = await fetch("/api/displayNameInRoom?rid=" + room.sid, {
         method: "GET",
@@ -190,7 +183,6 @@ const Room = (props) => {
       });
       if (res.ok) {
         const names = await res.json();
-        setNameArr(names)
         setParticipantsComponent(all_participants
           .slice(participantPage * ppp, participantPage * ppp + ppp)
           .map((participant, index) => (
@@ -201,7 +193,7 @@ const Room = (props) => {
       }
     }
     participantsComponent();
-  }, [room])
+  }, [participants])
 
   const leaderParticipant = () => {
     if (!room) return;

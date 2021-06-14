@@ -10,6 +10,7 @@ const Participant = ({ participant, names }) => {
 
   useEffect(() => {
     if (!names) return;
+    if (!names.find(x => x.sid === participant.sid)) return;
     setDisplayName(names.find(x => x.sid === participant.sid).name)
   }, [names]);
 
