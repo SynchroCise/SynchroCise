@@ -12,6 +12,7 @@ import { Redirect } from "react-router-dom";
 // using roomName and token, we will create a room
 const Room = (props) => {
   const [participants, setParticipants] = useState([]);
+  const [nameArr, setNameArray] = useState([{}]);
   const [particiapntsComponent, setParticipantsComponent] = useState(<Typography color="secondary">Loading</Typography>);
   const [participantPage, setParticipantPage] = useState(0);
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
@@ -83,6 +84,33 @@ const Room = (props) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (!room) return;
+    const gettingNames = async () => {
+      const res = await fetch("/api/displayNameInRoom?rid=" + room.sid, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const names = await res.json();
+        names.push({ name: username, sid: room.localParticipant.sid })
+        setNameArray(names);
+      }
+    }
+    gettingNames();
+  }, [room]);
+
+  useEffect(() => {
+    const handler = ({ name, sid }) => {
+      setNameArray((oldArray) => [...oldArray, { name, sid }]);
+    }
+    sckt.socket.on("newUser", handler);
+    return () => sckt.socket.off('newUser', handler);
+  }, []);
+
+
   // sending sync video
   const playerRef = useRef(null);
   const drawerWidth = 300;
@@ -98,7 +126,6 @@ const Room = (props) => {
     if (seekTime !== undefined) {
       playerRef.current.seekTo(seekTime);
     }
-
   }
 
   // once room is rendered do below
@@ -106,7 +133,10 @@ const Room = (props) => {
     if (!room) return;
     // if participant connects or disconnects update room properties
     const participantConnected = (participant) => {
-      setParticipants((prevParticipants) => [...prevParticipants, participant]);
+      setParticipants((prevParticipants) =>
+        [...prevParticipants, participant].filter(
+          (v, i, a) => a.indexOf(v) === i
+        ))
     };
 
     const participantDisconnected = (participant) => {
@@ -123,7 +153,6 @@ const Room = (props) => {
       room.off("participantConnected", participantConnected);
       room.off("participantDisconnected", participantDisconnected);
     };
-
   }, [room]);
 
   // joins the room through sockets
@@ -139,6 +168,7 @@ const Room = (props) => {
       // }, 750);
     });
   }, []);
+
   // handles leader changes from server
   useEffect(() => {
     const handler = (leaderList) => {
@@ -173,27 +203,16 @@ const Room = (props) => {
   useEffect(() => {
     if (!room) return;
     let all_participants = [...participants, room.localParticipant];
-    all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
-    const participantsComponent = async () => {
-      const res = await fetch("/api/displayNameInRoom?rid=" + room.sid, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (res.ok) {
-        const names = await res.json();
-        setParticipantsComponent(all_participants
-          .slice(participantPage * ppp, participantPage * ppp + ppp)
-          .map((participant, index) => (
-            <Grid item xs={3} key={index} style={{ height: "100%" }}>
-              <Participant participant={participant} names={names} />
-            </Grid>
-          )));
-      }
-    }
-    participantsComponent();
-  }, [participants])
+    //all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
+    setParticipantsComponent(all_participants
+      .slice(participantPage * ppp, participantPage * ppp + ppp)
+      .map((participant, index) => (
+        <Grid item xs={3} key={index} style={{ height: "100%" }}>
+          <Participant participant={participant} names={nameArr} />
+        </Grid>
+      )));
+
+  }, [nameArr, participants])
 
   const leaderParticipant = () => {
     if (!room) return;

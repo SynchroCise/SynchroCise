@@ -62,6 +62,7 @@ io.on('connection', (socket) => {
             if (otherUser) {
                 io.to(otherUser.socketId).emit('getRoomSync', { id: user.socketId });
                 io.to(otherUser.socketId).emit('getVideoSync', { id: user.socketId });
+                io.to(otherUser.socketId).emit('newUser', { name: name, sid: sid });
             }
         }
 
