@@ -2,27 +2,16 @@ import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography } from '@material-ui/core';
 import './Participant.scss';
 
-const Participant = ({ participant }) => {
+const Participant = ({ participant, names }) => {
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [displayName, setDisplayName] = useState('');
-  
-  // pulls displayName from server
+
+
   useEffect(() => {
-    const setName = async () => {
-      const res = await fetch(`/api/displayName?id=${participant.identity}`, { 
-        method: "GET", 
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (res.ok) {
-        const { name } = await res.json();
-        setDisplayName(name);
-      }
-    }
-    setName()
-  }, [])
+    if (!names) return;
+    setDisplayName(names.find(x => x.sid === participant.sid).name)
+  }, [names]);
 
   // creates ref to html element
   const videoRef = useRef();
@@ -93,7 +82,7 @@ const Participant = ({ participant }) => {
   return (
     <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%">
       {/* <div className='name'>{participant.identity}</div> */}
-      <video ref={videoRef} autoPlay={true}  style={{position: "relative", flexGrow: 1, maxWidth:"100%", minHeight: 0}}/>
+      <video ref={videoRef} autoPlay={true} style={{ position: "relative", flexGrow: 1, maxWidth: "100%", minHeight: 0 }} />
       <div className="name">
         <Typography color="secondary">{displayName}</Typography>
       </div>

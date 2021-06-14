@@ -12,6 +12,8 @@ import { Redirect } from "react-router-dom";
 // using roomName and token, we will create a room
 const Room = (props) => {
   const [participants, setParticipants] = useState([]);
+  const [nameArr, setNameArr] = useState([])
+  const [particiapntsComponent, setParticipantsComponent] = useState(<Typography color="secondary">Loading</Typography>);
   const [participantPage, setParticipantPage] = useState(0);
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
   const ppp = 4; // participants per page
@@ -97,8 +99,8 @@ const Room = (props) => {
     if (seekTime !== undefined) {
       playerRef.current.seekTo(seekTime);
     }
-    
-  } 
+
+  }
 
   // once room is rendered do below
   useEffect(() => {
@@ -173,22 +175,33 @@ const Room = (props) => {
   }, [participants]);
 
   // show all the particpants in the room
-  const remoteParticipants = () => {
+  useEffect(() => {
     if (!room) return;
-    if (participants.length < 1) {
-      return <Typography color="secondary">No Other Participants</Typography>;
-    }
     let all_participants = [...participants, room.localParticipant];
     all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
+    console.log("PARTICIPANTS")
     console.log(all_participants)
-    return all_participants
-      .slice(participantPage * ppp, participantPage * ppp + ppp)
-      .map((participant, index) => (
-        <Grid item xs={3} key={index} style={{ height: "100%" }}>
-          <Participant participant={participant} key={participant.sid} />
-        </Grid>
-      ));
-  };
+    const participantsComponent = async () => {
+      const res = await fetch("/api/displayNameInRoom?rid=" + room.sid, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const names = await res.json();
+        setNameArr(names)
+        setParticipantsComponent(all_participants
+          .slice(participantPage * ppp, participantPage * ppp + ppp)
+          .map((participant, index) => (
+            <Grid item xs={3} key={index} style={{ height: "100%" }}>
+              <Participant participant={participant} names={names} />
+            </Grid>
+          )));
+      }
+    }
+    participantsComponent();
+  }, [room])
 
   const leaderParticipant = () => {
     if (!room) return;
@@ -244,16 +257,16 @@ const Room = (props) => {
 
   return (
     <React.Fragment>
-      <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '': (classes.contentShift)}`} height="100%" bgcolor="text.primary">
-        <Grid container style={{height:"100vh"}}>
-          <Grid item xs={12} style={{height: "70%", width:"100%"}}>
-            {room && (workoutType === 'vid') ? leaderParticipant() : 
-            <Video playerRef={playerRef}/>}
+      <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`} height="100%" bgcolor="text.primary">
+        <Grid container style={{ height: "100vh" }}>
+          <Grid item xs={12} style={{ height: "70%", width: "100%" }}>
+            {room && (workoutType === 'vid') ? leaderParticipant() :
+              <Video playerRef={playerRef} />}
           </Grid>
           <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
-            {remoteParticipants()}
+            {particiapntsComponent}
           </Grid>
-          <Grid item container xs={12} style={{height: "10%", width:"100%"}} alignItems="center">
+          <Grid item container xs={12} style={{ height: "10%", width: "100%" }} alignItems="center">
             <BottomControl
               participants={participants}
               participantPage={participantPage}
