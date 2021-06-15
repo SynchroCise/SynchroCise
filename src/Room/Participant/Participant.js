@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography } from '@material-ui/core';
 import './Participant.scss';
 
-const Participant = ({ participant, names }) => {
+const Participant = ({ participant, names, participantPage }) => {
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [displayName, setDisplayName] = useState('');
@@ -11,8 +11,9 @@ const Participant = ({ participant, names }) => {
   useEffect(() => {
     if (!names) return;
     if (!names.find(x => x.sid === participant.sid)) return;
+    console.log("Name" + names.find(x => x.sid === participant.sid).name)
     setDisplayName(names.find(x => x.sid === participant.sid).name)
-  }, [names]);
+  });
 
   // creates ref to html element
   const videoRef = useRef();

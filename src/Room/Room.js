@@ -206,18 +206,21 @@ const Room = (props) => {
     if (!room) return;
     let all_participants = [...participants, room.localParticipant];
     all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
-    console.log("participants")
-    all_participants.map((p) => console.log(p.sid))
-    console.log(nameArr)
+    all_participants
+      .slice(participantPage * ppp, participantPage * ppp + ppp)
+      .map((participant, index) => (
+        console.log(participant.sid)
+      ));
+    console.log(nameArr);
     setParticipantsComponent(all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
         <Grid item xs={3} key={index} style={{ height: "100%" }}>
-          <Participant participant={participant} names={nameArr} />
+          <Participant participant={participant} names={nameArr} participantPage={participantPage} />
         </Grid>
       )));
 
-  }, [nameArr]);
+  }, [nameArr, participantPage]);
 
   const leaderParticipant = () => {
     if (!room) return;
