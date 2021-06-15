@@ -61,17 +61,14 @@ io.on('connection', (socket) => {
             if (otherUser) {
                 io.to(otherUser.socketId).emit('getRoomSync', { id: user.socketId });
                 io.to(otherUser.socketId).emit('getVideoSync', { id: user.socketId });
-                io.to(otherUser.socketId).emit('newUser', { name: name, sid: sid });
             }
         }
 
-
         io.to(user.room).emit('newUser', { name: name, sid: sid });
-
         socket.join(user.room);
         // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
 
-        callback({ id: user.id });
+        callback({ id: user.id, leaderList: leaderList });
     });
     socket.on('disconnect', async () => {
         const user = await removeUser(socket.id);

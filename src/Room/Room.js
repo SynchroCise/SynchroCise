@@ -12,7 +12,6 @@ import { Redirect } from "react-router-dom";
 // using roomName and token, we will create a room
 const Room = (props) => {
   const [participants, setParticipants] = useState([]);
-  const [particiapntsComponent, setParticipantsComponent] = useState(<Typography color="secondary">Loading</Typography>);
   const [participantPage, setParticipantPage] = useState(0);
   const [leaderParticipantIDs, setLeaderParticipantIDs] = useState([]);
   const ppp = 4; // participants per page
@@ -163,7 +162,8 @@ const Room = (props) => {
     const sid = room.localParticipant.sid;
     const name = username;
 
-    sckt.socket.emit('join', { name, room: room.sid, sid, userId }, ({ id }) => {
+    sckt.socket.emit('join', { name, room: room.sid, sid, userId }, ({ id, leaderList }) => {
+      setLeaderParticipantIDs([...leaderList]);
       // updateCurrUser({ id });
       // setTimeout(() => {
       //   setIsJoined(true);
@@ -202,25 +202,21 @@ const Room = (props) => {
   }, [participants]);
 
   // show all the particpants in the room
-  useEffect(() => {
+  const remoteParticipants = () => {
     if (!room) return;
+    if (participants.length < 1) {
+      return <Typography color="secondary">No Other Participants</Typography>;
+    }
     let all_participants = [...participants, room.localParticipant];
     all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
-    all_participants
-      .slice(participantPage * ppp, participantPage * ppp + ppp)
-      .map((participant, index) => (
-        console.log(participant.sid)
-      ));
-    console.log(nameArr);
-    setParticipantsComponent(all_participants
+    return (all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
         <Grid item xs={3} key={index} style={{ height: "100%" }}>
           <Participant participant={participant} names={nameArr} participantPage={participantPage} />
         </Grid>
       )));
-
-  }, [nameArr, participantPage]);
+  };
 
   const leaderParticipant = () => {
     if (!room) return;
@@ -232,16 +228,18 @@ const Room = (props) => {
         return (
           <Participant
             key={room.localParticipant.sid}
+            names={nameArr}
             participant={room.localParticipant}
           />
         );
       }
-      return <Participant key={participant.sid} participant={participant} />;
+      return <Participant key={participant.sid} participant={participant} names={nameArr} />;
     } else {
       return (
         <Participant
           key={room.localParticipant.sid}
           participant={room.localParticipant}
+          names={nameArr}
         />
       );
     }
@@ -283,7 +281,7 @@ const Room = (props) => {
               <Video playerRef={playerRef} />}
           </Grid>
           <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
-            {particiapntsComponent}
+            {remoteParticipants()}
           </Grid>
           <Grid item container xs={12} style={{ height: "10%", width: "100%" }} alignItems="center">
             <BottomControl
