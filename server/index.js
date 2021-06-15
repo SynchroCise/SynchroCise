@@ -52,7 +52,6 @@ io.on('connection', (socket) => {
         // socket.emit('roomData', roomData);
         let roomUsers = await getUsersInRoom(user.room)
         let leaderList = roomUsers.filter(user => user.isLeader === true).map((obj) => obj.sid);
-        io.to(user.room).emit('leader', leaderList);
         // socket.emit('message', { user: { name: 'admin' }, text: `${process.env.CLIENT}/room/${user.room}` });
 
         socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has joined` });
@@ -65,10 +64,11 @@ io.on('connection', (socket) => {
             }
         }
 
+        io.to(user.room).emit('newUser', { name: name, sid: sid });
         socket.join(user.room);
         // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
 
-        callback({ id: user.id });
+        callback({ id: user.id, leaderList: leaderList });
     });
     socket.on('disconnect', async () => {
         const user = await removeUser(socket.id);

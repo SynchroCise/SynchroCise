@@ -64,7 +64,9 @@ const SideBar = ({
         const handler = (message) => {
             setMessages(messages => [...messages, message]);
             let cht = document.getElementById("chat");
-            cht.scrollTop = cht.scrollHeight;
+            if (cht) {
+                cht.scrollTop = cht.scrollHeight;
+            }
         }
         sckt.socket.on('message', handler);
         return () => sckt.socket.off('message', handler);

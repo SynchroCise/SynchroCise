@@ -6,9 +6,9 @@ const config = require('./config');
 const router = express.Router();
 require('./auth');
 
-const { getUserById, createTempUser } = require('./users.js');
+const { getUsersInRoom, getUserById, createTempUser } = require('./users.js');
 const { getWorkouts, getWorkoutByName, setDeleteWorkout } = require('./workouts.js');
-const { addRoom, getRoomCode, getRoomsByCode} = require('./rooms.js');
+const { addRoom, getRoomCode, getRoomsByCode } = require('./rooms.js');
 const { reservationsUrl } = require('twilio/lib/jwt/taskrouter/util');
 
 const sendTokenResponse = (token, res) => {
@@ -64,7 +64,7 @@ router.get('/api/rooms', async (req, res) => {
   const roomCode = req.query.sid_or_name;
   if (!roomCode) return res.status(400).send('Invalid sid_or_name')
   room = (await getRoomsByCode(roomCode))[0];
-  if (room != undefined){
+  if (room != undefined) {
     res.send(JSON.stringify(room));
   } else {
     res.status(400).send('Unable to find room')
@@ -95,13 +95,29 @@ router.post('/api/createTempUser', async (req, res) => {
   res.send(userCode);
 });
 
+//OLD V
 router.get('/api/displayName', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   const id = req.query.id;
   if (!id) return res.status(400).send('Invalid id')
   const user = await getUserById(id);
-  if (user){
-    res.send(JSON.stringify({name: user.name}));
+  if (user) {
+    res.send(JSON.stringify({ name: user.name }));
+  } else {
+    res.status(400).send('Unable to obtain display name')
+  }
+});
+
+//GETS ALL DISPLAY NAMES IN ROOM
+router.get('/api/displayNameInRoom', async (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  const id = req.query.rid;
+  let userArr = []
+  if (!id) return res.status(400).send('Invalid id')
+  const users = await getUsersInRoom(id);
+  users.map((user) => userArr.push({ name: user.name, sid: user.sid }))
+  if (users) {
+    res.send(JSON.stringify(userArr));
   } else {
     res.status(400).send('Unable to obtain display name')
   }
@@ -131,7 +147,7 @@ router.post(
           if (info.error) {
             res.status(401).send(info.message)
           }
-           if (err || !user) {
+          if (err || !user) {
             const error = new Error('An error occurred.');
             return next(error);
           }
