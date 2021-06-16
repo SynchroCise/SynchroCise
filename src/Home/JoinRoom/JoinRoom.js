@@ -25,11 +25,11 @@ const JoinRoom = (props) => {
     let isMounted = true;
     async function getLocalVideoTrack() {
       const videoTrack = await Video.createLocalVideoTrack();
-      if(isMounted) { setVideoTracks((prevVideoTrack) => [...prevVideoTrack, ...videoTrack]); }
+      if(isMounted) { setVideoTracks((prevVideoTrack) => [...prevVideoTrack, videoTrack]); }
     }
     async function getLocalAudioTrack() {
       const audioTrack = await Video.createLocalAudioTrack();
-      if(isMounted) { setAudioTracks((prevAudioTrack) => [...prevAudioTrack, ...audioTrack]); }
+      if(isMounted) { setAudioTracks((prevAudioTrack) => [...prevAudioTrack, audioTrack]); }
     }
     getLocalVideoTrack()
     getLocalAudioTrack()
