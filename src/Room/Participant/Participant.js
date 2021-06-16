@@ -11,9 +11,8 @@ const Participant = ({ participant, names, participantPage }) => {
   useEffect(() => {
     if (!names) return;
     if (!names.find(x => x.sid === participant.sid)) return;
-    console.log("Name" + names.find(x => x.sid === participant.sid).name)
     setDisplayName(names.find(x => x.sid === participant.sid).name)
-  });
+  }, [names, participant.sid]);
 
   // creates ref to html element
   const videoRef = useRef();
