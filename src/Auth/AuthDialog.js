@@ -3,6 +3,7 @@ import SignIn from './SignIn'
 import SignUp from './SignUp'
 import { Dialog } from '@material-ui/core';
 import {useAppContext} from "../AppContext"
+import * as requests from '../utils/requests'
 
 
 
@@ -13,34 +14,26 @@ export default function LoginDialog() {
     };
     const signIn = async (formData) => {
         // attempt login
-        const res = await fetch('/login', {
-            method: 'POST',
-            body: formData,
-        });
+        const res = await requests.userLogin(formData);
         // failed login
         if (!res.ok) {
-            const errMessage = await res.text();
+            const errMessage = res.body.message
             return {success: false, errMessage}
         }
-        const resp = await res.json();
-        handleSetUserId(resp.userId); // userId determines whether a person is logged in or not
-        handleSetUsername(resp.displayName)
+        handleSetUserId(res.body.userId); // userId determines whether a person is logged in or not
+        handleSetUsername(res.body.displayName)
         handleSetOpenAuthDialog(false);
         setIsLoggedIn(true)
         return { success: true }
     }
     const signUp = async (formData) => {
         // attempt signup
-        const res = await fetch('/signup', {
-            method: 'POST',
-            body: formData,
-        });
+        const res = await requests.userSignUp(formData);
         // failed signup
         if (!res.ok) {
-            const errMessage = await res.text();
+            const errMessage = res.body.message
             return {success: false, errMessage}
         }
-        console.log(await res.json())
         return { success: true }
     }
     const handleSignIn = async (event) => {

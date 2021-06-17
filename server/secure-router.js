@@ -18,7 +18,7 @@ router.get(
 router.post(
   '/logout',
   async (req, res, next) => {
-    res.status(202).clearCookie('jwt').send('Cookie cleared')
+    res.status(202).clearCookie('jwt').send(JSON.stringify({message: 'Cookie cleared'}))
   }
 )
 
@@ -36,7 +36,7 @@ router.post('/addWorkout', async (req, res, next) => {
   res.setHeader('Content-Type', 'text/plain');
   const workout = req.body;
   const [code, msg] = await addWorkout(workout.workoutName, workout.exercises, req.user.id);
-  res.status(code).send(msg);
+  res.status(code).send(JSON.stringify({message: msg}));
 });
 
 module.exports = router;

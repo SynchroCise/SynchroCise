@@ -2,11 +2,11 @@ import React, {useContext, useState, useEffect} from "react";
 import {useHistory} from 'react-router-dom'
 import {AppContext} from "../../AppContext"
 import { RoutesEnum } from '../../App'
-import Video from "twilio-video";
 import WorkoutTable from "./WorkoutTable"
 import { makeStyles } from "@material-ui/core/styles";
 import { FormControlLabel, Switch, IconButton, Box, Typography, TextField, InputAdornment, Grid} from '@material-ui/core';
 import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward } from '@material-ui/icons';
+import * as requests from "../../utils/requests"
 
 
 // this component renders form to be passed to VideoChat.js
@@ -22,66 +22,30 @@ const CreateRoom = () => {
   }, [makeCustomRoom]);
   // initialize workouts and userId
   useEffect(() => {
-    if (isLoggedIn) {
-      fetch("/user/getWorkouts", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((res) => res.json()).then((res) => {
-        setWorkoutList(res)
-        handleSetWorkout(res[selectedWorkout])
-      });
-    } else {
-      setWorkoutList([])
+    const initWorkouts = async () => {
+      if (!isLoggedIn) return setWorkoutList([]);
+      const res = await requests.getUserWorkouts();
+      if (!res.ok) return setWorkoutList([]);
+      setWorkoutList(res.body)
+      handleSetWorkout(res.body[0])
     }
-  }, [isLoggedIn, selectedWorkout, handleSetWorkout]);
+    initWorkouts();
+  }, [isLoggedIn, handleSetWorkout]);
    
   const handleSubmit = async (event) => {
     event.preventDefault();
     handleSetConnecting(true);
     const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
-    const tok_res = await fetch("/video/token", {
-      method: "POST",
-      body: JSON.stringify({
-        identity: tempUserId,
-        room: roomName,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    const tok_res = await requests.twilioToken(tempUserId, roomName);
     if (!tok_res.ok) { handleSetConnecting(false); return; }
-    const data = await tok_res.json();
-    const room = await Video.connect(data.token, {
-      name: roomName,
-      bandwidthProfile: {
-        mode: 'collaboration',
-        maxSubscriptionBitrate: 2400000,
-        renderDimensions: {
-          high: {width: 1080, height: 720},
-          standard: {width: 640, height: 480},
-          low: {width: 320, height: 240}
-        }
-      }
-    });
+    const token = tok_res.body.token;
+    const room = await requests.createTwilioRoom(token, roomName);
     if (!room) { handleSetConnecting(false); return; }
     room.localParticipant.tracks.forEach(localTracks => {
       localTracks.setPriority('high')
     });
     // Creates a room in the server
-    const room_res = await fetch("/api/rooms", {
-      method: "POST",
-      body: JSON.stringify({
-        name: room.name,
-        sid: room.sid,
-        workoutID: workout.id,
-        workoutType: 'vid',
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const room_res = await requests.createRoom(room, workout.id, 'vid');
     if (!room_res.ok) { handleSetConnecting(false); return; }
     handleSetRoom(room);
     handleSetConnecting(false);

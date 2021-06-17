@@ -1,4 +1,3 @@
-const workouts = require('./defaultWorkouts.json')
 const {db, timestamp} = require('./firebase.js');
 const { getUserById } = require('./users');
 

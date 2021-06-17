@@ -7,6 +7,7 @@ import { ArrowForward, PeopleAltOutlined, AccessTime, Edit } from '@material-ui/
 import mockDesign from "../media/mock_design.png";
 import mockDesignTwo from "../media/mock_design_2.png";
 import AOS from "aos";
+import * as requests from "../utils/requests"
 import "aos/dist/aos.css";
 
 
@@ -26,24 +27,19 @@ const Home = () => {
   }
   const handleJoinRoom = async (event) => {
     event.preventDefault();
-    const res = await fetch(`/api/rooms?sid_or_name=${roomName}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    const res = await requests.getRoomByName(roomName);
     if (!res.ok) {
-      const errText = await res.text()
+      const errText = res.body.message
       setErrMessage(errText)
     }
-    const room = await res.json();
+    const room = res.body;
     joinRoom()
     handleSetRoomName(room.id)
     history.push(`${RoutesEnum.JoinRoom}/${room.id.substring(0, 6).toUpperCase()}`);
   }
 
   return (
-    <div>
+    <div data-test="homeComponent">
       <Box my={15} mx={6}>
         <Grid container spacing={4} alignItems="center">
           <Grid item xs={6} >
@@ -66,7 +62,7 @@ const Home = () => {
               </Grid>
               <Grid item xs={6}>
                 <Box display="flex" alignItems="flex-start" justifyContent="center">
-                  <form onSubmit={handleJoinRoom}>
+                  <form onSubmit={handleJoinRoom} data-test="joinRoomForm">
                     <TextField required variant="outlined" placeholder="Room Code:" size='small' value={roomName} onChange={handleRoomNameChange} helperText={errMessage} error={errMessage !== ''}
                     InputProps={{endAdornment:
                       (<InputAdornment position="end">
@@ -78,7 +74,7 @@ const Home = () => {
             </Grid>
               <Grid item xs={6}>
                 <Box mx={3} display="flex" alignItems="top" justifyContent="center">
-                  <Button color="primary" size="large" fullWidth={true} variant="contained" onClick={handleCreateRoom}>Create Room</Button>
+                  <Button color="primary" size="large" fullWidth={true} variant="contained" onClick={handleCreateRoom} data-test="createRoomButton">Create Room</Button>
                 </Box>
               </Grid>
               <Grid item xs={6}>
