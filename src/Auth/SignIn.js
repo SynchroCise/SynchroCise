@@ -49,15 +49,18 @@ const useStyles = makeStyles((theme) => ({
 export default function SignIn({handleSetIsSignUp, handleSubmit}) {
   const classes = useStyles();
   const [errMessage, setErrMessage] = useState('')
+  const [connecting, setConnecting] = useState(false)
 
   const validateOnSubmit = async (e) => {
+    setConnecting(true)
     e.preventDefault()
     const { success, errMessage } = await handleSubmit(e);
     if (!success) setErrMessage(errMessage)
+    setConnecting(false)
   }
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs" data-test="signInComponent">
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -66,7 +69,7 @@ export default function SignIn({handleSetIsSignUp, handleSubmit}) {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form onSubmit={validateOnSubmit} className={classes.form} noValidate>
+        <form onSubmit={validateOnSubmit} className={classes.form} noValidate data-test="signInForm">
           <TextField
             variant="outlined"
             margin="normal"
@@ -93,13 +96,15 @@ export default function SignIn({handleSetIsSignUp, handleSubmit}) {
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
-          <Typography color='error' variant='body1'>{errMessage}</Typography>
+          <Typography color='error' variant='body1' data-test="errMessage">{errMessage}</Typography>
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
+            data-test="signInSubmitButton"
+            disabled={connecting}
           >
             Sign In
           </Button>
@@ -110,7 +115,7 @@ export default function SignIn({handleSetIsSignUp, handleSubmit}) {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2" onClick={handleSetIsSignUp}>
+              <Link href="#" variant="body2" onClick={handleSetIsSignUp} data-test="signUpLink">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>

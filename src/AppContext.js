@@ -1,6 +1,7 @@
-import React, { useState, createContext, useCallback, useEffect } from 'react';
+import React, { useState, createContext, useCallback, useEffect, useContext } from 'react';
 import { sckt } from './Socket';
 
+export const useAppContext =  () => useContext(AppContext)
 
 const AppContext = createContext([{}, () => { }]);
 

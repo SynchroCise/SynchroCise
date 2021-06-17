@@ -1,13 +1,13 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import SignIn from './SignIn'
 import SignUp from './SignUp'
 import { Dialog } from '@material-ui/core';
-import {AppContext} from "../AppContext"
+import {useAppContext} from "../AppContext"
 
 
 
 export default function LoginDialog() {
-    const {openAuthDialog, handleSetOpenAuthDialog, isSignUp, handleSetIsSignUp, handleSetUserId, handleSetUsername, setIsLoggedIn} = useContext(AppContext)
+    const {openAuthDialog, handleSetOpenAuthDialog, isSignUp, handleSetIsSignUp, handleSetUserId, handleSetUsername, setIsLoggedIn} = useAppContext();
     const handleClose = () => {
         handleSetOpenAuthDialog(false);
     };
@@ -61,10 +61,10 @@ export default function LoginDialog() {
     }
 
     return (
-        <Dialog open={openAuthDialog} onClose={handleClose}>
+        <Dialog open={openAuthDialog} onClose={handleClose} data-test="authDialogComponent">
             {(isSignUp) ?
-                <SignUp handleSetIsSignUp={() => handleSetIsSignUp(!isSignUp)} handleSubmit={handleSignUp}/> :
-                <SignIn handleSetIsSignUp={() => handleSetIsSignUp(!isSignUp)} handleSubmit={handleSignIn}/>}
+                <SignUp handleSetIsSignUp={() => handleSetIsSignUp(!isSignUp)} handleSubmit={handleSignUp} data-test="signUpComponent"/> :
+                <SignIn handleSetIsSignUp={() => handleSetIsSignUp(!isSignUp)} handleSubmit={handleSignIn} data-test="signInComponent"/>}
         </Dialog>
     );
 }
