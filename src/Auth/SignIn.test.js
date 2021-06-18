@@ -1,10 +1,7 @@
 import React from 'react';
-import { shallow, configure } from 'enzyme';
-import { findByTestAtrr, runAllPromises } from '../utils/test';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+import { shallow } from 'enzyme';
+import { findByTestAttr, runAllPromises } from '../utils/test';
 import SignIn from './SignIn';
-
-configure({ adapter: new Adapter() });
 
 const setUp = (props={}) => {
     const component = shallow(<SignIn {...props} />)
@@ -24,22 +21,22 @@ describe('<SignIn />', () => {
         component = setUp(props);
     });
     it('Should render signInComponent', () => {
-        const wrapper = findByTestAtrr(component, 'signInComponent');
+        const wrapper = findByTestAttr(component, 'signInComponent');
         expect(wrapper.length).toBe(1);
     });
     it('Should emit handleSetIsSignUp on click', () => {
-        const button = findByTestAtrr(component, 'signUpLink');
+        const button = findByTestAttr(component, 'signUpLink');
         button.simulate('click');
         expect(props.handleSetIsSignUp.mock.calls.length).toBe(1);
     });
     it('Should submit form and fail', async () => {
         // create form
-        const form = findByTestAtrr(component, 'signInForm');
+        const form = findByTestAttr(component, 'signInForm');
         expect(form.length).toBe(1);
         form.simulate('submit', { preventDefault: jest.fn() });
 
         // check button disabled and hit handleSubmit
-        const preButton = findByTestAtrr(component, 'signInSubmitButton')
+        const preButton = findByTestAttr(component, 'signInSubmitButton')
         expect(preButton.prop('disabled')).toBe(true);
         expect(props.handleSubmit.mock.calls.length).toBe(1);
 
@@ -48,9 +45,9 @@ describe('<SignIn />', () => {
         component.update();
 
         // check error and button undisabled
-        const errWrapper = findByTestAtrr(component, 'errMessage');
+        const errWrapper = findByTestAttr(component, 'errMessage');
         expect(errWrapper.text()).toBe(errMessage);
-        const postButton = findByTestAtrr(component, 'signInSubmitButton')
+        const postButton = findByTestAttr(component, 'signInSubmitButton')
         expect(postButton.prop('disabled')).toBe(false);
     });
 });

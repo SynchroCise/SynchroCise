@@ -1,10 +1,7 @@
 import React from 'react';
-import { shallow, configure } from 'enzyme';
-import { findByTestAtrr, initContext } from '../utils/test';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+import { shallow } from 'enzyme';
+import { findByTestAttr, initContext } from '../utils/test';
 import AuthDialog from './AuthDialog';
-
-configure({ adapter: new Adapter() });
 
 const setUp = (props={}) => {
     const component = shallow(<AuthDialog {...props} />)
@@ -27,18 +24,18 @@ describe('<AuthDialog />', () => {
         });
     it('Should render authDialogComponent', () => {
         component = initContext(contextValues, setUp);
-        const wrapper = findByTestAtrr(component, 'authDialogComponent');
+        const wrapper = findByTestAttr(component, 'authDialogComponent');
         expect(wrapper.length).toBe(1);
     });
     it('Should render signUpComponent', () => {
         component = initContext(contextValues, setUp);
-        const wrapper = findByTestAtrr(component, 'signUpComponent');
+        const wrapper = findByTestAttr(component, 'signUpComponent');
         expect(wrapper.length).toBe(1);
     });
     it('Should render signInComponent', () => {
         contextValues.isSignUp = false
         component = initContext(contextValues, setUp);
-        const wrapper = findByTestAtrr(component, 'signInComponent');
+        const wrapper = findByTestAttr(component, 'signInComponent');
         expect(wrapper.length).toBe(1);
     });
 });

@@ -72,9 +72,10 @@ const AppContextProvider = ({ children }) => {
     setRoomState(null)
   }
 
-  const joinRoom = () => {
+  const joinRoom = (roomName) => {
     // check if room exists here TODO
     setRoomState('join');
+    setRoomName(roomName)
   }
 
   const handleUsernameChange = useCallback((event) => {
