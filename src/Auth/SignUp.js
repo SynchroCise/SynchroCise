@@ -46,10 +46,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+export const SignUpMethods = () => {
+  const isValidEmail = (email) => {
+    if (!email) return false
+    const re = /\S+@\S+\.\S+/;
+    return re.test(email);
+  };
+  return { isValidEmail }
+}
+
 export default function SignUp({handleSetIsSignUp, handleSubmit}) {
   const classes = useStyles();
   const [email, setEmail] = useState('')
   const [errMessage, setErrMessage] = useState('')
+  const [connecting, setConnecting] = useState(false)
 
   const handleSetEmail = (e) => {
     setEmail(e.target.value)
@@ -57,6 +67,7 @@ export default function SignUp({handleSetIsSignUp, handleSubmit}) {
 
   const validateOnSubmit = async (e) => {
     e.preventDefault()
+    setConnecting(true)
     const re = /\S+@\S+\.\S+/;
     const isValidEmail =  re.test(email);
     if (email && isValidEmail) {
@@ -65,10 +76,11 @@ export default function SignUp({handleSetIsSignUp, handleSubmit}) {
     } else {
       setErrMessage('Invalid Email');
     }
+    setConnecting(false)
   }
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs" data-test="signUpComponent">
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -77,7 +89,7 @@ export default function SignUp({handleSetIsSignUp, handleSubmit}) {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form onSubmit={validateOnSubmit} className={classes.form} noValidate>
+        <form onSubmit={validateOnSubmit} className={classes.form} noValidate data-test="signUpForm">
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -101,6 +113,7 @@ export default function SignUp({handleSetIsSignUp, handleSubmit}) {
                 name="email"
                 autoComplete="email"
                 onChange={handleSetEmail}
+                data-test="emailField"
               />
             </Grid>
             <Grid item xs={12}>
@@ -122,7 +135,7 @@ export default function SignUp({handleSetIsSignUp, handleSubmit}) {
               />
             </Grid>
             <Grid item xs={12}>
-              <Typography color='error' variant='body1'>{errMessage}</Typography>
+              <Typography color='error' variant='body1' data-test="errMessage">{errMessage}</Typography>
             </Grid>
           </Grid>
           <Button
@@ -131,12 +144,14 @@ export default function SignUp({handleSetIsSignUp, handleSubmit}) {
             variant="contained"
             color="primary"
             className={classes.submit}
+            disabled={connecting}
+            data-test="signUpSubmitButton"
           >
             Sign Up
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="#" variant="body2" onClick={handleSetIsSignUp}>
+              <Link href="#" variant="body2" onClick={handleSetIsSignUp} data-test="signInLink">
                 Already have an account? Sign in
               </Link>
             </Grid>

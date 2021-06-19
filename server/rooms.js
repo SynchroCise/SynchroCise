@@ -1,5 +1,3 @@
-const rooms = [];
-const { WorkOutlineRounded } = require('@material-ui/icons');
 const { db, timestamp } = require('./firebase.js');
 
 const getRoomCode = () => db.collection('rooms').doc().id;

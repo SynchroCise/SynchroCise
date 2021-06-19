@@ -8,6 +8,7 @@ import Video from './Video/Video';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
+import * as requests from "../utils/requests"
 
 // using roomName and token, we will create a room
 const Room = (props) => {
@@ -142,14 +143,9 @@ const Room = (props) => {
   useEffect(() => {
     if (!room) return;
     const gettingNames = async () => {
-      const res = await fetch("/api/displayNameInRoom?rid=" + room.sid, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await requests.getDisplayNamesInRoom(room.sid);
       if (res.ok) {
-        const names = await res.json();
+        const names = res.body;
         setNameArray((oldArray) => oldArray.concat(names));
       }
     }

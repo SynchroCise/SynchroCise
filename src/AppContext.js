@@ -1,6 +1,8 @@
-import React, { useState, createContext, useCallback, useEffect } from 'react';
+import React, { useState, createContext, useCallback, useEffect, useContext } from 'react';
 import { sckt } from './Socket';
+import * as requests from './utils/requests'
 
+export const useAppContext =  () => useContext(AppContext)
 
 const AppContext = createContext([{}, () => { }]);
 
@@ -52,15 +54,15 @@ const AppContextProvider = ({ children }) => {
     setVideoProps((prev) => ({ ...prev, ...paramsToChange }));
   }
 
-  const setWorkoutType = (workoutType) => updateRoomProps({ workoutType });
+  const setWorkoutType = useCallback((workoutType) => updateRoomProps({ workoutType }), []);
 
-  const setPlayWorkoutState = (playWorkoutState) => updateRoomProps({ playWorkoutState });
+  const setPlayWorkoutState = useCallback((playWorkoutState) => updateRoomProps({ playWorkoutState }), []);
 
-  const setWorkoutCounter = (workoutCounter) => updateRoomProps({ workoutCounter });
+  const setWorkoutCounter = useCallback((workoutCounter) => updateRoomProps({ workoutCounter }), []);
 
-  const setWorkoutNumber = (workoutNumber) => updateRoomProps({ workoutNumber });
+  const setWorkoutNumber = useCallback((workoutNumber) => updateRoomProps({ workoutNumber }), []);
 
-  const handleSetWorkout = (workout) => updateRoomProps({ workout });
+  const handleSetWorkout = useCallback((workout) => updateRoomProps({ workout }), []);
 
   const handleOpenSideBar = () => setOpenSideBar(!openSideBar)
 
@@ -70,9 +72,10 @@ const AppContextProvider = ({ children }) => {
     setRoomState(null)
   }
 
-  const joinRoom = () => {
+  const joinRoom = (roomName) => {
     // check if room exists here TODO
     setRoomState('join');
+    setRoomName(roomName)
   }
 
   const handleUsernameChange = useCallback((event) => {
@@ -84,27 +87,16 @@ const AppContextProvider = ({ children }) => {
   }, []);
 
   const makeCustomRoom = useCallback(async (event) => {
-    const res = await fetch('/api/roomCode', {
-      method: "GET",
-      headers: {
-        "Content-Type": "text/plain",
-      },
-    });
-    const roomCode = await res.text();
-    setRoomName(roomCode)
+    const res = await requests.getRoomCode()
+    if (!res.ok) return
+    setRoomName(res.body.roomCode)
     setRoomState('make_custom')
   }, []);
 
   const createTempUser = useCallback(async (name) => {
-    const res = await fetch(`/api/createTempUser`, {
-      method: "POST",
-      body: JSON.stringify({ name }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await requests.createTempUser(name);
     if (!res.ok) return null
-    const userCode = await res.text();
+    const userCode = res.body.userCode;
     setUserId(userCode)
     return userCode
   }, []);
@@ -114,22 +106,19 @@ const AppContextProvider = ({ children }) => {
   }, []);
 
   const checkLoggedIn = useCallback(async () => {
-    const res = await fetch('/user/profile', {
-      method: 'GET',
-    });
+    const res = await requests.getUserProfile();
     if (!res.ok) {
       setUserId('');
       setIsLoggedIn(false);
       return false;
     }
-    const resp = await res.json()
-    setUserId(resp.user.id)
-    setUsername(resp.user.displayName)
+    setUserId(res.body.user.id)
+    setUsername(res.body.user.displayName)
     setIsLoggedIn(true);
     return true;
   }, []);
   const handleLogout = async () => {
-    const res = await fetch('/user/logout', { method: "POST" });
+    const res = await requests.userLogout();
     if (res.ok) {
       setUserId('');
       setIsLoggedIn(false);
@@ -138,7 +127,7 @@ const AppContextProvider = ({ children }) => {
 
   // ejects user from room and return them to lobby
   const handleLeaveRoom = useCallback(() => {
-    setRoomName((prevRoom) => {
+    setRoom((prevRoom) => {
       if (prevRoom) {
         prevRoom.localParticipant.tracks.forEach((trackPub) => {
           trackPub.track.stop();

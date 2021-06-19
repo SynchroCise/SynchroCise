@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { IconButton, Box, Typography, TextField, InputAdornment, Grid, Button} from '@material-ui/core';
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import { ArrowForward, Close, CreateOutlined, Add } from '@material-ui/icons';
+import * as requests from "../../utils/requests"
 
 // this component renders form to be passed to VideoChat.js
 const CreateWorkout = () => {
@@ -63,13 +64,7 @@ const CreateWorkout = () => {
     setSelectedExercise(null);
     if (!(exercises.length > 0 && badExerciseIndices.length === 0)) { handleSetConnecting(false); return; }
     const newWorkout = { workoutName, exercises }
-    const res = await fetch("/user/addWorkout", {
-      method: "POST",
-      body: JSON.stringify(newWorkout),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await requests.addWorkout(newWorkout);
     if (!res.ok) { handleSetConnecting(false); return; }
     handleSetConnecting(false)
     history.push(RoutesEnum.CreateRoom)

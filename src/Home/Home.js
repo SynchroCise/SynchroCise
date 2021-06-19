@@ -1,21 +1,26 @@
-import React, {useContext, useState, useEffect}from "react";
+import React, {useState, useEffect}from "react";
 import {useHistory} from 'react-router-dom'
-import {AppContext} from "../AppContext"
+import {useAppContext} from "../AppContext"
 import { RoutesEnum } from '../App'
 import { Link, InputAdornment, Paper, IconButton, Button, TextField, Box, Typography, Grid } from '@material-ui/core';
 import { ArrowForward, PeopleAltOutlined, AccessTime, Edit } from '@material-ui/icons';
 import mockDesign from "../media/mock_design.png";
 import mockDesignTwo from "../media/mock_design_2.png";
 import AOS from "aos";
+import * as requests from "../utils/requests"
 import "aos/dist/aos.css";
 
 
 // this component renders form to be passed to VideoChat.js
 const Home = () => {
-  const {joinRoom, roomName, handleRoomNameChange, handleSetRoomName} = useContext(AppContext)
+  const {isLoggedIn, joinRoom, roomName, handleRoomNameChange, handleSetOpenAuthDialog, handleSetIsSignUp} = useAppContext()
   const history = useHistory()
   const [errMessage, setErrMessage] = useState('');
 
+  const handleLoginDialogClick = (val) => {
+    handleSetIsSignUp(val);
+    handleSetOpenAuthDialog(true);
+  }
 
   useEffect(() => {
     AOS.init({once: true});
@@ -26,24 +31,19 @@ const Home = () => {
   }
   const handleJoinRoom = async (event) => {
     event.preventDefault();
-    const res = await fetch(`/api/rooms?sid_or_name=${roomName}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    const res = await requests.getRoomByName(roomName);
     if (!res.ok) {
-      const errText = await res.text()
-      setErrMessage(errText)
+      const errText = res.body.message;
+      setErrMessage(errText);
+      return;
     }
-    const room = await res.json();
-    joinRoom()
-    handleSetRoomName(room.id)
+    const room = res.body;
+    joinRoom(room.id)
     history.push(`${RoutesEnum.JoinRoom}/${room.id.substring(0, 6).toUpperCase()}`);
   }
 
   return (
-    <div>
+    <div data-test="homeComponent">
       <Box my={15} mx={6}>
         <Grid container spacing={4} alignItems="center">
           <Grid item xs={6} >
@@ -66,8 +66,9 @@ const Home = () => {
               </Grid>
               <Grid item xs={6}>
                 <Box display="flex" alignItems="flex-start" justifyContent="center">
-                  <form onSubmit={handleJoinRoom}>
+                  <form onSubmit={handleJoinRoom} data-test="joinRoomForm">
                     <TextField required variant="outlined" placeholder="Room Code:" size='small' value={roomName} onChange={handleRoomNameChange} helperText={errMessage} error={errMessage !== ''}
+                    data-test="roomCodeInput"
                     InputProps={{endAdornment:
                       (<InputAdornment position="end">
                         <IconButton color="primary" edge="end" variant="contained" type="submit"><ArrowForward/></IconButton>
@@ -78,7 +79,7 @@ const Home = () => {
             </Grid>
               <Grid item xs={6}>
                 <Box mx={3} display="flex" alignItems="top" justifyContent="center">
-                  <Button color="primary" size="large" fullWidth={true} variant="contained" onClick={handleCreateRoom}>Create Room</Button>
+                  <Button color="primary" size="large" fullWidth={true} variant="contained" onClick={handleCreateRoom} data-test="createRoomButton">Create Room</Button>
                 </Box>
               </Grid>
               <Grid item xs={6}>
@@ -88,7 +89,11 @@ const Home = () => {
               </Grid>
               <Grid item xs={6}>
                 <Box display="flex" alignItems="center" justifyContent="center">
-                  <Typography variant="body2" color="textSecondary">Already a member? <Link color="primary">Sign in</Link></Typography>
+                  {!isLoggedIn && (
+                    <Typography variant="body2" color="textSecondary">
+                      Already a member? <Link color="primary" data-test="signInLink" component="button" onClick={() => handleLoginDialogClick(false)}>Sign in</Link>
+                    </Typography>
+                  )}
                 </Box>
               </Grid>
             </Grid>
@@ -149,25 +154,27 @@ const Home = () => {
         </Grid>
       </Box>
       <Box my={10} display="flex">
-        <Grid container justify="center" alignItems="center" spacing={2}>
-          <Grid item xs={12}>
-            <Box display="flex" alignItems="center" justifyContent="center">
-              <Typography variant="h5">Get Started!</Typography>
-            </Box>
+        {!isLoggedIn && (
+          <Grid container justify="center" alignItems="center" spacing={2}>
+            <Grid item xs={12}>
+              <Box display="flex" alignItems="center" justifyContent="center">
+                <Typography variant="h5">Get Started!</Typography>
+              </Box>
+            </Grid>
+            <Grid item xs></Grid>
+            <Grid item xs={2}>
+              <Box display="flex" alignItems="center" justifyContent="center">
+                <Button color="primary" size="large" variant="contained" fullWidth={true} onClick={() => handleLoginDialogClick(true)} data-test="signUpButton">Sign up</Button>
+              </Box>
+            </Grid>
+            <Grid item xs></Grid>
+            <Grid item xs={12}>
+              <Box display="flex" alignItems="center" justifyContent="center">
+                <Typography variant="body2" color="textSecondary">Already a member? <Link component="button" color="primary" onClick={() => handleLoginDialogClick(false)} data-test="signInLink2">Sign in</Link></Typography>
+              </Box>
+            </Grid>
           </Grid>
-          <Grid item xs></Grid>
-          <Grid item xs={2}>
-            <Box display="flex" alignItems="center" justifyContent="center">
-              <Button color="primary" size="large" variant="contained" fullWidth={true}>Sign up</Button>
-            </Box>
-          </Grid>
-          <Grid item xs></Grid>
-          <Grid item xs={12}>
-            <Box display="flex" alignItems="center" justifyContent="center">
-              <Typography variant="body2" color="textSecondary">Already a member? <Link color="primary">Sign in</Link></Typography>
-            </Box>
-          </Grid>
-        </Grid>
+        )}
       </Box>
     </div>
   );

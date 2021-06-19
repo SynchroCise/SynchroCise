@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../AppContext";
 import { Table, TableBody, TableCell, TableHead, TableRow, Collapse, IconButton, Typography } from '@material-ui/core';
 import { KeyboardArrowDown, KeyboardArrowUp, Close } from '@material-ui/icons';
+import * as requests from "../../utils/requests"
 
 const WorkoutTable = ({workoutList, setWorkoutList, selectedWorkout, setSelectedWorkout}) => {
   const {handleSetWorkout} = useContext(AppContext)
@@ -32,16 +33,10 @@ const WorkoutTable = ({workoutList, setWorkoutList, selectedWorkout, setSelected
         handleSetWorkout(workoutList[value])
     }
     
-    const handleDeleteWorkout = async (workoutId) => {
+    const handleDeleteWorkout = (workoutId) => {
         const result = window.confirm("Are you sure you want to delete this workout?")
         if (!result) return;
-        fetch('/api/deleteWorkout', {
-            method: "POST",
-            body: JSON.stringify({workoutId}),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        requests.deleteWorkout(workoutId)
         const i = workoutList.findIndex(element => element.id === workoutId);
         const array = [...workoutList];
         if (i === -1) return;

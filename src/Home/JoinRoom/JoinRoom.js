@@ -6,6 +6,7 @@ import { RoutesEnum } from '../../App'
 import { IconButton, TextField, Box, Typography, Grid } from '@material-ui/core';
 import { ArrowBack, ArrowForward, Videocam, VideocamOff, Mic, MicOff } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
+import * as requests from "../../utils/requests"
 
 // this component renders form to be passed to VideoChat.js
 const JoinRoom = (props) => {
@@ -62,14 +63,8 @@ const JoinRoom = (props) => {
 
   const checkRoomExists = async (roomCode) => {
     if (!roomCode) return null
-    const res = await fetch(`/api/rooms?sid_or_name=${roomCode}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const resp = await res.json()
-    return (res.ok) ? resp.id : null
+    const res = await requests.getRoomByName(roomCode);
+    return (res.ok) ? res.body.id : null
   }
 
   const handleMic = () => {
@@ -95,22 +90,11 @@ const JoinRoom = (props) => {
       return;
     }
     const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
-    const tok_res = await fetch("/video/token", {
-      method: "POST",
-      body: JSON.stringify({
-        identity: tempUserId,
-        room: roomName,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const tok_res = await requests.twilioToken(tempUserId, roomName);
     if (!tok_res.ok) { handleSetConnecting(false); return; }
-    const data = await tok_res.json();
-    const room = await Video.connect(data.token, {
-      name: roomName,
-      tracks: videoTracks.concat(audioTracks)
-    })
+    const token = tok_res.body.token;
+    const tracks = videoTracks.concat(audioTracks);
+    const room = await requests.joinTwilioRoom(token, roomName, tracks);
     if (!room) { handleSetConnecting(false); return; }
     room.localParticipant.tracks.forEach(localTracks => {
       localTracks.setPriority('low')
