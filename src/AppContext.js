@@ -127,7 +127,7 @@ const AppContextProvider = ({ children }) => {
 
   // ejects user from room and return them to lobby
   const handleLeaveRoom = useCallback(() => {
-    setRoomName((prevRoom) => {
+    setRoom((prevRoom) => {
       if (prevRoom) {
         prevRoom.localParticipant.tracks.forEach((trackPub) => {
           trackPub.track.stop();
