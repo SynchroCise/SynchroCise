@@ -1,6 +1,15 @@
 import Video from "twilio-video";
 
-const formatResults = async (res) => { return { ok: res.ok, body: (await res.json()) } };
+const formatResults = async (res) => {
+  let body = await res.json();
+  if (!body.message) {
+    body.message = (res) ? "Success" : "Failed"
+  }
+  return { 
+    ok: res.ok,
+    body
+  } 
+};
 
 // Room related requests
 export const getRoomByName = async (roomName) => {
@@ -65,7 +74,6 @@ export const getUserProfile = async () => {
   const res = await fetch('/user/profile', {
     method: 'GET',
   });
-  if (!res.ok) return { ok: false, body: { message: 'Failed' } };
   return formatResults(res);
 };
 
@@ -76,13 +84,11 @@ export const getUserWorkouts = async () => {
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) return { ok: false, body: { message: 'Failed' }  };
   return formatResults(res);
 };
 
 export const userLogout = async () => {
   const res = await fetch('/user/logout', { method: "POST" });
-  if (!res.ok) return { ok: false, body: { message: 'Failed' }  };
   return formatResults(res);
 }
 
@@ -91,7 +97,6 @@ export const userLogin = async (formData) => {
     method: 'POST',
     body: formData,
   });
-  if (!res.ok) return { ok: false, body: { message: 'Failed' }  };
   return formatResults(res);
 }
 
@@ -100,7 +105,6 @@ export const userSignUp = async (formData) => {
     method: 'POST',
     body: formData,
   });
-  if (!res.ok) return { ok: false, body: { message: 'Failed' } };
   return formatResults(res);
 }
 
