@@ -1,4 +1,4 @@
-const {db, timestamp} = require('./firebase.js');
+const { db, timestamp } = require('./firebase.js');
 const { getUserById } = require('./users');
 
 
@@ -27,7 +27,7 @@ const getUserWorkouts = async (userId) => {
 }
 
 const getWorkoutById = async (id) => {
-    const workoutRef =  db.collection('workouts').doc(id);
+    const workoutRef = db.collection('workouts').doc(id);
     const doc = await workoutRef.get()
     if (!doc.exists) {
         console.log('No such document!');
@@ -48,7 +48,8 @@ const addWorkout = async (workoutName, exercises, userId) => {
     if (workoutName == undefined || exercises == undefined || exercises.length == 0) {
         return [400, 'Invalid Workout']
     }
-    if (workouts.some(e => e.workoutName == workoutName)) {
+    let workouts = await getUserWorkouts(userId)
+    if (workouts && workouts.some(e => e.workoutName == workoutName)) {
         return [400, 'Workout Already Exists']
     }
     // TODO: Add userId once we implement login
@@ -59,7 +60,7 @@ const addWorkout = async (workoutName, exercises, userId) => {
         workoutName: workoutName,
         userId: userId,
         isDeleted: false
-    }).catch(error => {return [400, 'ERROR']});
+    }).catch(error => { return [400, 'ERROR'] });
     return [200, 'Success']
 };
 
@@ -72,7 +73,7 @@ const getWorkoutByName = async (name) => {
     return (workouts) ? workouts : null;
 }
 
-module.exports = { 
+module.exports = {
     getWorkoutByName,
     getWorkouts,
     addWorkout,
