@@ -6,21 +6,19 @@ import {
     isValidURL
 } from '../../../utils/video';
 import { store } from 'react-notifications-component';
-import { Box, TextField, withStyles} from '@material-ui/core';
+import { Box, TextField, withStyles } from '@material-ui/core';
 import moment from 'moment'
 
 require('dotenv').config()
 
 const VideoSearch = ({ addVideoToQueue, playVideoFromSearch, updateVideoProps }) => {
-    const [searchInput, setSearchInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [errSearch, setErrSearch] = useState("")
     const baseURL = 'https://www.googleapis.com/youtube/v3/videos';
     const lastSearch = useRef('');
 
-    const handlePlay = async (event) => {
-        event.preventDefault();
-        let trimInput = searchInput.trim();
+    const handlePlay = async (url) => {
+        let trimInput = url.trim();
         if (trimInput === '' || trimInput === lastSearch.current) return;
         lastSearch.current = trimInput;
         if (isValidURL(trimInput)) {
@@ -79,12 +77,12 @@ const VideoSearch = ({ addVideoToQueue, playVideoFromSearch, updateVideoProps })
         }).then(response => {
             setLoading(false);
             const searchItem = {
-                "channel" : {
+                "channel": {
                     "url": `https://www.youtube.com/channel/${response.data.items[0].snippet.channelId}`,
                     "username": response.data.items[0].snippet.channelTitle,
                     "verified": false
                 },
-                "video" : {
+                "video": {
                     "id": response.data.items[0].id,
                     "thumbnails": response.data.items[0].snippet.thumbnails.default.url,
                     "title": response.data.items[0].snippet.title,
@@ -100,23 +98,21 @@ const VideoSearch = ({ addVideoToQueue, playVideoFromSearch, updateVideoProps })
     const CustomTextField = withStyles({
         root: {
             '& .MuiInputBase-root': {
-              color: 'white',
+                color: 'white',
             },
             "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
                 borderColor: "gray"
-              },
-          },
-         
-      })(TextField);
+            },
+        },
+
+    })(TextField);
 
     return (
         <div className="videoSearchContainer">
             <Box width="75%">
                 <CustomTextField
                     placeholder='Paste Youtube Link Here!'
-                    value={searchInput}
-                    onChange={e => setSearchInput(e.target.value)}
-                    onKeyPress={e => e.key === 'Enter' ? handlePlay(e) : null}
+                    onKeyPress={e => e.key === 'Enter' ? handlePlay(e.target.value) : null}
                     disabled={loading}
                     error={errSearch !== ''}
                     helperText={errSearch}
@@ -124,35 +120,6 @@ const VideoSearch = ({ addVideoToQueue, playVideoFromSearch, updateVideoProps })
                     fullWidth
                 />
             </Box>
-            
-            {/* <Input
-                fluid
-                id='searchInput'
-                size='large'
-                placeholder='Paste Youtube Link Here!'
-                value={searchInput}
-                onChange={e => setSearchInput(e.target.value)}
-                onKeyPress={e => e.key === 'Enter' ? handlePlay(e) : null}
-                action={{
-                    content: "Enter",
-                    loading,
-                    onClick: (e) => searchInput.trim() !== '' ? handlePlay(e) : null
-                }}
-            />
-            <div>
-                {errSearch}
-            </div> */}
-            {/*
-            <SearchResults
-                searchResults={searchResults}
-                playVideoFromSearch={playVideoFromSearch}
-                addVideoToQueue={addVideoToQueue}
-                page={page}
-                search={search}
-                searchInput={searchInput}
-                loading={loading}
-            />
-            */}
 
         </div>
     )
