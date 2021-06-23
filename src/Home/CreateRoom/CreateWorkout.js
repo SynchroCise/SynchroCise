@@ -1,9 +1,9 @@
 import React, {useCallback, useState, useEffect} from "react";
-import {useHistory} from 'react-router-dom'
-import {useAppContext} from "../../AppContext"
+import { useHistory } from 'react-router-dom'
+import { useAppContext } from "../../AppContext"
 import { RoutesEnum } from '../../App'
 import { makeStyles } from "@material-ui/core/styles";
-import { IconButton, Box, Typography, TextField, InputAdornment, Grid, Button} from '@material-ui/core';
+import { IconButton, Box, Typography, TextField, InputAdornment, Grid, Button } from '@material-ui/core';
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import { ArrowForward, Close, CreateOutlined, Add } from '@material-ui/icons';
 import * as requests from "../../utils/requests"
@@ -11,7 +11,7 @@ import * as requests from "../../utils/requests"
 // this component renders form to be passed to VideoChat.js
 const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
   const history = useHistory()
-  const {connecting, handleSetConnecting} = useAppContext();
+  const { connecting, handleSetConnecting } = useAppContext();
   const [workoutName, setWorkoutName] = useState('')
   const [exercises, setExercises] = useState(initExercises)
   const [selectedExercise, setSelectedExercise] = useState(0)
@@ -40,7 +40,7 @@ const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
 
   const handleAddExercise = () => {
     // checks current selected exercise
-    const exercise = {'exercise': '', 'time': ''};
+    const exercise = { 'exercise': '', 'time': '' };
     setSelectedExercise(exercises.length);
     setExercises([...exercises, exercise]);
   }
@@ -64,7 +64,11 @@ const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
     if (!(exercises.length > 0 && badExerciseIndices.length === 0)) { handleSetConnecting(false); return; }
     const newWorkout = { workoutName, exercises }
     const res = await requests.addWorkout(newWorkout);
-    if (!res.ok) { handleSetConnecting(false); return; }
+    if (!res.ok) {
+      handleSetConnecting(false);
+      alert(res.body.message)
+      return;
+    }
     handleSetConnecting(false)
     history.push(RoutesEnum.CreateRoom)
   }
@@ -96,7 +100,7 @@ const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
           <Grid item xs={1}>
             <IconButton
               className={classes.blackButton}
-              onClick={()=>{history.push(RoutesEnum.CreateRoom)}}
+              onClick={()=>{ history.push(RoutesEnum.CreateRoom) }}
               data-test="backButton">
               <Close/>
             </IconButton>
@@ -124,7 +128,7 @@ const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
                 data-test="workoutNameField"
               />
             </Grid>
-            <Grid item xs={7}/> 
+            <Grid item xs={7} />
             <Grid item xs={12}>
               <Table>
                 <TableBody>
@@ -167,7 +171,7 @@ const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
                         )
                       }
                       <TableCell padding="checkbox">
-                        <IconButton onClick={() => handleRemoveRow(index)} data-test="removeButton"><Close/></IconButton>
+                        <IconButton onClick={() => handleRemoveRow(index)} data-test="removeButton"><Close /></IconButton>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -181,7 +185,7 @@ const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
                 variant="outlined"
                 size="large"
                 onClick={handleAddExercise}
-                startIcon={<Add/>}
+                startIcon={<Add />}
                 data-test="addWorkoutButton">
                 Add New Workout
               </Button>
@@ -193,7 +197,7 @@ const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
                 color="primary"
                 className={classes.containedButton}
                 type="submit">
-                <ArrowForward/>
+                <ArrowForward />
               </IconButton>
             </Box>
           </Grid>
