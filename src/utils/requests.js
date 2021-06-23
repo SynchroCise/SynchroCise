@@ -65,7 +65,7 @@ export const getUserProfile = async () => {
   const res = await fetch('/user/profile', {
     method: 'GET',
   });
-  if (!res.ok) return { ok: false, message: 'failed' };
+  if (!res.ok) return { ok: false, body: { message: 'Failed' } };
   return formatResults(res);
 };
 
@@ -76,13 +76,13 @@ export const getUserWorkouts = async () => {
       "Content-Type": "application/json",
     },
   });
-  if (!res.ok) return { ok: false, message: 'failed' };
+  if (!res.ok) return { ok: false, body: { message: 'Failed' }  };
   return formatResults(res);
 };
 
 export const userLogout = async () => {
   const res = await fetch('/user/logout', { method: "POST" });
-  if (!res.ok) return { ok: false, message: 'failed' };
+  if (!res.ok) return { ok: false, body: { message: 'Failed' }  };
   return formatResults(res);
 }
 
@@ -91,7 +91,7 @@ export const userLogin = async (formData) => {
     method: 'POST',
     body: formData,
   });
-  if (!res.ok) return { ok: false, message: 'failed' };
+  if (!res.ok) return { ok: false, body: { message: 'Failed' }  };
   return formatResults(res);
 }
 
@@ -100,7 +100,7 @@ export const userSignUp = async (formData) => {
     method: 'POST',
     body: formData,
   });
-  if (!res.ok) return { ok: false, message: 'failed' };
+  if (!res.ok) return { ok: false, body: { message: 'Failed' } };
   return formatResults(res);
 }
 
