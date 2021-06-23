@@ -67,7 +67,7 @@ const CreateWorkout = () => {
     const res = await requests.addWorkout(newWorkout);
     if (!res.ok) {
       handleSetConnecting(false);
-      alert("Workout with existing name exists. Please change the name of the workout and try again.")
+      alert(res.body.message)
       return;
     }
     handleSetConnecting(false)

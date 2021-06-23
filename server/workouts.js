@@ -50,7 +50,7 @@ const addWorkout = async (workoutName, exercises, userId) => {
     }
     let workouts = await getUserWorkouts(userId)
     if (workouts && workouts.some(e => e.workoutName == workoutName)) {
-        return [400, 'Workout Already Exists']
+        return [400, 'Workout with existing name exists. Please change the name of the workout and try again.']
     }
     // TODO: Add userId once we implement login
     const docRef = db.collection('workouts').doc()
