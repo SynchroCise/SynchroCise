@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import ExerciseList from "./ExerciseList/ExerciseList.js"
 import { sckt } from '../.././Socket';
-import { AppContext } from "../../AppContext";
+import { useAppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
 import { Drawer, Typography, IconButton, Box, Grid, Tab, Tabs } from '@material-ui/core';
 import { Link } from '@material-ui/icons';
@@ -53,7 +53,7 @@ const SideBar = ({
     isYoutube,
     drawerWidth
 }) => {
-    const { workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, roomName } = useContext(AppContext)
+    const { workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, roomName } = useAppContext();
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { return workout.exercise }));
     const [messages, setMessages] = useState([]);

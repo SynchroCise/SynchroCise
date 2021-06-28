@@ -1,11 +1,11 @@
-import React, {useContext} from "react";
-import {AppContext} from "../../../AppContext"
+import React from "react";
+import {useAppContext} from "../../../AppContext"
 import { Typography, LinearProgress, IconButton, Box } from '@material-ui/core';
 import { PlayArrow, Pause } from '@material-ui/icons';
 
 
 const ExerciseList = ({workoutTime, nextUpExercise}) => {
-    const {workout, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, workoutCounter} = useContext(AppContext)
+    const {workout, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, workoutCounter} = useAppContext();
 
     const handleStartWorkout = () => {
         var startWorkoutState = !playWorkoutState;

@@ -17,3 +17,36 @@ export const initContext = (contextValues, setUp, props={}) => {
         .mockImplementation(() => contextValues)
     return setUp(props);
 }
+
+export const createParticipant = (sid) => ({
+    sid,
+    videoTracks: [{
+        isTrackEnabled: true,
+        track: {
+            enable: jest.fn(),
+            disable: jest.fn(),
+            attach: jest.fn(),
+            detach: jest.fn()
+        }
+    }],
+    audioTracks: [{
+        isTrackEnabled: true,
+        track: {
+            enable: jest.fn(),
+            disable: jest.fn(),
+            attach: jest.fn(),
+            detach: jest.fn()
+        }
+    }],
+    removeAllListeners: jest.fn(),
+    on: jest.fn(),
+    off: jest.fn()
+})
+
+export const initRoomObj = () => ({
+    sid: 'room',
+    localParticipant: createParticipant('local'),
+    participants: [],
+    on: jest.fn(),
+    off: jest.fn()
+});
