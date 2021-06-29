@@ -51,13 +51,13 @@ passport.use(
       try {
         let user = await getUserByEmail(email);
         if (!user || user.length == 0) {
-          return done(null, false, { error: true, message: 'User not found' });
+          return done(null, false, { error: true, message: 'Invalid Email or Password' });
         }
 
         user = user[0];
         const validate = await isValidPassword(user, password);
         if (!validate) {
-          return done(null, false, { error: true, message: 'Wrong Password' });
+          return done(null, false, { error: true, message: 'Invalid Email or Password' });
         }
 
         return done(null, user, { message: 'Logged in Successfully' });

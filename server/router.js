@@ -146,8 +146,8 @@ router.post(
         try {
           if (info.error) { return res.status(401).send(JSON.stringify({message:info.message})) }
           if (err || !user) {
-            const error = new Error('An error occurred.');
-            return next(error);
+            const msg = (info.message) ? info.message : "";
+            return res.status(401).send(JSON.stringify({message:msg}))
           }
           req.login(
             user,
