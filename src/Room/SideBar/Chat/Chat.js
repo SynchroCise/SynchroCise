@@ -1,12 +1,12 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { sckt } from '../../../Socket';
 import ChatInput from './ChatInput/ChatInput';
 import Messages from './Messages/Messages';
 import { Divider } from '@material-ui/core';
-import { AppContext } from "../../../AppContext"
+import { useAppContext } from "../../../AppContext"
 
 const Chat = ({ messages, currUser, users }) => {
-    const { room } = useContext(AppContext)
+    const { room } = useAppContext();
     const [message, setMessage] = useState('');
 
     const sendMessage = (event) => {
@@ -18,12 +18,12 @@ const Chat = ({ messages, currUser, users }) => {
     }
 
     return (
-        <div style={{ height: "100%", maxHeight: "100%" }} display="flex">
+        <div style={{ height: "100%", maxHeight: "100%" }} display="flex" data-test="chatComponent">
             <div style={{ height: "95%", maxHeight: "95%", overflowY: 'scroll' }} display="flex" id="chat">
-                <Messages messages={messages} currUser={currUser} users={users} />
+                <Messages messages={messages} currUser={currUser} users={users} data-test="messageComponent"/>
                 <Divider />
             </div>
-            <ChatInput message={message} setMessage={setMessage} sendMessage={sendMessage} />
+            <ChatInput message={message} setMessage={setMessage} sendMessage={sendMessage} data-test="chatInputComponent" />
         </div>
     );
 }

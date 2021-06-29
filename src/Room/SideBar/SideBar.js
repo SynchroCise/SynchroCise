@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import ExerciseList from "./ExerciseList/ExerciseList.js"
 import { sckt } from '../.././Socket';
-import { AppContext } from "../../AppContext";
+import { useAppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
 import { Drawer, Typography, IconButton, Box, Grid, Tab, Tabs } from '@material-ui/core';
 import { Link } from '@material-ui/icons';
@@ -53,7 +53,7 @@ const SideBar = ({
     isYoutube,
     drawerWidth
 }) => {
-    const { workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, roomName } = useContext(AppContext)
+    const { workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, roomName } = useAppContext();
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { return workout.exercise }));
     const [messages, setMessages] = useState([]);
@@ -70,12 +70,14 @@ const SideBar = ({
         return () => sckt.socket.off('message', handler);
     }, []);
 
+    // initialize workout
     useEffect(() => {
         setWorkoutTime(workout.exercises[workoutNumber].time);
         if (workoutCounter === -1) setWorkoutCounter(workout.exercises[0].time);
         setNextUpExercise(workout.exercises.map((workout, index) => { return workout.exercise }));
     }, [workout, workoutCounter, setWorkoutCounter, workoutNumber]);
 
+    // countdown workout counter
     useEffect(() => {
         if (!playWorkoutState) return;
         const timer = workoutCounter > 0 && setTimeout(() => setWorkoutCounter(workoutCounter - 1), 1000);
@@ -131,7 +133,6 @@ const SideBar = ({
         </IconButton>
     )
 
-
     return (
         <Drawer
             variant="persistent"
@@ -140,7 +141,8 @@ const SideBar = ({
             className={classes.drawer}
             classes={{
                 paper: classes.drawerPaper,
-            }}>
+            }}
+            data-test="sidebarComponent">
             <Box mx={2} my={2} height="95%">
                 <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}</Typography>
                 <Tabs
@@ -148,13 +150,14 @@ const SideBar = ({
                     textColor="primary"
                     value={sideBarType}
                     onChange={(event, value) => { handleChange(value) }}
+                    data-test="tabsComponent"
                 >
                     <Tab value={0} label="Workout"  {...a11yProps(0)} />
                     <Tab value={1} label="Chat"  {...a11yProps(1)} />
                 </Tabs>
                 <TabPanel value={sideBarType} index={0}>
                     <Grid item>
-                        {!isYoutube && <ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise} />}
+                        {!isYoutube && <ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise} data-test="exerciseListComponent"/>}
                     </Grid>
                 </TabPanel>
                 <TabPanel value={sideBarType} index={1} style={{ height: "80%" }} id="TabPanelChat">
@@ -162,6 +165,7 @@ const SideBar = ({
                         messages={messages}
                         currUser={currUser}
                         users={users}
+                        data-test="chatComponent"
                     />
                 </TabPanel>
             </Box>

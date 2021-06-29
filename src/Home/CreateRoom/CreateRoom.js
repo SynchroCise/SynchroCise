@@ -1,6 +1,6 @@
-import React, {useContext, useState, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import {useHistory} from 'react-router-dom'
-import {AppContext} from "../../AppContext"
+import {useAppContext} from "../../AppContext"
 import { RoutesEnum } from '../../App'
 import WorkoutTable from "./WorkoutTable"
 import { makeStyles } from "@material-ui/core/styles";
@@ -11,7 +11,7 @@ import * as requests from "../../utils/requests"
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const {userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn} = useContext(AppContext)
+  const {userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn} = useAppContext()
   const history = useHistory()
   const [selectedWorkout, setSelectedWorkout] = useState(0);
   const [workoutList, setWorkoutList] = useState([]);
@@ -26,8 +26,8 @@ const CreateRoom = () => {
       if (!isLoggedIn) return setWorkoutList([]);
       const res = await requests.getUserWorkouts();
       if (!res.ok) return setWorkoutList([]);
-      setWorkoutList(res.body)
-      handleSetWorkout(res.body[0])
+      setWorkoutList(res.body);
+      handleSetWorkout(res.body[0]);
     }
     initWorkouts();
   }, [isLoggedIn, handleSetWorkout]);
@@ -73,11 +73,11 @@ const CreateRoom = () => {
   }
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="center" mx={12} my={6}>
-      <form onSubmit={handleSubmit}>
+    <Box display="flex" alignItems="center" justifyContent="center" mx={12} my={6} data-test="createRoomComponent">
+      <form onSubmit={handleSubmit} data-test="createRoomForm">
         <Grid container justify="center" spacing={4} wrap="nowrap">
           <Grid item xs={1}>
-            <IconButton className={classes.blackButton} onClick={()=>{history.push(RoutesEnum.Home)}}>
+            <IconButton className={classes.blackButton} onClick={()=>{history.push(RoutesEnum.Home)}} data-test="backButton">
               <ArrowBack/>
             </IconButton>
           </Grid>
@@ -112,6 +112,7 @@ const CreateRoom = () => {
                 onChange={handleUsernameChange}
                 readOnly={connecting}
                 required
+                data-test="usernameField"
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -140,7 +141,7 @@ const CreateRoom = () => {
                 <Typography variant="h4" style={{flexGrow: 1}}>Workouts</Typography>
               </Grid>
               <Grid item>
-                <IconButton onClick={handleAddWorkout} className={classes.blackButton}><Add /></IconButton>
+                <IconButton onClick={handleAddWorkout} className={classes.blackButton} data-test="addWorkoutButton"><Add /></IconButton>
               </Grid>
             </Grid>
             <Grid item xs={12}>
@@ -152,6 +153,7 @@ const CreateRoom = () => {
                     selectedWorkout={selectedWorkout}
                     setSelectedWorkout={setSelectedWorkout}
                     setWorkoutList={setWorkoutList}
+                    data-test="workoutTableComponent"
                   />
                 </Box>) : null
               }

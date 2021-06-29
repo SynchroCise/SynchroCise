@@ -1,6 +1,6 @@
-import React, {useContext, useEffect, useState, useRef} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import {useHistory} from 'react-router-dom'
-import {AppContext} from "../../AppContext"
+import {useAppContext} from "../../AppContext"
 import Video from "twilio-video";
 import { RoutesEnum } from '../../App'
 import { IconButton, TextField, Box, Typography, Grid } from '@material-ui/core';
@@ -10,7 +10,7 @@ import * as requests from "../../utils/requests"
 
 // this component renders form to be passed to VideoChat.js
 const JoinRoom = (props) => {
-  const {connecting, username, roomName, handleUsernameChange, handleSetRoom, isLoggedIn, handleSetConnecting, handleSetRoomName, createTempUser, userId} = useContext(AppContext)
+  const {connecting, username, roomName, handleUsernameChange, handleSetRoom, isLoggedIn, handleSetConnecting, handleSetRoomName, createTempUser, userId} = useAppContext()
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [vid, setVid] = useState(true);
@@ -49,6 +49,11 @@ const JoinRoom = (props) => {
 
   // initializes roomcode and userId
   useEffect(() => {
+    const checkRoomExists = async (roomCode) => {
+      if (!roomCode) return null
+      const res = await requests.getRoomByName(roomCode);
+      return (res.ok) ? res.body.id : null
+    }
     const checkRoom = async () => {
       const roomCode = await checkRoomExists(props.match.params.roomCode);
       if (!roomCode) {
@@ -59,13 +64,8 @@ const JoinRoom = (props) => {
       }
     };
     checkRoom();
-  }, [history, handleSetRoomName, props.match.params.roomCode]);
+  }, [history.push, handleSetRoomName, props.match.params.roomCode]);
 
-  const checkRoomExists = async (roomCode) => {
-    if (!roomCode) return null
-    const res = await requests.getRoomByName(roomCode);
-    return (res.ok) ? res.body.id : null
-  }
 
   const handleMic = () => {
     audioTracks.forEach(track => {
@@ -120,13 +120,14 @@ const JoinRoom = (props) => {
   }));
   const classes = useStyles();
   return (
-    <Box display="flex" alignItems="center" justifyContent="center" mx={15} my={3}>
-      <form onSubmit={handleSubmit}>
+    <Box display="flex" alignItems="center" justifyContent="center" mx={15} my={3} data-test="joinRoomComponent">
+      <form onSubmit={handleSubmit} data-test="joinRoomForm">
         <Grid container justify="center" spacing={2} wrap="nowrap">
           <Grid item xs={1} >
             <IconButton
               className={classes.blackButton}
-              onClick={()=>{history.push(RoutesEnum.Home)}}>
+              onClick={()=>{history.push(RoutesEnum.Home)}}
+              data-test="backButton">
               <ArrowBack/>
             </IconButton>
           </Grid>
@@ -152,6 +153,7 @@ const JoinRoom = (props) => {
                   value={username}
                   onChange={handleUsernameChange}
                   readOnly={connecting}
+                  data-test="usernameField"
                 />
               </Box>
             </Grid>
@@ -162,6 +164,7 @@ const JoinRoom = (props) => {
                 variant="outlined"
                 fullWidth
                 value={"Room Code: " + roomName.substring(0, 6).toUpperCase()}
+                data-test="roomCodeField"
                 disabled
               />
             </Grid>
@@ -181,16 +184,18 @@ const JoinRoom = (props) => {
               <IconButton
                 color="primary"
                 className={classes.blackContainedButton}
-                onClick={handleVid}>
-                {vid ? <Videocam/> : <VideocamOff/>}
+                onClick={handleVid}
+                data-test="vidButton">
+                {vid ? <Videocam data-test="vidIcon"/> : <VideocamOff data-test="vidOffIcon"/>}
               </IconButton>
             </Grid>
             <Grid item xs={1}>
               <IconButton
                 color="primary"
                 className={classes.blackContainedButton}
-                onClick={handleMic}>
-                {mic ? <Mic/> : <MicOff/>}
+                onClick={handleMic}
+                data-test="micButton">
+                {mic ? <Mic data-test="micIcon" /> : <MicOff data-test="micOffIcon"/>}
               </IconButton>
             </Grid>
           </Grid>

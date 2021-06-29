@@ -1,7 +1,7 @@
-import React, { useEffect, useContext, useCallback } from "react";
+import React, { useEffect, useCallback } from "react";
 import { sckt } from '../../Socket';
 import { insert } from '../../utils/video';
-import { AppContext } from "../../AppContext";
+import { useAppContext } from "../../AppContext";
 import { getVideoType } from '../../utils/video';
 import VideoSearch from './Search/Search';
 import VideoPlayer from "./Player/Player";
@@ -9,7 +9,7 @@ import VideoPlayer from "./Player/Player";
 
 
 const Video = ({ playerRef }) => {
-    const { username, room, videoProps, updateVideoProps } = useContext(AppContext);
+    const { username, room, videoProps, updateVideoProps } = useAppContext();
 
     const sendVideoState = useCallback(({ eventName, eventParams }) => {
         if (!room) return;

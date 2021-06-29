@@ -1,6 +1,6 @@
-import React, { useContext, useCallback, useState, useEffect } from "react";
+import React, {useCallback, useState, useEffect} from "react";
 import { useHistory } from 'react-router-dom'
-import { AppContext } from "../../AppContext"
+import { useAppContext } from "../../AppContext"
 import { RoutesEnum } from '../../App'
 import { makeStyles } from "@material-ui/core/styles";
 import { IconButton, Box, Typography, TextField, InputAdornment, Grid, Button } from '@material-ui/core';
@@ -9,11 +9,11 @@ import { ArrowForward, Close, CreateOutlined, Add } from '@material-ui/icons';
 import * as requests from "../../utils/requests"
 
 // this component renders form to be passed to VideoChat.js
-const CreateWorkout = () => {
+const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
   const history = useHistory()
-  const { connecting, handleSetConnecting } = useContext(AppContext)
+  const { connecting, handleSetConnecting } = useAppContext();
   const [workoutName, setWorkoutName] = useState('')
-  const [exercises, setExercises] = useState([{ 'exercise': '', 'time': '' }])
+  const [exercises, setExercises] = useState(initExercises)
   const [selectedExercise, setSelectedExercise] = useState(0)
   const [badExerciseIndices, setBadExerciseIndices] = useState([])
 
@@ -53,7 +53,6 @@ const CreateWorkout = () => {
 
   const handleTime = (event) => {
     let newArr = [...exercises];
-    console.log(parseInt(event.target.value))
     newArr[selectedExercise].time = event.target.value;
     setExercises(newArr)
   }
@@ -95,14 +94,15 @@ const CreateWorkout = () => {
   }, [exercises])
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="center" mx={12} my={6}>
-      <form onSubmit={handleSubmit}>
+    <Box display="flex" alignItems="center" justifyContent="center" mx={12} my={6} data-test="createWorkoutComponent">
+      <form onSubmit={handleSubmit} data-test="createWorkoutForm">
         <Grid container justify="center" spacing={4} wrap="nowrap">
           <Grid item xs={1}>
             <IconButton
               className={classes.blackButton}
-              onClick={() => { history.push(RoutesEnum.CreateRoom) }}>
-              <Close />
+              onClick={()=>{ history.push(RoutesEnum.CreateRoom) }}
+              data-test="backButton">
+              <Close/>
             </IconButton>
           </Grid>
           <Grid item container xs spacing={2}>
@@ -125,6 +125,7 @@ const CreateWorkout = () => {
                     </InputAdornment>
                   ),
                 }}
+                data-test="workoutNameField"
               />
             </Grid>
             <Grid item xs={7} />
@@ -133,7 +134,7 @@ const CreateWorkout = () => {
                 <TableBody>
                   {exercises.map((exerciseRow, index) => (
                     <TableRow key={index} hover selected={selectedExercise === index}
-                      className={(badExerciseIndices.includes(index) ? classes.errorRow : '')}>
+                      className={(badExerciseIndices.includes(index) ? classes.errorRow : '')} data-test="inputRow">
                       {
                         selectedExercise === index ? (
                           <React.Fragment>
@@ -143,7 +144,8 @@ const CreateWorkout = () => {
                                 label="Excercise Name"
                                 value={exerciseRow.exercise}
                                 onChange={handleExcerciseName}
-                                required>
+                                required
+                                data-test="exerciseNameField">
                               </TextField>
                             </TableCell>
                             <TableCell align="right">
@@ -152,23 +154,24 @@ const CreateWorkout = () => {
                                 label="Seconds"
                                 value={exerciseRow.time}
                                 onChange={handleTime}
-                                required>
+                                required
+                                data-test="timeField">
                               </TextField>
                             </TableCell>
                           </React.Fragment>
                         ) : (
                           <React.Fragment>
-                            <TableCell onClick={() => handleSelected(index)}>
+                            <TableCell onClick={() => handleSelected(index)} data-test="exerciseCell">
                               <Typography variant="body1">{exerciseRow.exercise}</Typography>
                             </TableCell>
-                            <TableCell align="right" onClick={() => handleSelected(index)}>
+                            <TableCell align="right" onClick={() => handleSelected(index)} data-test="timeCell">
                               <Typography variant="body1">{exerciseRow.time}</Typography>
                             </TableCell>
                           </React.Fragment>
                         )
                       }
                       <TableCell padding="checkbox">
-                        <IconButton onClick={() => handleRemoveRow(index)}><Close /></IconButton>
+                        <IconButton onClick={() => handleRemoveRow(index)} data-test="removeButton"><Close /></IconButton>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -182,7 +185,8 @@ const CreateWorkout = () => {
                 variant="outlined"
                 size="large"
                 onClick={handleAddExercise}
-                startIcon={<Add />}>
+                startIcon={<Add />}
+                data-test="addWorkoutButton">
                 Add New Workout
               </Button>
             </Grid>

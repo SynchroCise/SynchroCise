@@ -1,11 +1,11 @@
-import React, {useContext} from "react";
-import {AppContext} from "../../../AppContext"
+import React from "react";
+import {useAppContext} from "../../../AppContext"
 import { Typography, LinearProgress, IconButton, Box } from '@material-ui/core';
 import { PlayArrow, Pause } from '@material-ui/icons';
 
 
 const ExerciseList = ({workoutTime, nextUpExercise}) => {
-    const {workout, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, workoutCounter} = useContext(AppContext)
+    const {workout, sendRoomState, playWorkoutState, setPlayWorkoutState, workoutNumber, workoutCounter} = useAppContext();
 
     const handleStartWorkout = () => {
         var startWorkoutState = !playWorkoutState;
@@ -23,7 +23,8 @@ const ExerciseList = ({workoutTime, nextUpExercise}) => {
             <div><LinearProgress variant="determinate" value={workoutCounter/workoutTime * 100} /></div>
             <Box display="flex" justifyContent="flex-end">
                 <IconButton
-                    onClick={handleStartWorkout}>
+                    onClick={handleStartWorkout}
+                    data-test="startWorkoutButton">
                     {(playWorkoutState) ? <Pause/> : <PlayArrow/>}
                 </IconButton>
             </Box>
@@ -37,10 +38,10 @@ const ExerciseList = ({workoutTime, nextUpExercise}) => {
             {
                 nextUpExercise && nextUpExercise.length > 1 && typeof nextUpExercise != 'string' ? (
                     nextUpExercise.filter((exercise, index) => {return index > workoutNumber}).map((exercise, index) => {
-                        return (<Typography key={index} variant="body2">{exercise}</Typography>)
+                        return (<Typography key={index} variant="body2" data-test="nextUpExerciseComponent">{exercise}</Typography>)
                     })
                 ) : (
-                    <Typography variant="body2">{nextUpExercise}</Typography>
+                    <Typography variant="body2" data-test="nextUpExerciseComponent">{nextUpExercise}</Typography>
                 )
             }
         </React.Fragment>
