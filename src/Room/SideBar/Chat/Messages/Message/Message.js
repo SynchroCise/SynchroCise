@@ -9,7 +9,7 @@ const Message = ({ message: { user, text, time }, currUser, users }) => {
     // }
 
     return (
-        <Box width="100%">
+        <Box width="100%" data-test="messageComponent">
             <Grid container justify="space-between">
                 <Typography variant="body1" align="left" color="primary">{user.name}</Typography>
                 <Typography variant="body2" align="right" color="textSecondary">{time}</Typography>

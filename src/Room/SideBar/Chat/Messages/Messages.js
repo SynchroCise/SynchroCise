@@ -20,11 +20,11 @@ const Messages = ({ messages, currUser, users, times }) => {
     }));
     const classes = useStyles();
     return (
-        <List className={classes.messages} >
+        <List className={classes.messages} data-test="messagesComponent">
             {
                 messages.map((message, i) =>
                     <ListItem key={i} >
-                        <Message message={message} currUser={currUser} users={users} />
+                        <Message message={message} currUser={currUser} users={users} data-test="messageComponent"/>
                     </ListItem>
                 )
             }

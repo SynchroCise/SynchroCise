@@ -1,11 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { findByTestAttr, initContext, initRoomObj, createParticipant, initTrack, asyncUpdateComponent } from '../../utils/test';
+import { findByTestAttr, createParticipant, initTrack, asyncUpdateComponent } from '../../utils/test';
 import Participant from './Participant';
-import requests from '../../utils/requests';
-import { beforeEach } from '@jest/globals';
-
-jest.mock("../../utils/requests");
 
 const setUp = (props={}) => {
     const component = shallow(<Participant {...props} />);
