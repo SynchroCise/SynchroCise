@@ -190,7 +190,7 @@ describe('<Room /> component tests', () => {
             expect(contextValues.room.on).toHaveBeenCalledWith('participantDisconnected', expect.any(Function));
             expect(contextValues.room.on).toHaveBeenCalledTimes(2);
         });
-        it('Should ensure that participant join/leave, adds/removes additional participants', async () => {
+        it('Should ensure that participant join/leave, adds/removes additional participants', () => {
             component = initContext(contextValues, setUp, props);
 
             expect(findByTestAttr(component, 'leaderParticipantComponent').length).toBe(1);

@@ -85,7 +85,7 @@ const Participant = ({ participant, names, participantPage }) => {
       {/* <div className='name'>{participant.identity}</div> */}
       <video ref={videoRef} autoPlay={true} style={{ position: "relative", flexGrow: 1, maxWidth: "100%", minHeight: 0 }} data-test="videoComponent"/>
       <div className="name">
-        <Typography color="secondary">{displayName}</Typography>
+        <Typography color="secondary" data-test="displayNameComponent">{displayName}</Typography>
       </div>
       <audio ref={audioRef} autoPlay={true} muted={true} data-test="audioComponent"/>
     </Box>

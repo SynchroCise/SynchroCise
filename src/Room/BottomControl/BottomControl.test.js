@@ -1,20 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { findByTestAttr, initContext, initRoomObj, createParticipant, asyncUpdateComponent } from '../../utils/test';
+import { findByTestAttr, initContext, initRoomObj, createParticipant } from '../../utils/test';
 import BottomControl from './BottomControl';
-import * as requests from "../../utils/requests"
-import { sckt } from '../../Socket';
 
 jest.mock("../../utils/requests");
-jest.mock('../../Socket', () => ({
-    sckt : {
-        socket: {
-            on: jest.fn(),
-            off: jest.fn(),
-            emit: jest.fn(),
-        }
-    }
-}));
 
 const setUp = (props={}) => {
     const component = shallow(<BottomControl {...props} />);

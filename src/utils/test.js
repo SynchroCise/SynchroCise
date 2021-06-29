@@ -18,29 +18,27 @@ export const initContext = (contextValues, setUp, props={}) => {
     return setUp(props);
 }
 
+export const initTrack = (kind) => ({
+    isTrackEnabled: true,
+    track: {
+        enable: jest.fn(),
+        disable: jest.fn(),
+        attach: jest.fn(),
+        detach: jest.fn()
+    },
+    attach: jest.fn(),
+    detach: jest.fn(),
+    kind
+})
+
 export const createParticipant = (sid) => ({
     sid,
-    videoTracks: [{
-        isTrackEnabled: true,
-        track: {
-            enable: jest.fn(),
-            disable: jest.fn(),
-            attach: jest.fn(),
-            detach: jest.fn()
-        }
-    }],
-    audioTracks: [{
-        isTrackEnabled: true,
-        track: {
-            enable: jest.fn(),
-            disable: jest.fn(),
-            attach: jest.fn(),
-            detach: jest.fn()
-        }
-    }],
+    videoTracks: [initTrack('video')],
+    audioTracks: [initTrack('audio')],
     removeAllListeners: jest.fn(),
     on: jest.fn(),
-    off: jest.fn()
+    off: jest.fn(),
+    removeAllListeners: jest.fn()
 })
 
 export const initRoomObj = () => ({
