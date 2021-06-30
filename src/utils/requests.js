@@ -1,7 +1,12 @@
 import Video from "twilio-video";
 
 const formatResults = async (res) => {
-  let body = await res.json();
+  let body = await res.text();
+  try {
+    body = JSON.parse(body);
+  } catch (err) {
+    body = { message: body };
+  }
   if (!body.message) {
     body.message = (res) ? "Success" : "Failed"
   }

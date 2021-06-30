@@ -64,7 +64,7 @@ const JoinRoom = (props) => {
       }
     };
     checkRoom();
-  }, [history.push, handleSetRoomName, props.match.params.roomCode]);
+  }, [history, handleSetRoomName, props.match.params.roomCode]);
 
 
   const handleMic = () => {

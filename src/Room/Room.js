@@ -186,7 +186,7 @@ const Room = (props) => {
     }
     sckt.socket.on('killroom', handler);
     return () => sckt.socket.off('killroom', handler);
-  }, []);
+  }, [history]);
 
   // resets participant page if there are no remote participants
   useEffect(() => {

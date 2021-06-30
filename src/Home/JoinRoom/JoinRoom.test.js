@@ -102,7 +102,7 @@ describe('<JoinRoom />', () => {
         // wait for component to update
         await runAllPromises();
         component.update();
-        expect(mockPush).toHaveBeenCalledTimes(1);
+        expect(mockPush).toHaveBeenCalled();
         expect(requests.getRoomByName).toHaveBeenCalledTimes(0);
         expect(contextValues.handleSetRoom).toHaveBeenCalledTimes(0);
     });
@@ -113,8 +113,8 @@ describe('<JoinRoom />', () => {
         await runAllPromises();
         component.update();
         expect(mockPush).toHaveBeenCalledTimes(0);
-        expect(requests.getRoomByName).toHaveBeenCalledTimes(1);
-        expect(contextValues.handleSetRoomName).toHaveBeenCalledTimes(1);
+        expect(requests.getRoomByName).toHaveBeenCalled();
+        expect(contextValues.handleSetRoomName).toHaveBeenCalled();
     });
     it('Should test local video track creation', async () => {
         component = initContext(contextValues, setUp, props);
