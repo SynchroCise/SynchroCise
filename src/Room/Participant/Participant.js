@@ -66,6 +66,8 @@ const Participant = ({ participant, names, participantPage }) => {
       return () => {
         videoTrack.detach();
       };
+    } else {
+      console.log("THERE IS NO VIDEO!!")
     }
   }, [videoTracks]);
 
@@ -83,11 +85,11 @@ const Participant = ({ participant, names, participantPage }) => {
   return (
     <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%">
       {/* <div className='name'>{participant.identity}</div> */}
-      <video ref={videoRef} autoPlay={true} style={{ position: "relative", flexGrow: 1, maxWidth: "100%", minHeight: 0 }} data-test="videoComponent"/>
+      {(videoTracks[0]) ? <video ref={videoRef} autoPlay={true} style={{ position: "relative", flexGrow: 1, maxWidth: "100%", minHeight: 0 }} data-test="videoComponent" /> : null}
       <div className="name">
         <Typography color="secondary" data-test="displayNameComponent">{displayName}</Typography>
       </div>
-      <audio ref={audioRef} autoPlay={true} muted={true} data-test="audioComponent"/>
+      <audio ref={audioRef} autoPlay={true} muted={true} data-test="audioComponent" />
     </Box>
   );
 };
