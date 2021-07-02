@@ -160,7 +160,7 @@ const SideBar = ({
                         {!isYoutube && <ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise} data-test="exerciseListComponent"/>}
                     </Grid>
                 </TabPanel>
-                <TabPanel value={sideBarType} index={1} style={{ height: "80%" }} id="TabPanelChat">
+                <TabPanel value={sideBarType} index={1} style={{ height: "85%" }} id="TabPanelChat">
                     <Chat
                         messages={messages}
                         currUser={currUser}
