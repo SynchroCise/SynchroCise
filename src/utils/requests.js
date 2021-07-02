@@ -146,38 +146,43 @@ export const twilioToken = async (tempUserId, roomName) => {
 };
 
 export const createTwilioRoom = async (token, roomName) => {
-
+  let vidPerm;
+  let audPerm;
+  let videoTrack;
+  let audioTrack;
   try {
-    const room = await Video.connect(token, {
-      name: roomName,
-      bandwidthProfile: {
-        mode: "collaboration",
-        maxSubscriptionBitrate: 2400000,
-        renderDimensions: {
-          high: { width: 1080, height: 720 },
-          standard: { width: 640, height: 480 },
-          low: { width: 320, height: 240 },
-        },
-      },
-    });
-    return room;
+    videoTrack = await Video.createLocalVideoTrack();
+    vidPerm = true;
   } catch {
-    const room = await Video.connect(token, {
-      video: false,
-      audio: false,
-      name: roomName,
-      bandwidthProfile: {
-        mode: "collaboration",
-        maxSubscriptionBitrate: 2400000,
-        renderDimensions: {
-          high: { width: 1080, height: 720 },
-          standard: { width: 640, height: 480 },
-          low: { width: 320, height: 240 },
-        },
-      },
-    });
-    return room;
+    vidPerm = false;
+    videoTrack = [];
   }
+  try {
+    audioTrack = await Video.createLocalAudioTrack();
+    audPerm = true;
+  } catch {
+    audPerm = false;
+    audioTrack = [];
+  }
+
+  const tracks = videoTrack.concat(audioTrack);
+  const room = await Video.connect(token, {
+    video: vidPerm,
+    audio: audPerm,
+    name: roomName,
+    tracks: tracks,
+    bandwidthProfile: {
+      mode: "collaboration",
+      maxSubscriptionBitrate: 2400000,
+      renderDimensions: {
+        high: { width: 1080, height: 720 },
+        standard: { width: 640, height: 480 },
+        low: { width: 320, height: 240 },
+      },
+    },
+  });
+  return room;
+
 };
 
 export const joinTwilioRoom = async (token, roomName, tracks) => {

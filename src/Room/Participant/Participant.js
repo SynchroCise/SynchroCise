@@ -66,8 +66,6 @@ const Participant = ({ participant, names, participantPage }) => {
       return () => {
         videoTrack.detach();
       };
-    } else {
-      console.log("THERE IS NO VIDEO!!")
     }
   }, [videoTracks]);
 
