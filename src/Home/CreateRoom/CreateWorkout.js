@@ -1,4 +1,4 @@
-import React, {useCallback, useState, useEffect} from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { useHistory } from 'react-router-dom'
 import { useAppContext } from "../../AppContext"
 import { RoutesEnum } from '../../App'
@@ -9,10 +9,11 @@ import { ArrowForward, Close, CreateOutlined, Add } from '@material-ui/icons';
 import * as requests from "../../utils/requests"
 
 // this component renders form to be passed to VideoChat.js
-const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
+const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => {
   const history = useHistory()
   const { connecting, handleSetConnecting } = useAppContext();
   const [workoutName, setWorkoutName] = useState('')
+  const [title, setTitle] = useState('Create New Workout')
   const [exercises, setExercises] = useState(initExercises)
   const [selectedExercise, setSelectedExercise] = useState(0)
   const [badExerciseIndices, setBadExerciseIndices] = useState([])
@@ -38,6 +39,18 @@ const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
     setWorkoutName(event.target.value);
   }, []);
 
+  const editWorkout = async (id) => {
+    const res = await requests.getUserWorkout(id);
+    if (!res.ok) {
+      return false;
+    }
+    console.log(res)
+    setExercises(res.body.exercises);
+    setWorkoutName(res.body.workoutName);
+    setTitle("Edit Workout");
+    return res;
+  }
+
   const handleAddExercise = () => {
     // checks current selected exercise
     const exercise = { 'exercise': '', 'time': '' };
@@ -48,50 +61,65 @@ const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
   const handleExcerciseName = (event) => {
     let newArr = [...exercises];
     newArr[selectedExercise].exercise = event.target.value;
-    setExercises(newArr)
+    setExercises(newArr);
   }
 
   const handleTime = (event) => {
     let newArr = [...exercises];
     newArr[selectedExercise].time = event.target.value;
-    setExercises(newArr)
+    setExercises(newArr);
   }
 
   const handleSubmit = async (event) => {
+    let res;
     event.preventDefault();
     handleSetConnecting(true);
     setSelectedExercise(null);
     if (!(exercises.length > 0 && badExerciseIndices.length === 0)) { handleSetConnecting(false); return; }
     const newWorkout = { workoutName, exercises }
-    const res = await requests.addWorkout(newWorkout);
+    if (title === "Create New Workout") {
+      res = await requests.addWorkout(newWorkout);
+    } else {
+      res = await requests.editWorkout(newWorkout, window.location.href.split("/")[4]);
+    }
     if (!res.ok) {
       handleSetConnecting(false);
-      alert(res.body.message)
+      alert(res.body.message);
       return;
     }
-    handleSetConnecting(false)
-    history.push(RoutesEnum.CreateRoom)
+    handleSetConnecting(false);
+    history.push(RoutesEnum.CreateRoom);
   }
 
   const handleSelected = (index) => {
-    setSelectedExercise(index)
+    setSelectedExercise(index);
   }
 
   const handleRemoveRow = (index) => {
-    const newArr = [...exercises]
-    newArr.splice(index, 1)
-    setExercises(newArr)
-    if (selectedExercise === index) setSelectedExercise(null)
-    else if (selectedExercise > index) setSelectedExercise(selectedExercise - 1)
+    const newArr = [...exercises];
+    newArr.splice(index, 1);
+    setExercises(newArr);
+    if (selectedExercise === index) setSelectedExercise(null);
+    else if (selectedExercise > index) setSelectedExercise(selectedExercise - 1);
   }
   // updates bad indices
   useEffect(() => {
     const newBadExerciseIndices = exercises.reduce((arr, e, i) => {
-      if (!(e.time && e.exercise && !isNaN(parseInt(e.time)))) arr.push(i)
-      return arr
+      if (!(e.time && e.exercise && !isNaN(parseInt(e.time)))) arr.push(i);
+      return arr;
     }, [])
-    setBadExerciseIndices(newBadExerciseIndices)
-  }, [exercises])
+    setBadExerciseIndices(newBadExerciseIndices);
+  }, [exercises]);
+
+  //Checks to see if it is an edit workout or create workout and rebinds defaults
+  useEffect(() => {
+    let url = window.location.href.split("/");
+    console.log(url[3])
+    console.log(url[4])
+    if (url[3] === "edit-workout") {
+      editWorkout(url[4]);
+    }
+  }, []);
 
   return (
     <Box display="flex" alignItems="center" justifyContent="center" mx={12} my={6} data-test="createWorkoutComponent">
@@ -100,14 +128,14 @@ const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
           <Grid item xs={1}>
             <IconButton
               className={classes.blackButton}
-              onClick={()=>{ history.push(RoutesEnum.CreateRoom) }}
+              onClick={() => { history.push(RoutesEnum.CreateRoom) }}
               data-test="backButton">
-              <Close/>
+              <Close />
             </IconButton>
           </Grid>
           <Grid item container xs spacing={2}>
             <Grid item xs={12}>
-              <Box mb={4}><Typography variant="h4">Create New Workout</Typography></Box>
+              <Box mb={4}><Typography variant="h4">{title}</Typography></Box>
             </Grid>
             <Grid item xs={5}>
               <TextField

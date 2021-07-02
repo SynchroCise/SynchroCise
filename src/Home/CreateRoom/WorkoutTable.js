@@ -1,74 +1,80 @@
 
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useAppContext } from "../../AppContext";
 import { Table, TableBody, TableCell, TableHead, TableRow, Collapse, IconButton, Typography } from '@material-ui/core';
-import { KeyboardArrowDown, KeyboardArrowUp, Close } from '@material-ui/icons';
+import { KeyboardArrowDown, KeyboardArrowUp, Close, Create } from '@material-ui/icons';
 import * as requests from "../../utils/requests"
+import { RoutesEnum } from '../../App'
+import { useHistory } from 'react-router-dom'
 
-const WorkoutTable = ({workoutList, setWorkoutList, selectedWorkout, setSelectedWorkout}) => {
-  const {handleSetWorkout} = useAppContext()
-    const handleSelect = value => () => {
-        setSelectedWorkout(value)
-        handleSetWorkout(workoutList[value])
-    }
-    
-    const handleDeleteWorkout = (workoutId) => {
-        const result = window.confirm("Are you sure you want to delete this workout?")
-        if (!result) return;
-        requests.deleteWorkout(workoutId)
-        const i = workoutList.findIndex(element => element.id === workoutId);
-        const array = [...workoutList];
-        if (i === -1) return;
-        array.splice(i, 1)
-        setWorkoutList(array)
-    };
+const WorkoutTable = ({ workoutList, setWorkoutList, selectedWorkout, setSelectedWorkout }) => {
+  const { handleSetWorkout } = useAppContext()
+  const history = useHistory()
+  const handleSelect = value => () => {
+    setSelectedWorkout(value)
+    handleSetWorkout(workoutList[value])
+  }
 
-    return (
-        <Table data-test="workoutTableComponent">
-            <TableHead>
-                <TableRow>
-                    <TableCell/>
-                    <TableCell><b>Workout</b></TableCell>
-                    <TableCell align="right"><b>Created By</b></TableCell>
-                    <TableCell align="right"><b>Time</b></TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                { workoutList.map((row, index) => 
-                <Row key={index}
-                  row={row}
-                  index={index}
-                  handleSelect={handleSelect}
-                  handleDeleteWorkout={handleDeleteWorkout}
-                  selectedWorkout={selectedWorkout}
-                  data-test="rowComponent"/>) 
-                }
-            </TableBody>
-        </Table>
-    );
+  const handleDeleteWorkout = (workoutId) => {
+    const result = window.confirm("Are you sure you want to delete this workout?")
+    if (!result) return;
+    requests.deleteWorkout(workoutId)
+    const i = workoutList.findIndex(element => element.id === workoutId);
+    const array = [...workoutList];
+    if (i === -1) return;
+    array.splice(i, 1)
+    setWorkoutList(array)
+  };
+
+  const handleEditWorkout = (workout) => {
+    history.push(`${RoutesEnum.EditWorkout}/${workout.id}`);
+  }
+  return (
+    <Table data-test="workoutTableComponent">
+      <TableHead>
+        <TableRow>
+          <TableCell />
+          <TableCell><b>Workout</b></TableCell>
+          <TableCell align="right"><b>Created By</b></TableCell>
+          <TableCell align="right"><b>Time</b></TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {workoutList.map((row, index) =>
+          <Row key={index}
+            row={row}
+            index={index}
+            handleSelect={handleSelect}
+            handleDeleteWorkout={handleDeleteWorkout}
+            handleEditWorkout={handleEditWorkout}
+            selectedWorkout={selectedWorkout}
+            data-test="rowComponent" />)
+        }
+      </TableBody>
+    </Table>
+  );
 }
 
-export const Row = ({row, index, handleSelect, handleDeleteWorkout, selectedWorkout}) => {
+export const Row = ({ row, index, handleSelect, handleDeleteWorkout, selectedWorkout, handleEditWorkout }) => {
   const [open, setOpen] = useState(false);
   // https://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds
-  const fancyTimeFormat = (duration) =>
-  {    
-      // Hours, minutes and seconds
-      var hrs = ~~(duration / 3600);
-      var mins = ~~((duration % 3600) / 60);
-      var secs = ~~duration % 60;
+  const fancyTimeFormat = (duration) => {
+    // Hours, minutes and seconds
+    var hrs = ~~(duration / 3600);
+    var mins = ~~((duration % 3600) / 60);
+    var secs = ~~duration % 60;
 
-      // Output like "1:01" or "4:03:59" or "123:03:59"
-      var ret = "";
+    // Output like "1:01" or "4:03:59" or "123:03:59"
+    var ret = "";
 
-      if (hrs > 0) {
-          ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
-      }
+    if (hrs > 0) {
+      ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+    }
 
-      ret += "" + mins + ":" + (secs < 10 ? "0" : "");
-      ret += "" + secs;
-      return ret;
+    ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+    ret += "" + secs;
+    return ret;
   }
   const useStyles = makeStyles(theme => ({
     tableRow: {
@@ -98,7 +104,7 @@ export const Row = ({row, index, handleSelect, handleDeleteWorkout, selectedWork
         selected={index === selectedWorkout}>
         <TableCell padding='checkbox'>
           <IconButton onClick={() => setOpen(!open)} data-test="collapseButton">
-            {open ? <KeyboardArrowUp data-test="arrUp" /> : <KeyboardArrowDown  data-test="arrDown"/>}
+            {open ? <KeyboardArrowUp data-test="arrUp" /> : <KeyboardArrowDown data-test="arrDown" />}
           </IconButton>
         </TableCell>
         <TableCell className={classes.tableCell} onClick={handleSelect(index)} data-test="workoutName">{row.workoutName}</TableCell>
@@ -106,7 +112,12 @@ export const Row = ({row, index, handleSelect, handleDeleteWorkout, selectedWork
         <TableCell className={classes.tableCell} onClick={handleSelect(index)} align="right" data-test="exercise">{fancyTimeFormat(row.exercises.reduce((a, b) => a + parseInt(b.time), 0))}</TableCell>
         <TableCell padding='checkbox'>
           <IconButton onClick={() => handleDeleteWorkout(row.id)} data-test="deleteWorkoutButton">
-            <Close/>
+            <Close />
+          </IconButton>
+        </TableCell>
+        <TableCell padding='checkbox'>
+          <IconButton onClick={() => handleEditWorkout(row)}>
+            <Create />
           </IconButton>
         </TableCell>
       </TableRow>

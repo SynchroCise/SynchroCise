@@ -157,7 +157,7 @@ const SideBar = ({
                 </Tabs>
                 <TabPanel value={sideBarType} index={0}>
                     <Grid item>
-                        {!isYoutube && <ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise} data-test="exerciseListComponent"/>}
+                        {!isYoutube && <ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise} data-test="exerciseListComponent" />}
                     </Grid>
                 </TabPanel>
                 <TabPanel value={sideBarType} index={1} style={{ height: "85%" }} id="TabPanelChat">

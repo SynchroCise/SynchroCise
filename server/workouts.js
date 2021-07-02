@@ -34,7 +34,7 @@ const getWorkoutById = async (id) => {
         return null;
     }
     const workout = workoutFromDoc(doc)
-    return workout
+    return workout;
 };
 
 const setDeleteWorkout = (workoutId) => {
@@ -47,10 +47,6 @@ const setDeleteWorkout = (workoutId) => {
 const addWorkout = async (workoutName, exercises, userId) => {
     if (workoutName == undefined || exercises == undefined || exercises.length == 0) {
         return [400, 'Invalid Workout']
-    }
-    let workouts = await getUserWorkouts(userId)
-    if (workouts && workouts.some(e => e.workoutName == workoutName)) {
-        return [400, 'Workout with existing name exists. Please change the name of the workout and try again.']
     }
     // TODO: Add userId once we implement login
     const docRef = db.collection('workouts').doc()

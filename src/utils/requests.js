@@ -10,10 +10,10 @@ const formatResults = async (res) => {
   if (!body.message) {
     body.message = (res) ? "Success" : "Failed"
   }
-  return { 
+  return {
     ok: res.ok,
     body
-  } 
+  }
 };
 
 // Room related requests
@@ -37,7 +37,7 @@ export const getRoomCode = async () => {
   return formatResults(res);
 };
 
-export const createRoom = async (room, workoutId, workoutType='vid') => {
+export const createRoom = async (room, workoutId, workoutType = 'vid') => {
   const res = await fetch("/api/rooms", {
     method: "POST",
     body: JSON.stringify({
@@ -82,16 +82,6 @@ export const getUserProfile = async () => {
   return formatResults(res);
 };
 
-export const getUserWorkouts = async () => {
-  const res = await fetch("/user/getWorkouts", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  return formatResults(res);
-};
-
 export const userLogout = async () => {
   const res = await fetch('/user/logout', { method: "POST" });
   return formatResults(res);
@@ -114,6 +104,26 @@ export const userSignUp = async (formData) => {
 }
 
 // Workout related requests
+export const getUserWorkouts = async () => {
+  const res = await fetch("/user/getWorkouts", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return formatResults(res);
+};
+
+export const getUserWorkout = async (workoutId) => {
+  const res = await fetch(`/user/getWorkout?workoutId=${workoutId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return formatResults(res);
+};
+
 export const addWorkout = async (newWorkout) => {
   const res = await fetch("/user/addWorkout", {
     method: "POST",
@@ -125,13 +135,24 @@ export const addWorkout = async (newWorkout) => {
   return formatResults(res);
 }
 
+export const editWorkout = async (newWorkout, workoutId) => {
+  const res = await fetch("/user/editWorkout", {
+    method: "PUT",
+    body: JSON.stringify({ newWorkout: newWorkout, workoutId: workoutId }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return formatResults(res);
+}
+
 export const deleteWorkout = async (workoutId) => {
-  const res = await fetch('/api/deleteWorkout', {
-      method: "POST",
-      body: JSON.stringify({workoutId}),
-      headers: {
-          "Content-Type": "application/json",
-      },
+  const res = await fetch('/user/deleteWorkout', {
+    method: "POST",
+    body: JSON.stringify({ workoutId }),
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
   return formatResults(res);
 }
@@ -157,9 +178,9 @@ export const createTwilioRoom = async (token, roomName) => {
       mode: 'collaboration',
       maxSubscriptionBitrate: 2400000,
       renderDimensions: {
-        high: {width: 1080, height: 720},
-        standard: {width: 640, height: 480},
-        low: {width: 320, height: 240}
+        high: { width: 1080, height: 720 },
+        standard: { width: 640, height: 480 },
+        low: { width: 320, height: 240 }
       }
     }
   });

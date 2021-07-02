@@ -7,7 +7,7 @@ const router = express.Router();
 require('./auth');
 
 const { getUsersInRoom, getUserById, createTempUser } = require('./users.js');
-const { getWorkouts, getWorkoutByName, setDeleteWorkout } = require('./workouts.js');
+const { getWorkouts, getWorkoutByName } = require('./workouts.js');
 const { addRoom, getRoomCode, getRoomsByCode } = require('./rooms.js');
 const { reservationsUrl } = require('twilio/lib/jwt/taskrouter/util');
 
@@ -53,21 +53,16 @@ router.get('/api/workouts', async (req, res) => {
   }
 });
 
-router.post('/api/deleteWorkout', async (req, res) => {
-  const workoutId = req.body.workoutId;
-  if (workoutId) setDeleteWorkout(workoutId);
-});
-
 // ROOMS
 router.get('/api/rooms', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   const roomCode = req.query.sid_or_name;
-  if (!roomCode) return res.status(400).send(JSON.stringify({message: 'Invalid sid_or_name'}))
+  if (!roomCode) return res.status(400).send(JSON.stringify({ message: 'Invalid sid_or_name' }))
   room = (await getRoomsByCode(roomCode))[0];
   if (room != undefined) {
     res.send(JSON.stringify(room));
   } else {
-    const errMessage = JSON.stringify({message: 'Unable to find room'});
+    const errMessage = JSON.stringify({ message: 'Unable to find room' });
     res.status(400).send(errMessage);
   }
 });
@@ -75,36 +70,36 @@ router.get('/api/rooms', async (req, res) => {
 router.get('/api/roomCode', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   const roomCode = getRoomCode();
-  if (!roomCode) return res.status(400).send(JSON.stringify({message: 'Invalid roomCode'}))
-  res.send(JSON.stringify({roomCode}));
+  if (!roomCode) return res.status(400).send(JSON.stringify({ message: 'Invalid roomCode' }))
+  res.send(JSON.stringify({ roomCode }));
 });
 
 router.post('/api/rooms', async (req, res) => {
   res.setHeader('Content-Type', 'text/plain');
   const room = req.body;
   const [code, roomCode] = await addRoom(room.name, room.sid, room.workoutID, room.workoutType);
-  res.status(code).send(JSON.stringify({roomCode}));
+  res.status(code).send(JSON.stringify({ roomCode }));
 });
 
 router.post('/api/createTempUser', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   const name = req.body.name;
-  if (!name) return res.status(400).send(JSON.stringify({message: 'Invalid name'}));
+  if (!name) return res.status(400).send(JSON.stringify({ message: 'Invalid name' }));
   const userCode = await createTempUser(name)
-  if (!userCode) return res.status(400).send(JSON.stringify({message: 'Invalid userCode'}));
-  res.send(JSON.stringify({userCode}));
+  if (!userCode) return res.status(400).send(JSON.stringify({ message: 'Invalid userCode' }));
+  res.send(JSON.stringify({ userCode }));
 });
 
 //OLD V
 router.get('/api/displayName', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   const id = req.query.id;
-  if (!id) return res.status(400).send(JSON.stringify({message: 'Invalid id'}))
+  if (!id) return res.status(400).send(JSON.stringify({ message: 'Invalid id' }))
   const user = await getUserById(id);
   if (user) {
     res.send(JSON.stringify({ name: user.name }));
   } else {
-    res.status(400).send(JSON.stringify({message: 'Unable to obtain display name'}));
+    res.status(400).send(JSON.stringify({ message: 'Unable to obtain display name' }));
   }
 });
 
@@ -113,13 +108,13 @@ router.get('/api/displayNameInRoom', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   const id = req.query.rid;
   let userArr = []
-  if (!id) return res.status(400).send(JSON.stringify({message: 'Invalid id'}))
+  if (!id) return res.status(400).send(JSON.stringify({ message: 'Invalid id' }))
   const users = await getUsersInRoom(id);
   users.map((user) => userArr.push({ name: user.name, sid: user.sid }))
   if (users) {
     res.send(JSON.stringify(userArr));
   } else {
-    res.status(400).send(JSON.stringify({message: 'Unable to obtain display name'}));
+    res.status(400).send(JSON.stringify({ message: 'Unable to obtain display name' }));
   }
 });
 
@@ -129,7 +124,7 @@ router.post(
   (req, res, next) => {
     passport.authenticate('signup', (err, user, info) => {
       if (err) { return next(err) }
-      if (info.error) { return res.status(401).send(JSON.stringify({message:info.message})) }
+      if (info.error) { return res.status(401).send(JSON.stringify({ message: info.message })) }
       res.json({
         message: 'Signup successful',
         user: user
@@ -144,10 +139,10 @@ router.post(
       'login',
       async (err, user, info) => {
         try {
-          if (info.error) { return res.status(401).send(JSON.stringify({message:info.message})) }
+          if (info.error) { return res.status(401).send(JSON.stringify({ message: info.message })) }
           if (err || !user) {
             const msg = (info.message) ? info.message : "";
-            return res.status(401).send(JSON.stringify({message:msg}))
+            return res.status(401).send(JSON.stringify({ message: msg }))
           }
           req.login(
             user,

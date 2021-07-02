@@ -1,10 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 // import "./App.css";
 import Navbar from "./components/Navbar";
 import Home from "./Home/Home";
 // import "./media/CoLab.css";
-import {AppContextProvider} from "./AppContext"
+import { AppContextProvider } from "./AppContext"
 import CreateRoom from "./Home/CreateRoom/CreateRoom";
 import CreateWorkout from "./Home/CreateRoom/CreateWorkout";
 import JoinRoom from "./Home/JoinRoom/JoinRoom";
@@ -18,7 +18,8 @@ const RoutesEnum = {
   Room: '/room',
   CreateRoom: '/create-room',
   JoinRoom: '/join-room',
-  CreateWorkout: '/create-workout'
+  CreateWorkout: '/create-workout',
+  EditWorkout: '/edit-workout'
 }
 
 const App = () => {
@@ -30,12 +31,13 @@ const App = () => {
           <AppContextProvider>
             <Router>
               <Switch>
-                <Route path={`${RoutesEnum.Room}/:roomCode?`} component={Room}/>
+                <Route path={`${RoutesEnum.Room}/:roomCode?`} component={Room} />
                 <>
                   <Navbar />
                   <Route path={RoutesEnum.Home} exact component={Home} />
                   <Route path={`${RoutesEnum.CreateRoom}`} component={CreateRoom} />
                   <Route path={`${RoutesEnum.JoinRoom}/:roomCode?`} component={JoinRoom} />
+                  <Route path={`${RoutesEnum.EditWorkout}/:workoutId?`} component={CreateWorkout} />
                   <Route path={RoutesEnum.CreateWorkout} component={CreateWorkout} />
                 </>
               </Switch>
