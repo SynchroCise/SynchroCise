@@ -43,7 +43,6 @@ const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => 
     if (!res.ok) {
       return false;
     }
-    console.log(res)
     setExercises(res.body.exercises);
     setWorkoutName(res.body.workoutName);
 
@@ -132,7 +131,7 @@ const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => 
           </Grid>
           <Grid item container xs spacing={2}>
             <Grid item xs={12}>
-              <Box mb={4}><Typography variant="h4">{window.location.href.split("/")[4] ? "Edit Workout" : "Create Workout"}</Typography></Box>
+              <Box mb={4}><Typography variant="h4" data-test="workoutTitle">{window.location.href.split("/")[3] === 'edit-workout' ? "Edit Workout" : "Create Workout"}</Typography></Box>
             </Grid>
             <Grid item xs={5}>
               <TextField
