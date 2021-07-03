@@ -116,7 +116,7 @@ export const Row = ({ row, index, handleSelect, handleDeleteWorkout, selectedWor
           </IconButton>
         </TableCell>
         <TableCell padding='checkbox'>
-          <IconButton onClick={() => handleEditWorkout(row)}>
+          <IconButton onClick={() => handleEditWorkout(row)} data-test="editWorkoutButton">
             <Create />
           </IconButton>
         </TableCell>
