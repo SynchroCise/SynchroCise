@@ -64,7 +64,7 @@ const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => 
     setSelectedExercise(null);
     if (!(exercises.length > 0 && badExerciseIndices.length === 0)) { handleSetConnecting(false); return; }
     const newWorkout = { workoutName, exercises }
-    if (window.location.href.split("/")[4]) {
+    if (window.location.href.split("/")[3] === 'edit-workout') {
       res = await requests.editWorkout(newWorkout, window.location.href.split("/")[4]);
     } else {
       res = await requests.addWorkout(newWorkout);
@@ -112,8 +112,10 @@ const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => 
       return res;
     }
     let url = window.location.href.split("/");
-    if (url[3] === "edit-workout") {
+    if (url[3] === "edit-workout" && url[4]) {
       editWorkout(url[4]);
+    } else if (url[3] === "edit-workout") {
+      history.push(RoutesEnum.Home)
     }
   }, [history]);
 
