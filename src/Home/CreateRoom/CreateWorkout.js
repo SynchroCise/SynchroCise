@@ -38,17 +38,6 @@ const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => 
     setWorkoutName(event.target.value);
   }, []);
 
-  const editWorkout = async (id) => {
-    const res = await requests.getUserWorkout(id);
-    if (!res.ok) {
-      return false;
-    }
-    setExercises(res.body.exercises);
-    setWorkoutName(res.body.workoutName);
-
-    return res;
-  }
-
   const handleAddExercise = () => {
     // checks current selected exercise
     const exercise = { 'exercise': '', 'time': '' };
@@ -111,11 +100,22 @@ const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => 
 
   //Checks to see if it is an edit workout or create workout and rebinds defaults
   useEffect(() => {
+    const editWorkout = async (id) => {
+      const res = await requests.getUserWorkout(id);
+      if (!res.ok) {
+        history.push(RoutesEnum.Home);
+        return false;
+      }
+      setExercises(res.body.exercises);
+      setWorkoutName(res.body.workoutName);
+
+      return res;
+    }
     let url = window.location.href.split("/");
     if (url[3] === "edit-workout") {
       editWorkout(url[4]);
     }
-  }, []);
+  }, [history]);
 
   return (
     <Box display="flex" alignItems="center" justifyContent="center" mx={12} my={6} data-test="createWorkoutComponent">
