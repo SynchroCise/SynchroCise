@@ -1,19 +1,19 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { useAppContext } from "../../AppContext";
-import {Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles} from '@material-ui/core';
-import { ArrowForward, ArrowBack, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter} from '@material-ui/icons';
+import { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles } from '@material-ui/core';
+import { ArrowForward, ArrowBack, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter } from '@material-ui/icons';
 
-const BottomControl = ({participants, participantPage, setParticipantPage, leaderParticipantIDs, ppp}) => {
+const BottomControl = ({ participants, participantPage, setParticipantPage, leaderParticipantIDs, ppp }) => {
     const { room, sendRoomState, workoutType, setWorkoutType, openSideBar, handleOpenSideBar } = useAppContext();
-    const [vid, setVid] = useState((room) ? room.localParticipant.videoTracks.values().next().value.isTrackEnabled : false);
-    const [mic, setMic] = useState((room) ? room.localParticipant.audioTracks.values().next().value.isTrackEnabled : false);
+    const [vid, setVid] = useState(true);
+    const [mic, setMic] = useState(true);
 
     const handleChangeWorkoutType = (value) => {
         const newWorkoutType = value ? 'yt' : 'vid';
         sendRoomState({
             eventName: 'syncWorkoutType',
             eventParams: { workoutType: newWorkoutType }
-        }, () => {setWorkoutType(newWorkoutType)});
+        }, () => { setWorkoutType(newWorkoutType) });
     }
 
     const handleMic = () => {
@@ -50,28 +50,28 @@ const BottomControl = ({participants, participantPage, setParticipantPage, leade
     })(BottomNavigationAction);
 
     return (
-        <Grid item container xs={12} style={{width:"100%"}} alignItems="center" data-test="bottomControlComponent">
+        <Grid item container xs={12} style={{ width: "100%" }} alignItems="center" data-test="bottomControlComponent">
             <Grid item xs={4}>
                 <Box display="flex" justifyContent="flex-start" alignItems="center">
                     <IconButton color="secondary" onClick={handleVid} data-test="videoButton">
-                        {vid ? <Videocam data-test="vidOn"/> : <VideocamOff data-test="vidOff"/>}
+                        {vid ? <Videocam data-test="vidOn" /> : <VideocamOff data-test="vidOff" />}
                     </IconButton>
                     <IconButton color="secondary" onClick={handleMic} data-test="micButton">
-                        {mic ? <Mic data-test="micOn"/> : <MicOff data-test="micOff"/>}
+                        {mic ? <Mic data-test="micOn" /> : <MicOff data-test="micOff" />}
                     </IconButton>
-                        {/* <IconButton>
+                    {/* <IconButton>
                         <CallEnd></CallEnd>
                         </IconButton> */}
                 </Box>
-                </Grid>
+            </Grid>
             <Grid item xs={4}>
                 <Box display="flex" justifyContent="center" alignItems="center" l={3} r={3}>
                     <IconButton color="secondary" onClick={() => handleParticipantPage(-1)} data-test="backPPButton">
-                    <ArrowBack style={{fill: "white"}}/>
+                        <ArrowBack style={{ fill: "white" }} />
                     </IconButton>
                     <Typography color="secondary"> {participants.length + leaderParticipantIDs.length}/{participants.length + leaderParticipantIDs.length} participants {participantPage} </Typography>
                     <IconButton color="secondary" onClick={() => handleParticipantPage(1)} data-test="forwardPPButton">
-                    <ArrowForward style={{fill: "white"}}/>
+                        <ArrowForward style={{ fill: "white" }} />
                     </IconButton>
                 </Box>
             </Grid>
@@ -91,14 +91,14 @@ const BottomControl = ({participants, participantPage, setParticipantPage, leade
                         }}
                         showLabels
                         // className={classes.root}
-                        color="secondary" 
+                        color="secondary"
                         data-test="changeWorkoutNavigation"
                     >
-                    <CustomBottomNavigationAction label="Custom" icon={<FitnessCenter />} />
-                    <CustomBottomNavigationAction color="secondary" label="Youtube" icon={<YouTube/>} />
+                        <CustomBottomNavigationAction label="Custom" icon={<FitnessCenter />} />
+                        <CustomBottomNavigationAction color="secondary" label="Youtube" icon={<YouTube />} />
                     </BottomNavigation>
                     <IconButton color="secondary" onClick={handleOpenSideBar} data-test="sidebarButton">
-                    {openSideBar ? <ChevronRight /> : <ChevronLeft />}
+                        {openSideBar ? <ChevronRight /> : <ChevronLeft />}
                     </IconButton>
                 </Box>
             </Grid>

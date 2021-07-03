@@ -1,17 +1,17 @@
-import React, {useState, useEffect} from "react";
-import {useHistory} from 'react-router-dom'
-import {useAppContext} from "../../AppContext"
+import React, { useState, useEffect } from "react";
+import { useHistory } from 'react-router-dom'
+import { useAppContext } from "../../AppContext"
 import { RoutesEnum } from '../../App'
 import WorkoutTable from "./WorkoutTable"
 import { makeStyles } from "@material-ui/core/styles";
-import { FormControlLabel, Switch, IconButton, Box, Typography, TextField, InputAdornment, Grid} from '@material-ui/core';
+import { FormControlLabel, Switch, IconButton, Box, Typography, TextField, InputAdornment, Grid } from '@material-ui/core';
 import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward } from '@material-ui/icons';
 import * as requests from "../../utils/requests"
 
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const {userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn} = useAppContext()
+  const { userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
   const history = useHistory()
   const [selectedWorkout, setSelectedWorkout] = useState(0);
   const [workoutList, setWorkoutList] = useState([]);
@@ -31,7 +31,7 @@ const CreateRoom = () => {
     }
     initWorkouts();
   }, [isLoggedIn, handleSetWorkout]);
-   
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     handleSetConnecting(true);
@@ -42,7 +42,7 @@ const CreateRoom = () => {
     const room = await requests.createTwilioRoom(token, roomName);
     if (!room) { handleSetConnecting(false); return; }
     room.localParticipant.tracks.forEach(localTracks => {
-      localTracks.setPriority('high')
+      localTracks.setPriority('high');
     });
     // Creates a room in the server
     const room_res = await requests.createRoom(room, workout.id, 'vid');
@@ -77,8 +77,8 @@ const CreateRoom = () => {
       <form onSubmit={handleSubmit} data-test="createRoomForm">
         <Grid container justify="center" spacing={4} wrap="nowrap">
           <Grid item xs={1}>
-            <IconButton className={classes.blackButton} onClick={()=>{history.push(RoutesEnum.Home)}} data-test="backButton">
-              <ArrowBack/>
+            <IconButton className={classes.blackButton} onClick={() => { history.push(RoutesEnum.Home) }} data-test="backButton">
+              <ArrowBack />
             </IconButton>
           </Grid>
           <Grid container item xs spacing={2}>
@@ -102,7 +102,7 @@ const CreateRoom = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={7}/>
+            <Grid item xs={7} />
             <Grid item xs={5}>
               <TextField
                 label="Display Name"
@@ -122,7 +122,7 @@ const CreateRoom = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={7}/>
+            <Grid item xs={7} />
             <Grid item>
               <Box my={3}>
                 <FormControlLabel
@@ -138,7 +138,7 @@ const CreateRoom = () => {
             </Grid>
             <Grid container item justify="space-between" xs={12}>
               <Grid item>
-                <Typography variant="h4" style={{flexGrow: 1}}>Workouts</Typography>
+                <Typography variant="h4" style={{ flexGrow: 1 }}>Workouts</Typography>
               </Grid>
               <Grid item>
                 <IconButton onClick={handleAddWorkout} className={classes.blackButton} data-test="addWorkoutButton"><Add /></IconButton>
@@ -146,16 +146,16 @@ const CreateRoom = () => {
             </Grid>
             <Grid item xs={12}>
               {
-                (isLoggedIn) ? 
-                (<Box width="100%">
-                  <WorkoutTable
-                    workoutList={workoutList}
-                    selectedWorkout={selectedWorkout}
-                    setSelectedWorkout={setSelectedWorkout}
-                    setWorkoutList={setWorkoutList}
-                    data-test="workoutTableComponent"
-                  />
-                </Box>) : null
+                (isLoggedIn) ?
+                  (<Box width="100%">
+                    <WorkoutTable
+                      workoutList={workoutList}
+                      selectedWorkout={selectedWorkout}
+                      setSelectedWorkout={setSelectedWorkout}
+                      setWorkoutList={setWorkoutList}
+                      data-test="workoutTableComponent"
+                    />
+                  </Box>) : null
               }
             </Grid>
           </Grid>
@@ -166,7 +166,7 @@ const CreateRoom = () => {
                 className={classes.containedButton}
                 disabled={!roomName || connecting}
                 type="submit">
-                <ArrowForward/>
+                <ArrowForward />
               </IconButton>
             </Box>
           </Grid>
