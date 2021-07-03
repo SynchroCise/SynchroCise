@@ -38,6 +38,15 @@ describe('<Participant /> component tests', () => {
         await asyncUpdateComponent(component)
         expect(findByTestAttr(component, "displayNameComponent").text()).toBe('helloworld');
     });
+    it('Should not render videoTracks if participant has no tracks', () => {
+        props.participant.videoTracks = [];
+        component = setUp(props);
+        expect(findByTestAttr(component, "videoComponent").length).toBe(0);
+    });
+    it('Should render videoTracks if participant has tracks', () => {
+        component = setUp(props);
+        expect(findByTestAttr(component, "videoComponent").length).toBe(1);
+    });
     describe('Test participant listeners', () => {
         it('Should initialize all participant listeners', () => {
             component = setUp(props);

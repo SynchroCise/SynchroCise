@@ -85,7 +85,7 @@ npm run dev
 
 This will open in your browser at [localhost:3000](http://localhost:3000). Enjoy!
 
-## Deploy to GCP instructions
+## Steps to deploy to GCP
 
 1. Get credentials to Google Container Registry
 ```
@@ -97,23 +97,33 @@ gcloud auth configure-docker
 docker build -t gcr.io/[PROJECT_ID]/app:v1 .
 docker push gcr.io/[PROJECT_ID]/app:v1
 ```
-3. Connect to kubernetes cluster navigating to GCP -> Kubernetes Engine -> Connect
-4. Create Deployment and service 
+3. When uploading new container, restart deployment to apply changes
 ```
-kubectl apply -f deployment.yaml --record
+kubectl rollout restart deployment
 ```
-5. Check deployment process / pods (containers)
+
+## Steps to apply new kubernetes configuration
+1. Connect to kubernetes cluster navigating to GCP -> Kubernetes Engine -> Connect, OR
+```
+gcloud container clusters get-credentials [CLUSTER_NAME] --zone [ZONE] --project [PROJECT_ID]
+```
+2. Create Public external IP to bind to the ingress
+This external IP is the same IP that ingress exposes!
+```
+gcloud compute addresses create synchrocise-ip --global
+```
+3. Apply configurations to the cluster
+```
+kubectl apply -f cluster/
+```
+4. Check deployment process / pods / services (containers)
+External IP address of ingress is the IP connected to `synchrocise.com`
 ```
 kubectl get deployments
 kubectl get pods
-```
-6. Check service and copy external IP address (LoadBalancer)
-```
 kubectl get services
+kubectl get ingress
 ```
-7. Open in browser:
-```
-http://<EXTERNAL-IP>:3001
-```
+
 ## Check out our devpost!
 [Click Me!](https://devpost.com/software/colab-qfjwod)

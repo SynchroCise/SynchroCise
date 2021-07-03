@@ -8,12 +8,12 @@ const formatResults = async (res) => {
     body = { message: body };
   }
   if (!body.message) {
-    body.message = (res) ? "Success" : "Failed"
+    body.message = res ? "Success" : "Failed";
   }
   return {
     ok: res.ok,
     body
-  }
+  };
 };
 
 // Room related requests
@@ -28,7 +28,7 @@ export const getRoomByName = async (roomName) => {
 };
 
 export const getRoomCode = async () => {
-  const res = await fetch('/api/roomCode', {
+  const res = await fetch("/api/roomCode", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -37,7 +37,8 @@ export const getRoomCode = async () => {
   return formatResults(res);
 };
 
-export const createRoom = async (room, workoutId, workoutType = 'vid') => {
+
+export const createRoom = async (room, workoutId, workoutType = "vid") => {
   const res = await fetch("/api/rooms", {
     method: "POST",
     body: JSON.stringify({
@@ -61,7 +62,7 @@ export const getDisplayNamesInRoom = async (roomSid) => {
     },
   });
   return formatResults(res);
-}
+};
 
 // User related requests
 export const createTempUser = async (name) => {
@@ -73,35 +74,35 @@ export const createTempUser = async (name) => {
     },
   });
   return formatResults(res);
-}
+};
 
 export const getUserProfile = async () => {
-  const res = await fetch('/user/profile', {
-    method: 'GET',
+  const res = await fetch("/user/profile", {
+    method: "GET",
   });
   return formatResults(res);
 };
 
 export const userLogout = async () => {
-  const res = await fetch('/user/logout', { method: "POST" });
+  const res = await fetch("/user/logout", { method: "POST" });
   return formatResults(res);
-}
+};
 
 export const userLogin = async (formData) => {
-  const res = await fetch('/login', {
-    method: 'POST',
+  const res = await fetch("/login", {
+    method: "POST",
     body: formData,
   });
   return formatResults(res);
-}
+};
 
 export const userSignUp = async (formData) => {
-  const res = await fetch('/signup', {
-    method: 'POST',
+  const res = await fetch("/signup", {
+    method: "POST",
     body: formData,
   });
   return formatResults(res);
-}
+};
 
 // Workout related requests
 export const getUserWorkouts = async () => {
@@ -133,7 +134,7 @@ export const addWorkout = async (newWorkout) => {
     },
   });
   return formatResults(res);
-}
+};
 
 export const editWorkout = async (newWorkout, workoutId) => {
   const res = await fetch("/user/editWorkout", {
@@ -147,7 +148,7 @@ export const editWorkout = async (newWorkout, workoutId) => {
 }
 
 export const deleteWorkout = async (workoutId) => {
-  const res = await fetch('/user/deleteWorkout', {
+  const res = await fetch("/user/deleteWorkout", {
     method: "POST",
     body: JSON.stringify({ workoutId }),
     headers: {
@@ -155,7 +156,7 @@ export const deleteWorkout = async (workoutId) => {
     },
   });
   return formatResults(res);
-}
+};
 // Twilio related requests
 export const twilioToken = async (tempUserId, roomName) => {
   const res = await fetch("/video/token", {
@@ -169,29 +170,48 @@ export const twilioToken = async (tempUserId, roomName) => {
     },
   });
   return formatResults(res);
-}
+};
 
 export const createTwilioRoom = async (token, roomName) => {
+  let vidPerm;
+  let audPerm;
+  let tracks = [];
+  try {
+    tracks.push(await Video.createLocalVideoTrack());
+    vidPerm = true;
+  } catch {
+    vidPerm = false;
+  }
+  try {
+    tracks.push(await Video.createLocalAudioTrack());
+    audPerm = true;
+  } catch {
+    audPerm = false;
+  }
   const room = await Video.connect(token, {
+    video: vidPerm,
+    audio: audPerm,
     name: roomName,
+    tracks: tracks,
     bandwidthProfile: {
-      mode: 'collaboration',
+      mode: "collaboration",
       maxSubscriptionBitrate: 2400000,
       renderDimensions: {
         high: { width: 1080, height: 720 },
         standard: { width: 640, height: 480 },
-        low: { width: 320, height: 240 }
-      }
-    }
+        low: { width: 320, height: 240 },
+      },
+    },
   });
-  return room
+  return room;
 };
 
 export const joinTwilioRoom = async (token, roomName, tracks) => {
   const room = await Video.connect(token, {
+    audio: false,
+    video: false,
     name: roomName,
-    tracks: tracks
+    tracks: tracks,
   });
   return room;
-}
-
+};
