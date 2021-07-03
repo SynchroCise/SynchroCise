@@ -169,7 +169,6 @@ export const createTwilioRoom = async (token, roomName) => {
     audPerm = false;
     audioTrack = [];
   }
-
   const tracks = videoTrack.concat(audioTrack);
   const room = await Video.connect(token, {
     video: vidPerm,
@@ -187,7 +186,6 @@ export const createTwilioRoom = async (token, roomName) => {
     },
   });
   return room;
-
 };
 
 export const joinTwilioRoom = async (token, roomName, tracks) => {
