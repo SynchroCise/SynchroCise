@@ -4,6 +4,12 @@ import { findByTestAttr, initContext } from '../../utils/test';
 import WorkoutTable, { Row } from './WorkoutTable';
 
 jest.mock("../../utils/requests");
+const mockPush = jest.fn();
+jest.mock('react-router-dom', () => ({
+    useHistory: () => ({
+      push: mockPush,
+    }),
+}));
 
 describe('<WorkoutTable />', () => {
     let component;
@@ -57,6 +63,7 @@ describe('<Row />', () => {
             index: 0,
             handleSelect: jest.fn(),
             handleDeleteWorkout: jest.fn(),
+            handleEditWorkout: jest.fn(),
             selectedWorkout: 0
         }
         jest.spyOn(window, 'confirm').mockImplementation(() => true);
@@ -91,5 +98,10 @@ describe('<Row />', () => {
         button = findByTestAttr(component, 'collapseButton');
         expect(wrapper.prop('in')).toBe(true);
         expect(button.children().prop('data-test')).toBe("arrUp");
+    });
+    it('Should handleEditWorkout on button click', () => {
+        const button = findByTestAttr(component, 'editWorkoutButton');
+        button.simulate('click');
+        expect(props.handleEditWorkout).toHaveBeenCalledTimes(1);
     });
 });

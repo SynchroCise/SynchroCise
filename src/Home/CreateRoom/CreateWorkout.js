@@ -114,8 +114,6 @@ const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => 
   //Checks to see if it is an edit workout or create workout and rebinds defaults
   useEffect(() => {
     let url = window.location.href.split("/");
-    console.log(url[3])
-    console.log(url[4])
     if (url[3] === "edit-workout") {
       editWorkout(url[4]);
     }
