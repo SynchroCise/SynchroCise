@@ -3,19 +3,20 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: react-webapp
-  name: react-webapp
+    app: synchrocise-webapp
+  name: synchrocise-webapp
+  namespace: default
 spec:
-  replicas: 5
+  replicas: 2
   selector:
     matchLabels:
-      app: react-webapp
+      app: synchrocise-webapp
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: react-webapp
+        app: synchrocise-webapp
     spec:
       containers:
       - image: gcr.io/synchrocise-dev/app:v1
@@ -24,20 +25,4 @@ spec:
         resources: {}
         ports:
           - containerPort: 3001
-status: {}
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: react-webapp
-  labels:
-    run: react-webapp
-spec:
-  ports:
-  - port: 3001
-    protocol: TCP
-  selector:
-    app: react-webapp
-  type: LoadBalancer
+            protocol: TCP
