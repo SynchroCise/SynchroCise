@@ -1,6 +1,6 @@
-import React, {useState, useEffect}from "react";
-import {useHistory} from 'react-router-dom'
-import {useAppContext} from "../AppContext"
+import React, { useState, useEffect } from "react";
+import { useHistory } from 'react-router-dom'
+import { useAppContext } from "../AppContext"
 import { RoutesEnum } from '../App'
 import { Link, InputAdornment, Paper, IconButton, Button, TextField, Box, Typography, Grid } from '@material-ui/core';
 import { ArrowForward, PeopleAltOutlined, AccessTime, Edit } from '@material-ui/icons';
@@ -13,7 +13,7 @@ import "aos/dist/aos.css";
 
 // this component renders form to be passed to VideoChat.js
 const Home = () => {
-  const {isLoggedIn, joinRoom, roomName, handleRoomNameChange, handleSetOpenAuthDialog, handleSetIsSignUp} = useAppContext()
+  const { isLoggedIn, joinRoom, roomName, handleRoomNameChange, handleSetOpenAuthDialog, handleSetIsSignUp } = useAppContext()
   const history = useHistory()
   const [errMessage, setErrMessage] = useState('');
 
@@ -23,10 +23,10 @@ const Home = () => {
   }
 
   useEffect(() => {
-    AOS.init({once: true});
+    AOS.init({ once: true });
   }, []);
 
-  const handleCreateRoom = () =>{
+  const handleCreateRoom = () => {
     history.push(RoutesEnum.CreateRoom)
   }
   const handleJoinRoom = async (event) => {
@@ -68,15 +68,17 @@ const Home = () => {
                 <Box display="flex" alignItems="flex-start" justifyContent="center">
                   <form onSubmit={handleJoinRoom} data-test="joinRoomForm">
                     <TextField required variant="outlined" placeholder="Room Code:" size='small' value={roomName} onChange={handleRoomNameChange} helperText={errMessage} error={errMessage !== ''}
-                    data-test="roomCodeInput"
-                    InputProps={{endAdornment:
-                      (<InputAdornment position="end">
-                        <IconButton color="primary" edge="end" variant="contained" type="submit"><ArrowForward/></IconButton>
-                      </InputAdornment>)}}
+                      data-test="roomCodeInput"
+                      InputProps={{
+                        endAdornment:
+                          (<InputAdornment position="end">
+                            <IconButton color="primary" edge="end" variant="contained" type="submit"><ArrowForward /></IconButton>
+                          </InputAdornment>)
+                      }}
                     ></TextField>
                   </form>
-                </Box> 
-            </Grid>
+                </Box>
+              </Grid>
               <Grid item xs={6}>
                 <Box mx={3} display="flex" alignItems="top" justifyContent="center">
                   <Button color="primary" size="large" fullWidth={true} variant="contained" onClick={handleCreateRoom} data-test="createRoomButton">Create Room</Button>
@@ -100,7 +102,7 @@ const Home = () => {
           </Grid>
           <Grid item xs={6}>
             <Paper elevation={2}>
-              <img src={mockDesign} alt="" style={{objectFit: "contain", maxWidth: "100%", maxHeight: "100%",}}></img>
+              <img src={mockDesign} alt="" style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%", }}></img>
             </Paper>
           </Grid>
         </Grid>
@@ -109,16 +111,16 @@ const Home = () => {
         <Grid container alignItems="center">
           <Grid item xs={8}>
             <Box>
-              <img src={mockDesignTwo} alt="" style={{objectFit: "contain", maxWidth: "100%", maxHeight: "100%",}}></img>
+              <img src={mockDesignTwo} alt="" style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%", }}></img>
             </Box>
           </Grid>
           <Grid item xs={4}>
-            <Box mr={12} py={4} style={{maxHeight: "100%"}}>
+            <Box mr={12} py={4} style={{ maxHeight: "100%" }}>
               <Grid container spacing={10} justify="center">
                 <Grid container item data-aos="zoom-in-left" xs={12}>
                   <Grid item xs={4}>
                     <Box display="flex" justifyContent="center">
-                      <IconButton disabled style={{backgroundColor: "#F1CC6E", color: "#FFFFFF"}}><PeopleAltOutlined style={{ fontSize: '200%' }}/></IconButton>
+                      <IconButton disabled style={{ backgroundColor: "#F1CC6E", color: "#FFFFFF" }}><PeopleAltOutlined style={{ fontSize: '200%' }} /></IconButton>
                     </Box>
                   </Grid>
                   <Grid item xs={8}>
@@ -129,7 +131,7 @@ const Home = () => {
                 <Grid container item data-aos="zoom-in-left" xs={12}>
                   <Grid item xs={4}>
                     <Box display="flex" alignItems="center" justifyContent="center">
-                      <IconButton disabled style={{backgroundColor: "#48A0F1", color: "#FFFFFF"}}><AccessTime style={{ fontSize: '200%' }}/></IconButton>
+                      <IconButton disabled style={{ backgroundColor: "#48A0F1", color: "#FFFFFF" }}><AccessTime style={{ fontSize: '200%' }} /></IconButton>
                     </Box>
                   </Grid>
                   <Grid item xs={8}>
@@ -140,7 +142,7 @@ const Home = () => {
                 <Grid container item data-aos="zoom-in-left" xs={12}>
                   <Grid item xs={4}>
                     <Box display="flex" alignItems="center" justifyContent="center">
-                      <IconButton disabled style={{backgroundColor: "#D38BF5", color: "#FFFFFF"}}><Edit style={{ fontSize: '200%' }}/></IconButton>
+                      <IconButton disabled style={{ backgroundColor: "#D38BF5", color: "#FFFFFF" }}><Edit style={{ fontSize: '200%' }} /></IconButton>
                     </Box>
                   </Grid>
                   <Grid item xs={8}>

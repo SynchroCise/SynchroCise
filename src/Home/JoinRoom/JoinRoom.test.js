@@ -5,7 +5,7 @@ import JoinRoom from './JoinRoom';
 import * as requests from "../../utils/requests";
 import Video from "twilio-video";
 
-const setUp = (props={}) => {
+const setUp = (props = {}) => {
     const component = shallow(<JoinRoom {...props} />);
     return component
 }
@@ -13,7 +13,7 @@ const setUp = (props={}) => {
 const mockPush = jest.fn();
 jest.mock('react-router-dom', () => ({
     useHistory: () => ({
-      push: mockPush,
+        push: mockPush,
     }),
 }));
 jest.mock("../../utils/requests");
@@ -32,7 +32,7 @@ describe('<JoinRoom />', () => {
         await runAllPromises();
         component.update();
     }
-    
+
     beforeEach(() => {
         contextValues = {
             connecting: false,
@@ -46,9 +46,9 @@ describe('<JoinRoom />', () => {
             createTempUser: jest.fn(),
             userId: 'testId'
         }
-        props = {match: {params: {roomCode: "ROOMCODE"}}}
-        requests.getRoomByName.mockResolvedValue({ok: true ,body: {id: 'ROOMCODE'}});
-        jest.spyOn(window, 'alert').mockImplementation(() => {});
+        props = { match: { params: { roomCode: "ROOMCODE" } } }
+        requests.getRoomByName.mockResolvedValue({ ok: true, body: { id: 'ROOMCODE' } });
+        jest.spyOn(window, 'alert').mockImplementation(() => { });
     });
     it('Should render joinRoomComponent', () => {
         component = initContext(contextValues, setUp, props);
@@ -69,8 +69,8 @@ describe('<JoinRoom />', () => {
         component = initContext(contextValues, setUp, props);
 
         // mock requests
-        requests.twilioToken.mockResolvedValue({ok: true, body : {token: ''}});
-        requests.joinTwilioRoom.mockResolvedValue({localParticipant: { tracks: []}});
+        requests.twilioToken.mockResolvedValue({ ok: true, body: { token: '' } });
+        requests.joinTwilioRoom.mockResolvedValue({ localParticipant: { tracks: [] } });
 
         // find and submit form
         const form = findByTestAttr(component, 'joinRoomForm');
@@ -96,7 +96,7 @@ describe('<JoinRoom />', () => {
         expect(findByTestAttr(component, 'vidOffIcon').length).toBe(1);
     });
 
-    it('Should test room code initialization and userid (no room code)' , async () => {
+    it('Should test room code initialization and userid (no room code)', async () => {
         props.match.params.roomCode = ""
         component = initContext(contextValues, setUp, props);
         // wait for component to update
@@ -107,7 +107,7 @@ describe('<JoinRoom />', () => {
         expect(contextValues.handleSetRoom).toHaveBeenCalledTimes(0);
     });
 
-    it('Should test room code initialization and userid succeed' , async () => {
+    it('Should test room code initialization and userid succeed', async () => {
         component = initContext(contextValues, setUp, props);
         // wait for component to update
         await runAllPromises();
@@ -126,7 +126,7 @@ describe('<JoinRoom />', () => {
 
         // test username field
         const usrField = findByTestAttr(component, 'usernameField');
-        usrField.simulate('change', {target: { value: "newtestuser" }});
+        usrField.simulate('change', { target: { value: "newtestuser" } });
         expect(contextValues.handleUsernameChange).toHaveBeenCalledTimes(1);
     });
     it('Should test back button', () => {

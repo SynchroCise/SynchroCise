@@ -5,7 +5,7 @@ import BottomControl from './BottomControl';
 
 jest.mock("../../utils/requests");
 
-const setUp = (props={}) => {
+const setUp = (props = {}) => {
     const component = shallow(<BottomControl {...props} />);
     return component
 }
@@ -20,10 +20,10 @@ describe('<BottomControl /> component tests', () => {
     )
 
     beforeEach(() => {
-        
+
         contextValues = {
             room: initRoomObj(),
-            sendRoomState: jest.fn( ({ eventName, eventParams }, callback) => (callback()) ),
+            sendRoomState: jest.fn(({ eventName, eventParams }, callback) => (callback())),
             workoutType: 'vid',
             setWorkoutType: jest.fn(),
             openSideBar: true,

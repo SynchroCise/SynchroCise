@@ -4,7 +4,7 @@ import { findByTestAttr, initContext } from '../utils/test';
 import Navbar from './Navbar';
 
 
-const setUp = (props={}) => {
+const setUp = (props = {}) => {
     const component = shallow(<Navbar {...props} />)
     return component
 }

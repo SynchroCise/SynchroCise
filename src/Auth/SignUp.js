@@ -55,7 +55,7 @@ export const SignUpMethods = () => {
   return { isValidEmail }
 }
 
-export default function SignUp({handleSetIsSignUp, handleSubmit}) {
+export default function SignUp({ handleSetIsSignUp, handleSubmit }) {
   const classes = useStyles();
   const [email, setEmail] = useState('')
   const [errMessage, setErrMessage] = useState('')
@@ -69,7 +69,7 @@ export default function SignUp({handleSetIsSignUp, handleSubmit}) {
     e.preventDefault()
     setConnecting(true)
     const re = /\S+@\S+\.\S+/;
-    const isValidEmail =  re.test(email);
+    const isValidEmail = re.test(email);
     if (email && isValidEmail) {
       const { success, errMessage } = await handleSubmit(e);
       if (!success) setErrMessage(errMessage)

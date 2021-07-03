@@ -4,7 +4,7 @@ import { findByTestAttr, initContext, asyncUpdateComponent } from '../../utils/t
 import CreateRoom from './CreateRoom';
 import * as requests from "../../utils/requests";
 
-const setUp = (props={}) => {
+const setUp = (props = {}) => {
     const component = shallow(<CreateRoom {...props} />);
     return component
 }
@@ -12,7 +12,7 @@ const setUp = (props={}) => {
 const mockPush = jest.fn();
 jest.mock('react-router-dom', () => ({
     useHistory: () => ({
-      push: mockPush,
+        push: mockPush,
     }),
 }));
 jest.mock("../../utils/requests");
@@ -27,11 +27,11 @@ describe('<JoinRoom />', () => {
         form.simulate('submit', { preventDefault: jest.fn() });
         await asyncUpdateComponent(component)
     }
-    
+
     beforeEach(() => {
         contextValues = {
             userId: 'testId',
-            connecting : false,
+            connecting: false,
             username: 'test',
             roomName: 'testRoom',
             workout: { "workoutName": "", "exercises": [{ "time": 1, "exercise": "" }], "id": "" },
@@ -44,8 +44,8 @@ describe('<JoinRoom />', () => {
             createTempUser: jest.fn(),
             isLoggedIn: false
         }
-        requests.getUserWorkouts.mockResolvedValue({ok: true, body: ['workout!'] });
-        jest.spyOn(window, 'alert').mockImplementation(() => {});
+        requests.getUserWorkouts.mockResolvedValue({ ok: true, body: ['workout!'] });
+        jest.spyOn(window, 'alert').mockImplementation(() => { });
     });
     it('Should render createRoomComponent', () => {
         component = initContext(contextValues, setUp);
@@ -74,11 +74,11 @@ describe('<JoinRoom />', () => {
     it('Should render createRoomForm and submit succeed (not logged in)', async () => {
         contextValues.isLoggedIn = false
         component = initContext(contextValues, setUp);
-        
+
         // mock values
-        requests.twilioToken.mockResolvedValue({ok: true, body : {token: ''}});
-        requests.createTwilioRoom.mockResolvedValue({localParticipant: { tracks: []}});
-        requests.createRoom.mockResolvedValue({ok: true});
+        requests.twilioToken.mockResolvedValue({ ok: true, body: { token: '' } });
+        requests.createTwilioRoom.mockResolvedValue({ localParticipant: { tracks: [] } });
+        requests.createRoom.mockResolvedValue({ ok: true });
 
         // find and submit form
         const form = findByTestAttr(component, 'createRoomForm');
@@ -94,11 +94,11 @@ describe('<JoinRoom />', () => {
     it('Should render createRoomForm and submit succeed (logged in)', async () => {
         contextValues.isLoggedIn = true
         component = initContext(contextValues, setUp);
-        
+
         // mock values
-        requests.twilioToken.mockResolvedValue({ok: true, body : {token: ''}});
-        requests.createTwilioRoom.mockResolvedValue({localParticipant: { tracks: []}});
-        requests.createRoom.mockResolvedValue({ok: true});
+        requests.twilioToken.mockResolvedValue({ ok: true, body: { token: '' } });
+        requests.createTwilioRoom.mockResolvedValue({ localParticipant: { tracks: [] } });
+        requests.createRoom.mockResolvedValue({ ok: true });
 
         // find and submit form
         const form = findByTestAttr(component, 'createRoomForm');
@@ -117,7 +117,7 @@ describe('<JoinRoom />', () => {
         expect(button.length).toBe(1);
         button.simulate('click');
         expect(mockPush).toHaveBeenCalledTimes(1);
-        expect(contextValues.handleSetOpenAuthDialog).toHaveBeenCalledTimes(0); 
+        expect(contextValues.handleSetOpenAuthDialog).toHaveBeenCalledTimes(0);
     });
     it('Should test clicking add workout (not logged in)', () => {
         contextValues.isLoggedIn = false
@@ -126,7 +126,7 @@ describe('<JoinRoom />', () => {
         expect(button.length).toBe(1);
         button.simulate('click');
         expect(mockPush).toHaveBeenCalledTimes(0);
-        expect(contextValues.handleSetOpenAuthDialog).toHaveBeenCalledTimes(1); 
+        expect(contextValues.handleSetOpenAuthDialog).toHaveBeenCalledTimes(1);
     });
 
     it('Should test back button', () => {
@@ -141,7 +141,7 @@ describe('<JoinRoom />', () => {
 
         // test username field
         let usrField = findByTestAttr(component, 'usernameField');
-        usrField.simulate('change', {target: { value: "newtestuser" }});
+        usrField.simulate('change', { target: { value: "newtestuser" } });
         expect(contextValues.handleUsernameChange).toHaveBeenCalledTimes(1);
     });
     it('Should see if workoutTableCompoment renders (logged in)', () => {

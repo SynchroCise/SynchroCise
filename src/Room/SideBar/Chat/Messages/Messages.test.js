@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { findByTestAttr, createParticipant } from '../../../../utils/test';
 import Messages from './Messages';
 
-const setUp = (props={}) => {
+const setUp = (props = {}) => {
     const component = shallow(<Messages {...props} />);
     return component
 }

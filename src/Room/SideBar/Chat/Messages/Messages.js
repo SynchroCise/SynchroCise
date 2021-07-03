@@ -24,7 +24,7 @@ const Messages = ({ messages, currUser, users, times }) => {
             {
                 messages.map((message, i) =>
                     <ListItem key={i} >
-                        <Message message={message} currUser={currUser} users={users} data-test="messageComponent"/>
+                        <Message message={message} currUser={currUser} users={users} data-test="messageComponent" />
                     </ListItem>
                 )
             }

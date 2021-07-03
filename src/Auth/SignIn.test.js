@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { findByTestAttr, runAllPromises } from '../utils/test';
 import SignIn from './SignIn';
 
-const setUp = (props={}) => {
+const setUp = (props = {}) => {
     const component = shallow(<SignIn {...props} />)
     return component
 }
@@ -17,7 +17,7 @@ describe('<SignIn />', () => {
             handleSetIsSignUp: jest.fn(),
             handleSubmit: jest.fn()
         }
-        props.handleSubmit.mockResolvedValue({success: false, errMessage})
+        props.handleSubmit.mockResolvedValue({ success: false, errMessage })
         component = setUp(props);
     });
     it('Should render signInComponent', () => {

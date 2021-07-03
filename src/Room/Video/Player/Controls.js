@@ -2,8 +2,8 @@ import React, { forwardRef } from "react";
 import { Slider, Rail, Tracks } from "react-compound-slider";
 import { TooltipRail, SliderRail, Track } from "./Slider";
 import { formatTimestamp } from '../../../utils/video';
-import {PlayArrow, Pause, VolumeOff, VolumeUp, VolumeDown, Fullscreen, FullscreenExit} from '@material-ui/icons';
-import {IconButton} from '@material-ui/core'
+import { PlayArrow, Pause, VolumeOff, VolumeUp, VolumeDown, Fullscreen, FullscreenExit } from '@material-ui/icons';
+import { IconButton } from '@material-ui/core'
 
 
 const Controls = forwardRef(
@@ -47,7 +47,7 @@ const Controls = forwardRef(
               onClick={onPlayPause}
               size="small"
               title="Play/Pause">
-              {playing ? <Pause style={controlIcon}/> : <PlayArrow style={controlIcon}/>}
+              {playing ? <Pause style={controlIcon} /> : <PlayArrow style={controlIcon} />}
             </IconButton>
 
             {!['twitch'].includes(videoType) &&
@@ -95,7 +95,7 @@ const Controls = forwardRef(
               onClick={onMute}
               size="small"
               title="Mute">
-              {muted ? <VolumeOff style={controlIcon}/> : (volume > 0.5 ? <VolumeUp style={controlIcon}/> : <VolumeDown style={controlIcon}/>)}
+              {muted ? <VolumeOff style={controlIcon} /> : (volume > 0.5 ? <VolumeUp style={controlIcon} /> : <VolumeDown style={controlIcon} />)}
             </IconButton>
 
             <div className='volumeSlider'>
@@ -131,7 +131,7 @@ const Controls = forwardRef(
               onClick={onToggleFullScreen}
               size="small"
               title="Fullscreen">
-              {isFullscreen ? <FullscreenExit style={controlIcon}/> : <Fullscreen style={controlIcon}/>}
+              {isFullscreen ? <FullscreenExit style={controlIcon} /> : <Fullscreen style={controlIcon} />}
             </IconButton>
           </div>
         }

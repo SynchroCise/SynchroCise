@@ -5,7 +5,7 @@ import SideBar from './SideBar';
 import { sckt } from '../../Socket';
 
 jest.mock('../../Socket', () => ({
-    sckt : {
+    sckt: {
         socket: {
             on: jest.fn(),
             off: jest.fn(),
@@ -15,7 +15,7 @@ jest.mock('../../Socket', () => ({
 }));
 jest.useFakeTimers();
 
-const setUp = (props={}) => {
+const setUp = (props = {}) => {
     const component = shallow(<SideBar {...props} />);
     return component
 }

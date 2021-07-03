@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { findByTestAttr, createParticipant, initTrack, asyncUpdateComponent } from '../../utils/test';
 import Participant from './Participant';
 
-const setUp = (props={}) => {
+const setUp = (props = {}) => {
     const component = shallow(<Participant {...props} />);
     return component
 }
@@ -33,7 +33,7 @@ describe('<Participant /> component tests', () => {
         expect(findByTestAttr(component, "videoComponent").length).toBe(1);
     })
     it('Should show correct displayName', async () => {
-        props.names = [{sid: 'local', name: 'helloworld'}]
+        props.names = [{ sid: 'local', name: 'helloworld' }]
         component = setUp(props);
         await asyncUpdateComponent(component)
         expect(findByTestAttr(component, "displayNameComponent").text()).toBe('helloworld');
