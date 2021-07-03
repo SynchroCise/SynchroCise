@@ -13,7 +13,6 @@ const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => 
   const history = useHistory()
   const { connecting, handleSetConnecting } = useAppContext();
   const [workoutName, setWorkoutName] = useState('')
-  const [title, setTitle] = useState('Create New Workout')
   const [exercises, setExercises] = useState(initExercises)
   const [selectedExercise, setSelectedExercise] = useState(0)
   const [badExerciseIndices, setBadExerciseIndices] = useState([])
@@ -47,7 +46,7 @@ const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => 
     console.log(res)
     setExercises(res.body.exercises);
     setWorkoutName(res.body.workoutName);
-    setTitle("Edit Workout");
+
     return res;
   }
 
@@ -77,10 +76,10 @@ const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => 
     setSelectedExercise(null);
     if (!(exercises.length > 0 && badExerciseIndices.length === 0)) { handleSetConnecting(false); return; }
     const newWorkout = { workoutName, exercises }
-    if (title === "Create New Workout") {
-      res = await requests.addWorkout(newWorkout);
-    } else {
+    if (window.location.href.split("/")[4]) {
       res = await requests.editWorkout(newWorkout, window.location.href.split("/")[4]);
+    } else {
+      res = await requests.addWorkout(newWorkout);
     }
     if (!res.ok) {
       handleSetConnecting(false);
@@ -114,8 +113,6 @@ const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => 
   //Checks to see if it is an edit workout or create workout and rebinds defaults
   useEffect(() => {
     let url = window.location.href.split("/");
-    console.log(url[3])
-    console.log(url[4])
     if (url[3] === "edit-workout") {
       editWorkout(url[4]);
     }
@@ -135,7 +132,7 @@ const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => 
           </Grid>
           <Grid item container xs spacing={2}>
             <Grid item xs={12}>
-              <Box mb={4}><Typography variant="h4">{title}</Typography></Box>
+              <Box mb={4}><Typography variant="h4">{window.location.href.split("/")[4] ? "Edit Workout" : "Create Workout"}</Typography></Box>
             </Grid>
             <Grid item xs={5}>
               <TextField
