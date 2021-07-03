@@ -16,11 +16,13 @@ jest.mock('react-router-dom', () => ({
     }),
 }));
 jest.mock("../../utils/requests");
+const realLocation = window.location;
 
 describe('<CreateWorkout />', () => {
     let component;
     let contextValues;
     let props;
+    let location;
 
     const testSubmitForm = async (initExercises) => {
         component = initContext(contextValues, setUp, props={initExercises});
@@ -37,12 +39,24 @@ describe('<CreateWorkout />', () => {
         field = findByTestAttr(component, fieldName);
         expect(field.prop('value')).toBe(text);
     }
+    const testWorkoutTitle = (url) => {
+        const mockLocation = new URL(url);
+        delete window.location;
+        window.location = mockLocation;
+        component = initContext(contextValues, setUp);
+        return findByTestAttr(component, "workoutTitle").text()
+    }
     
     beforeEach(() => {
+        location = window.location;
         contextValues = {
             connecting: false,
             handleSetConnecting: jest.fn()
         };
+        requests.getUserWorkout.mockResolvedValue({ ok: false });
+    });
+    afterEach(() => {
+        window.location = location;
     });
 
     it('Should render createWorkoutComponent', () => {
@@ -55,6 +69,7 @@ describe('<CreateWorkout />', () => {
         await testSubmitForm();
         expect(contextValues.handleSetConnecting).toHaveBeenCalledTimes(2);
         expect(requests.addWorkout).toHaveBeenCalledTimes(0);
+        expect(requests.editWorkout).toHaveBeenCalledTimes(0);
         expect(mockPush).toHaveBeenCalledTimes(0);
     });
 
@@ -67,8 +82,27 @@ describe('<CreateWorkout />', () => {
         await testSubmitForm(exercises);
         expect(contextValues.handleSetConnecting).toHaveBeenCalledTimes(2);
         expect(requests.addWorkout).toHaveBeenCalledTimes(1);
+        expect(requests.editWorkout).toHaveBeenCalledTimes(0);
         expect(mockPush).toHaveBeenCalledTimes(1);
     });
+
+    it('Should handleSubmit with exercises & edit-workout', async () => {
+        // init
+        requests.getUserWorkout.mockResolvedValue({ ok: false });
+        requests.editWorkout.mockResolvedValue({ ok: true });
+        const exercises = [{'exercise': '1', 'time': '1'}]
+        const mockLocation = new URL("https://synchrocise.com/edit-workout/asdf");
+        delete window.location;
+        window.location = mockLocation;
+        
+        // submit
+        await testSubmitForm(exercises);
+        expect(contextValues.handleSetConnecting).toHaveBeenCalledTimes(2);
+        expect(requests.addWorkout).toHaveBeenCalledTimes(0);
+        expect(requests.editWorkout).toHaveBeenCalledTimes(1);
+        expect(mockPush).toHaveBeenCalledTimes(1);
+    });
+
 
     it('Should return to CreateRoom on click', () => {
         component = initContext(contextValues, setUp);
@@ -146,5 +180,35 @@ describe('<CreateWorkout />', () => {
         testInputField({text: '5', fieldName: 'timeField'});
         expect(findByTestAttr(component, 'inputRow').prop('className')).toBe('');
     });
+    describe("testing workoutTitle", () => {
+        it('Should test workoutTitle renders as expected when edit-workout', () => {
+            expect(testWorkoutTitle("https://synchrocise.com/edit-workout/")).toBe("Edit Workout");
+        });
+        it('Should test workoutTitle renders as expected when edit-workout', () => {
+            expect(testWorkoutTitle("https://synchrocise.com/edit-workout/asdf")).toBe("Edit Workout");
+    
+        });
+        it('Should test workoutTitle renders as expected when create-workout', () => {
+            expect(testWorkoutTitle("https://synchrocise.com/create-workout/")).toBe("Create Workout");
+        });
+        it('Should test workoutTitle renders as expected when create-workout', () => {
+            expect(testWorkoutTitle("https://synchrocise.com/create-workout/asdf")).toBe("Create Workout");
+        });
+    });
+    it('Should call getUserWorkouts on initial render if edit-workout', () => {
+        const mockLocation = new URL("https://synchrocise.com/edit-workout/asdf");
+        delete window.location;
+        window.location = mockLocation;
+        component = initContext(contextValues, setUp);
 
+        expect(requests.getUserWorkout).toHaveBeenCalledTimes(1);
+    });
+    it('Should not call getUserWorkouts on initial render if create-workout', () => {
+        const mockLocation = new URL("https://synchrocise.com/create-workout/asdf");
+        delete window.location;
+        window.location = mockLocation;
+        component = initContext(contextValues, setUp);
+
+        expect(requests.getUserWorkout).toHaveBeenCalledTimes(0);
+    });
 });

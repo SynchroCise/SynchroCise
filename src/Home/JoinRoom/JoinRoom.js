@@ -1,6 +1,6 @@
-import React, {useEffect, useState, useRef} from "react";
-import {useHistory} from 'react-router-dom'
-import {useAppContext} from "../../AppContext"
+import React, { useEffect, useState, useRef } from "react";
+import { useHistory } from 'react-router-dom'
+import { useAppContext } from "../../AppContext"
 import Video from "twilio-video";
 import { RoutesEnum } from '../../App'
 import { IconButton, TextField, Box, Typography, Grid } from '@material-ui/core';
@@ -10,13 +10,13 @@ import * as requests from "../../utils/requests"
 
 // this component renders form to be passed to VideoChat.js
 const JoinRoom = (props) => {
-  const {connecting, username, roomName, handleUsernameChange, handleSetRoom, isLoggedIn, handleSetConnecting, handleSetRoomName, createTempUser, userId} = useAppContext()
+  const { connecting, username, roomName, handleUsernameChange, handleSetRoom, isLoggedIn, handleSetConnecting, handleSetRoomName, createTempUser, userId } = useAppContext()
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [vid, setVid] = useState(true);
   const [mic, setMic] = useState(true);
 
-  const videoRef = useRef(); 
+  const videoRef = useRef();
   const videoContainerRef = useRef();
   const history = useHistory()
 
@@ -26,11 +26,11 @@ const JoinRoom = (props) => {
     let isMounted = true;
     async function getLocalVideoTrack() {
       const videoTrack = await Video.createLocalVideoTrack();
-      if(isMounted) { setVideoTracks((prevVideoTrack) => [...prevVideoTrack, videoTrack]); }
+      if (isMounted) { setVideoTracks((prevVideoTrack) => [...prevVideoTrack, videoTrack]); }
     }
     async function getLocalAudioTrack() {
       const audioTrack = await Video.createLocalAudioTrack();
-      if(isMounted) { setAudioTracks((prevAudioTrack) => [...prevAudioTrack, audioTrack]); }
+      if (isMounted) { setAudioTracks((prevAudioTrack) => [...prevAudioTrack, audioTrack]); }
     }
     getLocalVideoTrack()
     getLocalAudioTrack()
@@ -126,9 +126,9 @@ const JoinRoom = (props) => {
           <Grid item xs={1} >
             <IconButton
               className={classes.blackButton}
-              onClick={()=>{history.push(RoutesEnum.Home)}}
+              onClick={() => { history.push(RoutesEnum.Home) }}
               data-test="backButton">
-              <ArrowBack/>
+              <ArrowBack />
             </IconButton>
           </Grid>
           <Grid container item xs spacing={2}>
@@ -157,7 +157,7 @@ const JoinRoom = (props) => {
                 />
               </Box>
             </Grid>
-            <Grid item xs={7}/>
+            <Grid item xs={7} />
             <Grid item xs={5}>
               <TextField
                 placeholder="Room Code:"
@@ -168,8 +168,8 @@ const JoinRoom = (props) => {
                 disabled
               />
             </Grid>
-            <Grid item xs={7}/>
-            <Grid item xs={12}><hr/></Grid>
+            <Grid item xs={7} />
+            <Grid item xs={12}><hr /></Grid>
             <Grid item xs={12}>
               <Box display="flex" justifyContent="center">
                 <Typography variant="h5">How you'll appear</Typography>
@@ -177,7 +177,7 @@ const JoinRoom = (props) => {
             </Grid>
             <Grid item xs={12}>
               <Box display="flex" justifyContent="center" ref={videoContainerRef}>
-              {(videoRef) ? <video ref={videoRef} autoPlay={true} style={{width: "40%", maxHeight: "40%"}}/> : ''}
+                {(videoRef) ? <video ref={videoRef} autoPlay={true} style={{ width: "40%", maxHeight: "40%" }} /> : ''}
               </Box>
             </Grid>
             <Grid item xs={1}>
@@ -186,7 +186,7 @@ const JoinRoom = (props) => {
                 className={classes.blackContainedButton}
                 onClick={handleVid}
                 data-test="vidButton">
-                {vid ? <Videocam data-test="vidIcon"/> : <VideocamOff data-test="vidOffIcon"/>}
+                {vid ? <Videocam data-test="vidIcon" /> : <VideocamOff data-test="vidOffIcon" />}
               </IconButton>
             </Grid>
             <Grid item xs={1}>
@@ -195,7 +195,7 @@ const JoinRoom = (props) => {
                 className={classes.blackContainedButton}
                 onClick={handleMic}
                 data-test="micButton">
-                {mic ? <Mic data-test="micIcon" /> : <MicOff data-test="micOffIcon"/>}
+                {mic ? <Mic data-test="micIcon" /> : <MicOff data-test="micOffIcon" />}
               </IconButton>
             </Grid>
           </Grid>
@@ -206,7 +206,7 @@ const JoinRoom = (props) => {
                 className={classes.containedButton}
                 type="submit"
                 disabled={connecting}>
-                <ArrowForward/>
+                <ArrowForward />
               </IconButton>
             </Box>
           </Grid>
