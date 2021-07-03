@@ -153,23 +153,19 @@ export const twilioToken = async (tempUserId, roomName) => {
 export const createTwilioRoom = async (token, roomName) => {
   let vidPerm;
   let audPerm;
-  let videoTrack;
-  let audioTrack;
+  let tracks = [];
   try {
-    videoTrack = await Video.createLocalVideoTrack();
+    tracks.push(await Video.createLocalVideoTrack());
     vidPerm = true;
   } catch {
     vidPerm = false;
-    videoTrack = [];
   }
   try {
-    audioTrack = await Video.createLocalAudioTrack();
+    tracks.push(await Video.createLocalAudioTrack());
     audPerm = true;
   } catch {
     audPerm = false;
-    audioTrack = [];
   }
-  const tracks = videoTrack.concat(audioTrack);
   const room = await Video.connect(token, {
     video: vidPerm,
     audio: audPerm,

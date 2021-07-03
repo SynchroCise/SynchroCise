@@ -1,4 +1,4 @@
-import React, {useCallback, useState, useEffect} from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { useHistory } from 'react-router-dom'
 import { useAppContext } from "../../AppContext"
 import { RoutesEnum } from '../../App'
@@ -9,7 +9,7 @@ import { ArrowForward, Close, CreateOutlined, Add } from '@material-ui/icons';
 import * as requests from "../../utils/requests"
 
 // this component renders form to be passed to VideoChat.js
-const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
+const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => {
   const history = useHistory()
   const { connecting, handleSetConnecting } = useAppContext();
   const [workoutName, setWorkoutName] = useState('')
@@ -100,9 +100,9 @@ const CreateWorkout = ({ initExercises=[{'exercise': '', 'time': ''}] }) => {
           <Grid item xs={1}>
             <IconButton
               className={classes.blackButton}
-              onClick={()=>{ history.push(RoutesEnum.CreateRoom) }}
+              onClick={() => { history.push(RoutesEnum.CreateRoom) }}
               data-test="backButton">
-              <Close/>
+              <Close />
             </IconButton>
           </Grid>
           <Grid item container xs spacing={2}>
