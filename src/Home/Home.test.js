@@ -5,7 +5,7 @@ import Home from './Home';
 import * as requests from "../utils/requests"
 import AOS from "aos";
 
-const setUp = (props={}) => {
+const setUp = (props = {}) => {
     const component = shallow(<Home {...props} />);
     return component
 }
@@ -14,7 +14,7 @@ jest.mock("../utils/requests");
 const mockPush = jest.fn();
 jest.mock('react-router-dom', () => ({
     useHistory: () => ({
-      push: mockPush,
+        push: mockPush,
     }),
 }));
 
@@ -22,7 +22,7 @@ describe('<Home />', () => {
     let component;
     let contextValues;
 
-    const testClickAndCall = (componentName, expectedFunctionCalls=[]) => {
+    const testClickAndCall = (componentName, expectedFunctionCalls = []) => {
         const button = findByTestAttr(component, componentName);
         expect(button.length).toBe(1);
         button.simulate('click');
@@ -30,7 +30,7 @@ describe('<Home />', () => {
             expect(mockFunc).toHaveBeenCalledTimes(1);
         });
     }
-    
+
     beforeEach(() => {
         contextValues = {
             isLoggedIn: false,
@@ -47,7 +47,7 @@ describe('<Home />', () => {
         expect(wrapper.length).toBe(1);
     });
     it('Should render joinRoomForm and submit succeed', async () => {
-        requests.getRoomByName.mockResolvedValue({ok: true ,body: {id: 'ROOMCODE'}});
+        requests.getRoomByName.mockResolvedValue({ ok: true, body: { id: 'ROOMCODE' } });
         component = initContext(contextValues, setUp);
 
         // find and submit form
@@ -64,7 +64,7 @@ describe('<Home />', () => {
         expect(mockPush).toHaveBeenCalledTimes(1);
     });
     it('Should render joinRoomForm and submit fail', async () => {
-        requests.getRoomByName.mockResolvedValue({ok: false ,body: {message: 'error'}});
+        requests.getRoomByName.mockResolvedValue({ ok: false, body: { message: 'error' } });
         component = initContext(contextValues, setUp);
 
         // find and submit form
@@ -75,7 +75,7 @@ describe('<Home />', () => {
         // wait for component to update
         await runAllPromises();
         component.update();
-        
+
         const input = findByTestAttr(component, 'roomCodeInput');
         expect(input.length).toBe(1);
         expect(input.prop('helperText')).toBe('error')

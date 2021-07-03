@@ -11,7 +11,7 @@ export const findByTestAttr = (component, attr) => {
     return wrapper;
 };
 
-export const initContext = (contextValues, setUp, props={}) => {
+export const initContext = (contextValues, setUp, props = {}) => {
     jest
         .spyOn(AppContext, 'useAppContext')
         .mockImplementation(() => contextValues)

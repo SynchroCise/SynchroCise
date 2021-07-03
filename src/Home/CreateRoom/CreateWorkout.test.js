@@ -4,7 +4,7 @@ import { findByTestAttr, initContext, asyncUpdateComponent } from '../../utils/t
 import CreateWorkout from './CreateWorkout';
 import * as requests from "../../utils/requests";
 
-const setUp = (props={}) => {
+const setUp = (props = {}) => {
     const component = shallow(<CreateWorkout {...props} />);
     return component
 }
@@ -12,7 +12,7 @@ const setUp = (props={}) => {
 const mockPush = jest.fn();
 jest.mock('react-router-dom', () => ({
     useHistory: () => ({
-      push: mockPush,
+        push: mockPush,
     }),
 }));
 jest.mock("../../utils/requests");
@@ -25,16 +25,16 @@ describe('<CreateWorkout />', () => {
     let location;
 
     const testSubmitForm = async (initExercises) => {
-        component = initContext(contextValues, setUp, props={initExercises});
+        component = initContext(contextValues, setUp, props = { initExercises });
         const form = findByTestAttr(component, 'createWorkoutForm');
         expect(form.length).toBe(1);
         form.simulate('submit', { preventDefault: jest.fn() });
         await asyncUpdateComponent(component);
     }
 
-    const testInputField = ({text, fieldName}) => {
+    const testInputField = ({ text, fieldName }) => {
         let field = findByTestAttr(component, fieldName);
-        field.simulate('change', {target: { value: text }});
+        field.simulate('change', { target: { value: text } });
         component.update()
         field = findByTestAttr(component, fieldName);
         expect(field.prop('value')).toBe(text);
@@ -46,7 +46,7 @@ describe('<CreateWorkout />', () => {
         component = initContext(contextValues, setUp);
         return findByTestAttr(component, "workoutTitle").text()
     }
-    
+
     beforeEach(() => {
         location = window.location;
         contextValues = {
@@ -76,7 +76,7 @@ describe('<CreateWorkout />', () => {
     it('Should handleSubmit with exercises', async () => {
         // init
         requests.addWorkout.mockResolvedValue({ ok: true });
-        const exercises = [{'exercise': '1', 'time': '1'}]
+        const exercises = [{ 'exercise': '1', 'time': '1' }]
 
         // submit
         await testSubmitForm(exercises);
@@ -90,11 +90,11 @@ describe('<CreateWorkout />', () => {
         // init
         requests.getUserWorkout.mockResolvedValue({ ok: false });
         requests.editWorkout.mockResolvedValue({ ok: true });
-        const exercises = [{'exercise': '1', 'time': '1'}]
+        const exercises = [{ 'exercise': '1', 'time': '1' }]
         const mockLocation = new URL("https://synchrocise.com/edit-workout/asdf");
         delete window.location;
         window.location = mockLocation;
-        
+
         // submit
         await testSubmitForm(exercises);
         expect(contextValues.handleSetConnecting).toHaveBeenCalledTimes(2);
@@ -114,7 +114,7 @@ describe('<CreateWorkout />', () => {
 
     it('Should update workoutNameField on change', () => {
         component = initContext(contextValues, setUp);
-        testInputField({text: 'New name!', fieldName: 'workoutNameField'});
+        testInputField({ text: 'New name!', fieldName: 'workoutNameField' });
     });
 
     it('Should add row on addWorkoutButton click', () => {
@@ -124,38 +124,38 @@ describe('<CreateWorkout />', () => {
         const rowLength = findByTestAttr(component, 'inputRow').length
         button.simulate('click');
         component.update();
-        expect(findByTestAttr(component, 'inputRow').length).toBe(rowLength+1);
+        expect(findByTestAttr(component, 'inputRow').length).toBe(rowLength + 1);
     });
 
     it('Should update exerciseNameField on change', () => {
         component = initContext(contextValues, setUp);
-        testInputField({text: 'New exercise!', fieldName: 'exerciseNameField'});
+        testInputField({ text: 'New exercise!', fieldName: 'exerciseNameField' });
     });
 
     it('Should update timeField on change', () => {
         component = initContext(contextValues, setUp);
-        testInputField({text: '2', fieldName: 'timeField'});
+        testInputField({ text: '2', fieldName: 'timeField' });
     });
 
     it('Should handleSelected on click', () => {
-        const initExercises = [{'exercise': '1', 'time': '1'}, {'exercise': '2', 'time': '2'}]
-        component = initContext(contextValues, setUp, props={initExercises});
+        const initExercises = [{ 'exercise': '1', 'time': '1' }, { 'exercise': '2', 'time': '2' }]
+        component = initContext(contextValues, setUp, props = { initExercises });
 
         expect(findByTestAttr(component, 'inputRow').at(0).prop('selected')).toBe(true);
-        expect(findByTestAttr(component, 'inputRow').at(1).prop('selected')).toBe(false); 
+        expect(findByTestAttr(component, 'inputRow').at(1).prop('selected')).toBe(false);
 
         findByTestAttr(component, 'exerciseCell').at(0).simulate('click');
-        expect(findByTestAttr(component, 'inputRow').at(0).prop('selected')).toBe(false);  
-        expect(findByTestAttr(component, 'inputRow').at(1).prop('selected')).toBe(true);  
+        expect(findByTestAttr(component, 'inputRow').at(0).prop('selected')).toBe(false);
+        expect(findByTestAttr(component, 'inputRow').at(1).prop('selected')).toBe(true);
 
         findByTestAttr(component, 'timeCell').at(0).simulate('click');
         expect(findByTestAttr(component, 'inputRow').at(0).prop('selected')).toBe(true);
-        expect(findByTestAttr(component, 'inputRow').at(1).prop('selected')).toBe(false);   
+        expect(findByTestAttr(component, 'inputRow').at(1).prop('selected')).toBe(false);
     });
 
     it('Should handleRemoveRow on click', () => {
-        const initExercises = [{'exercise': '1', 'time': '1'}, {'exercise': '2', 'time': '2'}]
-        component = initContext(contextValues, setUp, props={initExercises});
+        const initExercises = [{ 'exercise': '1', 'time': '1' }, { 'exercise': '2', 'time': '2' }]
+        component = initContext(contextValues, setUp, props = { initExercises });
 
         expect(findByTestAttr(component, 'inputRow').length).toBe(2);
         findByTestAttr(component, 'removeButton').at(0).simulate('click');
@@ -163,21 +163,21 @@ describe('<CreateWorkout />', () => {
     });
 
     it('Should show bad input on click', () => {
-        const initExercises = [{'exercise': '1', 'time': '1'}]
-        component = initContext(contextValues, setUp, props={initExercises});
+        const initExercises = [{ 'exercise': '1', 'time': '1' }]
+        component = initContext(contextValues, setUp, props = { initExercises });
         expect(findByTestAttr(component, 'inputRow').prop('className')).toBe('');
 
 
-        testInputField({text: 'New exercise!', fieldName: 'exerciseNameField'});
-        testInputField({text: '', fieldName: 'timeField'});
+        testInputField({ text: 'New exercise!', fieldName: 'exerciseNameField' });
+        testInputField({ text: '', fieldName: 'timeField' });
         expect(findByTestAttr(component, 'inputRow').prop('className')).toMatch(/errorRow/);
 
-        testInputField({text: '', fieldName: 'exerciseNameField'});
-        testInputField({text: 'hello', fieldName: 'timeField'});
+        testInputField({ text: '', fieldName: 'exerciseNameField' });
+        testInputField({ text: 'hello', fieldName: 'timeField' });
         expect(findByTestAttr(component, 'inputRow').prop('className')).toMatch(/errorRow/);
 
-        testInputField({text: 'New exercise!', fieldName: 'exerciseNameField'});
-        testInputField({text: '5', fieldName: 'timeField'});
+        testInputField({ text: 'New exercise!', fieldName: 'exerciseNameField' });
+        testInputField({ text: '5', fieldName: 'timeField' });
         expect(findByTestAttr(component, 'inputRow').prop('className')).toBe('');
     });
     describe("testing workoutTitle", () => {
@@ -186,7 +186,7 @@ describe('<CreateWorkout />', () => {
         });
         it('Should test workoutTitle renders as expected when edit-workout', () => {
             expect(testWorkoutTitle("https://synchrocise.com/edit-workout/asdf")).toBe("Edit Workout");
-    
+
         });
         it('Should test workoutTitle renders as expected when create-workout', () => {
             expect(testWorkoutTitle("https://synchrocise.com/create-workout/")).toBe("Create Workout");

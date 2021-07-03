@@ -9,13 +9,13 @@ import { sckt } from '../Socket';
 const mockPush = jest.fn();
 jest.mock('react-router-dom', () => ({
     useHistory: () => ({
-      push: mockPush,
+        push: mockPush,
     }),
     Redirect: jest.fn(({ to }) => `Redirected to ${to}`),
 }));
 jest.mock("../utils/requests");
 jest.mock('../Socket', () => ({
-    sckt : {
+    sckt: {
         socket: {
             on: jest.fn(),
             off: jest.fn(),
@@ -24,12 +24,12 @@ jest.mock('../Socket', () => ({
     }
 }));
 
-const setUp = (props={}) => {
+const setUp = (props = {}) => {
     const component = shallow(<Room {...props} />);
     return component
 }
 
-const setUpMount = (props={}) => {
+const setUpMount = (props = {}) => {
     let component
     withoutHooks(() => {
         component = mount(<Room {...props} />);
@@ -42,7 +42,7 @@ describe('<Room /> component tests', () => {
     let contextValues;
     let props;
 
-    const participantJoins = (sids, leaderSid=contextValues.room.localParticipant.sid) => {
+    const participantJoins = (sids, leaderSid = contextValues.room.localParticipant.sid) => {
         const participantConnectedCallBack = contextValues.room.on.mock.calls.filter(call => call[0] == "participantConnected")[0][1];
         const leaderCallback = sckt.socket.on.mock.calls.filter(call => call[0] == "leader")[0][1];
         sids.forEach((sid) => {
@@ -88,9 +88,9 @@ describe('<Room /> component tests', () => {
             },
             updateVideoProps: jest.fn()
         };
-        props = {match: {params: {roomCode: "ROOMCODE"}}}
-        requests.getDisplayNamesInRoom.mockResolvedValue({ok: false});
-        jest.spyOn(window, 'alert').mockImplementation(() => {});
+        props = { match: { params: { roomCode: "ROOMCODE" } } }
+        requests.getDisplayNamesInRoom.mockResolvedValue({ ok: false });
+        jest.spyOn(window, 'alert').mockImplementation(() => { });
     });
     it('Should render roomComponent', () => {
         component = initContext(contextValues, setUp, props);
@@ -113,7 +113,7 @@ describe('<Room /> component tests', () => {
     describe('Test socket listeners', () => {
         it('Should initialize all sockets listeners', () => {
             component = initContext(contextValues, setUp, props);
-    
+
             expect(sckt.socket.on).toHaveBeenCalledWith('getRoomSync', expect.any(Function));
             expect(sckt.socket.on).toHaveBeenCalledWith('getVideoSync', expect.any(Function));
             expect(sckt.socket.on).toHaveBeenCalledWith('receiveRoomState', expect.any(Function));
@@ -134,15 +134,15 @@ describe('<Room /> component tests', () => {
         it('Should ensure getVideoSync callback works', () => {
             component = initContext(contextValues, setUp, props);
             const callback = sckt.socket.on.mock.calls.filter(call => call[0] == "getRoomSync")[0][1];
-            callback({id: 'id'});
+            callback({ id: 'id' });
             expect(sckt.socket.emit).toHaveBeenCalledWith('sendRoomSync', expect.anything(), expect.any(Function));
         });
         it('Should ensure getVideoSync callback works', () => {
             contextValues.workoutType = 'yt';
             component = initContext(contextValues, setUp, props);
             const callback = sckt.socket.on.mock.calls.filter(call => call[0] == "getVideoSync")[0][1];
-            findByTestAttr(component, "youtubeComponent").prop('playerRef').current = { getCurrentTime: jest.fn()};
-            callback({id: 'id'});
+            findByTestAttr(component, "youtubeComponent").prop('playerRef').current = { getCurrentTime: jest.fn() };
+            callback({ id: 'id' });
             expect(sckt.socket.emit).toHaveBeenCalledWith('sendVideoSync', expect.anything(), expect.any(Function));
         });
         it('Should ensure killroom callback works', () => {
@@ -166,16 +166,16 @@ describe('<Room /> component tests', () => {
         it('Should ensure receiveRoomState callback works', () => {
             component = initContext(contextValues, setUp, props);
             const callback = sckt.socket.on.mock.calls.filter(call => call[0] == "receiveRoomState")[0][1];
-            callback({eventName: 'syncWorkoutState'});
-            callback({eventName: 'syncWorkoutType'});
-            callback({eventName: 'syncWorkout'});
-            callback({eventName: ''});
+            callback({ eventName: 'syncWorkoutState' });
+            callback({ eventName: 'syncWorkoutType' });
+            callback({ eventName: 'syncWorkout' });
+            callback({ eventName: '' });
             expect(contextValues.updateRoomProps).toHaveBeenCalledTimes(3);
         });
         it('Should ensure newUser callback works', () => {
             component = initContext(contextValues, setUp, props);
             const callback = sckt.socket.on.mock.calls.filter(call => call[0] == "newUser")[0][1];
-            const nameMapping = {name: 'hi', sid: 'hello'}
+            const nameMapping = { name: 'hi', sid: 'hello' }
             participantJoins(['1']);
             callback(nameMapping);
             expect(findByTestAttr(component, 'leaderParticipantComponent').prop('names')).toContainEqual(nameMapping);
@@ -183,7 +183,7 @@ describe('<Room /> component tests', () => {
         });
     });
     describe('Test room listeners', () => {
-         // room listeners
+        // room listeners
         it('Should initialize all room listeners', () => {
             component = initContext(contextValues, setUp, props);
             expect(contextValues.room.on).toHaveBeenCalledWith('participantConnected', expect.any(Function));
@@ -216,7 +216,7 @@ describe('<Room /> component tests', () => {
             expect(findByTestAttr(component, 'remoteParticipantComponent').length).toBe(4);
         });
     });
-   
+
     describe('<Room /> Integration tests with <BottomControl />', () => {
         beforeAll(() => {
             // https://stackoverflow.com/a/65338472/13659833

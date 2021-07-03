@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import Participant from "./Participant/Participant";
 import { RoutesEnum } from '../App'
-import {useHistory} from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import SideBar from "./SideBar/SideBar";
 import BottomControl from "./BottomControl/BottomControl"
 import { useAppContext } from "../AppContext";
@@ -126,7 +126,7 @@ const Room = (props) => {
     };
 
     const participantDisconnected = (participant) => {
-      setParticipants((prevParticipants) => 
+      setParticipants((prevParticipants) =>
         [...prevParticipants].filter((p) => p.sid !== participant.sid)
       );
       setNameArray((prevParticipants) =>
@@ -211,7 +211,7 @@ const Room = (props) => {
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
         <Grid item xs={3} key={index} style={{ height: "100%" }}>
-          <Participant participant={participant} names={nameArr} participantPage={participantPage} data-test="remoteParticipantComponent"/>
+          <Participant participant={participant} names={nameArr} participantPage={participantPage} data-test="remoteParticipantComponent" />
         </Grid>
       )));
   };
@@ -232,7 +232,7 @@ const Room = (props) => {
           />
         );
       }
-      return <Participant key={participant.sid} participant={participant} names={nameArr} data-test="leaderParticipantComponent"/>;
+      return <Participant key={participant.sid} participant={participant} names={nameArr} data-test="leaderParticipantComponent" />;
     } else {
       return (
         <Participant
@@ -268,7 +268,7 @@ const Room = (props) => {
   // TODO: Add loading screen. https://stackoverflow.com/questions/56861580/how-can-i-redirect-before-render
   if (!room) {
     return (
-      <Redirect to={`/join-room/${props.match.params.roomCode}`} data-test="redirectComponent"/>
+      <Redirect to={`/join-room/${props.match.params.roomCode}`} data-test="redirectComponent" />
     );
   }
 
@@ -278,7 +278,7 @@ const Room = (props) => {
         <Grid container style={{ height: "100vh" }}>
           <Grid item xs={12} style={{ height: "70%", width: "100%" }}>
             {room && (workoutType === 'vid') ? leaderParticipant() :
-              <Video playerRef={playerRef} data-test="youtubeComponent"/>}
+              <Video playerRef={playerRef} data-test="youtubeComponent" />}
           </Grid>
           <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
             {remoteParticipants()}

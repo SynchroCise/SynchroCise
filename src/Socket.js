@@ -10,7 +10,7 @@ function Socket() {
   } else {
     this.socket = io(ENDPOINT);
   }
-  
+
 };
 
 const sckt = new Socket();

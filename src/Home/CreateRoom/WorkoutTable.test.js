@@ -7,7 +7,7 @@ jest.mock("../../utils/requests");
 const mockPush = jest.fn();
 jest.mock('react-router-dom', () => ({
     useHistory: () => ({
-      push: mockPush,
+        push: mockPush,
     }),
 }));
 
@@ -16,7 +16,7 @@ describe('<WorkoutTable />', () => {
     let contextValues;
     let props;
 
-    const setUp = (props={}) => {
+    const setUp = (props = {}) => {
         const component = shallow(<WorkoutTable {...props} />);
         return component
     }
@@ -49,7 +49,7 @@ describe('<Row />', () => {
     let contextValues;
     let props;
 
-    const setUp = (props={}) => {
+    const setUp = (props = {}) => {
         const component = shallow(<Row {...props} />);
         return component
     }

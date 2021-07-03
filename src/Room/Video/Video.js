@@ -14,10 +14,10 @@ const Video = ({ playerRef }) => {
     const sendVideoState = useCallback(({ eventName, eventParams }) => {
         if (!room) return;
         let params = {
-          name: username,
-          room: room.sid,
-          eventName: eventName,
-          eventParams: eventParams
+            name: username,
+            room: room.sid,
+            eventName: eventName,
+            eventParams: eventParams
         };
         sckt.socket.emit('sendVideoState', params, (error) => { });
     }, [room, username]);
@@ -28,19 +28,19 @@ const Video = ({ playerRef }) => {
             if (!initVideo) updateVideoProps({ initVideo: true });
             let videoUrl = searchItem.video.url;
             if (sync) {
-            updateVideoProps({ url: videoUrl });
-            updateVideoProps({ playing });
-            updateVideoProps({ receiving: false });
-            playerRef.current.seekTo(seekTime, 'seconds');
+                updateVideoProps({ url: videoUrl });
+                updateVideoProps({ playing });
+                updateVideoProps({ receiving: false });
+                playerRef.current.seekTo(seekTime, 'seconds');
             } else {
-            updateVideoProps({ url: videoUrl });
-            updateVideoProps({ playing: true });
-            updateVideoProps({ receiving: false });
+                updateVideoProps({ url: videoUrl });
+                updateVideoProps({ playing: true });
+                updateVideoProps({ receiving: false });
             }
             // sckt.socket.emit('updateRoomData', { video: searchItem }, (error) => { });
         }
     }, [playerRef, updateVideoProps, videoProps]);
-    
+
     const playVideoFromSearch = useCallback((searchItem) => {
         const url = searchItem.video.url;
         const videoType = getVideoType(url);
@@ -139,7 +139,7 @@ const Video = ({ playerRef }) => {
     // }, [videoProps.playing])
 
     return (
-        <div style={{display: "flex", height:"100%", flexDirection: "column", justifyContent: "center"}}>
+        <div style={{ display: "flex", height: "100%", flexDirection: "column", justifyContent: "center" }}>
             <VideoSearch
                 addVideoToQueue={addVideoToQueue}
                 playVideoFromSearch={playVideoFromSearch}

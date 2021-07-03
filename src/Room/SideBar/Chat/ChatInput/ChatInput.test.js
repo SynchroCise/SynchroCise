@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { findByTestAttr } from '../../../../utils/test';
 import ChatInput from './ChatInput';
 
-const setUp = (props={}) => {
+const setUp = (props = {}) => {
     const component = shallow(<ChatInput {...props} />);
     return component
 }
@@ -31,7 +31,7 @@ describe('<ChatInput /> component tests', () => {
     it('Should sendMessage on enter key press', () => {
         component = setUp(props);
         const textfield = findByTestAttr(component, 'chatInputComponent');
-        textfield.simulate('keypress', {key: 'Enter'});
+        textfield.simulate('keypress', { key: 'Enter' });
         expect(props.sendMessage).toHaveBeenCalledTimes(1);
     });
 });

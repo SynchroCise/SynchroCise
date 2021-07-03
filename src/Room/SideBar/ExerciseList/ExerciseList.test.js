@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { findByTestAttr, initContext } from '../../../utils/test';
 import ExerciseList from './ExerciseList';
 
-const setUp = (props={}) => {
+const setUp = (props = {}) => {
     const component = shallow(<ExerciseList {...props} />);
     return component
 }
@@ -19,8 +19,8 @@ describe('<ExerciseList /> component tests', () => {
         }
         contextValues = {
             workout: { "workoutName": "", "exercises": [{ "time": 1, "exercise": "" }, { "time": 1, "exercise": "" }], "id": "" },
-            sendRoomState: jest.fn(({eventName, eventParams}, callback) => callback()),
-            playWorkoutState: false, 
+            sendRoomState: jest.fn(({ eventName, eventParams }, callback) => callback()),
+            playWorkoutState: false,
             setPlayWorkoutState: jest.fn(),
             workoutNumber: 0,
             workoutCounter: -1

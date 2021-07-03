@@ -6,7 +6,7 @@ jest.mock("twilio-video")
 
 describe("test requests.js", () => {
     describe('test createTwilioRoom', () => {
-        it('Should test createTwilioRoom with failed createLocalAudioTrack', async  () => {
+        it('Should test createTwilioRoom with failed createLocalAudioTrack', async () => {
             Video.createLocalAudioTrack.mockImplementation(() => {
                 throw new Error();
             });
@@ -18,7 +18,7 @@ describe("test requests.js", () => {
                 "audio": false
             }));
         });
-        it('Should test createTwilioRoom with failed createLocalVideoTrack', async  () => {
+        it('Should test createTwilioRoom with failed createLocalVideoTrack', async () => {
             Video.createLocalVideoTrack.mockImplementation(() => {
                 throw new Error();
             });
