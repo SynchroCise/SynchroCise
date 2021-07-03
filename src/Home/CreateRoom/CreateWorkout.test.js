@@ -100,7 +100,7 @@ describe('<CreateWorkout />', () => {
         expect(contextValues.handleSetConnecting).toHaveBeenCalledTimes(2);
         expect(requests.addWorkout).toHaveBeenCalledTimes(0);
         expect(requests.editWorkout).toHaveBeenCalledTimes(1);
-        expect(mockPush).toHaveBeenCalledTimes(1);
+        expect(mockPush).toHaveBeenCalled();
     });
 
 
@@ -201,7 +201,7 @@ describe('<CreateWorkout />', () => {
         window.location = mockLocation;
         component = initContext(contextValues, setUp);
 
-        expect(requests.getUserWorkout).toHaveBeenCalledTimes(1);
+        expect(requests.getUserWorkout).toHaveBeenCalled();
     });
     it('Should not call getUserWorkouts on initial render if create-workout', () => {
         const mockLocation = new URL("https://synchrocise.com/create-workout/asdf");
