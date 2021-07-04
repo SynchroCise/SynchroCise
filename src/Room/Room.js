@@ -72,7 +72,6 @@ const Room = (props) => {
       console.log("I'm syncing video.", 'server');
       updateVideoProps({ ...videoProps });
       modifyVideoState({ ...videoProps });
-      // loadVideo(videoProps.history[0], true);
     };
     const receiveRoomStateHandler = ({ name, room, eventName, eventParams = {} }) => {
       const { playWorkoutState, workout, workoutType } = eventParams;
@@ -124,7 +123,6 @@ const Room = (props) => {
           (v, i, a) => a.indexOf(v) === i
         ))
     };
-
     const participantDisconnected = (participant) => {
       setParticipants((prevParticipants) =>
         [...prevParticipants].filter((p) => p.sid !== participant.sid)
@@ -163,10 +161,6 @@ const Room = (props) => {
 
     sckt.socket.emit('join', { name, room: room.sid, sid, userId }, ({ id, leaderList }) => {
       setLeaderParticipantIDs([...leaderList]);
-      // updateCurrUser({ id });
-      // setTimeout(() => {
-      //   setIsJoined(true);
-      // }, 750);
     });
   }, [room, userId, username]);
   // handles leader changes from server

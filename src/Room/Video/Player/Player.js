@@ -262,13 +262,6 @@ function Player({ videoProps, sendVideoState, updateVideoProps, loadVideo, loadF
         let key = code(e);
         // console.log(key);
         switch (key) {
-            // case ' ':
-            // case 'k':
-            //     handlePlayPause()
-            //     break;
-            // case 'm':
-            //     handleMute();
-            //     break;
             case 'ArrowLeft':
             case 'j':
                 handleRewind();
@@ -280,46 +273,18 @@ function Player({ videoProps, sendVideoState, updateVideoProps, loadVideo, loadF
             case 'f':
                 toggleFullScreen();
                 break;
-            // case 'i':
-            //     // enablePip();
-            //     break;
-            // case 'c':
-            //     // enable captions
-            //     break;
-            // case 'ArrowUp':
-            //     handleVolumeChange([volume + 0.2]);
-            //     break;
-            // case 'ArrowDown':
-            //     handleVolumeChange([volume - 0.2]);
-            //     break;
             default:
                 break
-            // // Is a number
-            // if (isFinite(key)) {
-            // }
         }
     }, [handleFastForward, handleRewind]);
     useEffect(() => {
-        // let clickCount = 0;
-        // let singleClickTimer;
         const handleClickFocus = (e) => {
             let player = playerContainerRef.current;
             if (!player) return;
             if (!player.contains(e.target)) {
-                document.removeEventListener('keydown', setKeyboardShortcuts);
+                //document.removeEventListener('keydown', setKeyboardShortcuts);
             } else if (e.target.classList.contains('videoPlayerContainer')) {
-                document.addEventListener('keydown', setKeyboardShortcuts);
-                // clickCount++;
-                // if (clickCount === 1) {
-                //     singleClickTimer = setTimeout(function () {
-                //         clickCount = 0;
-                //         // handleVideoClick();
-                //     }, 300);
-                // } else if (clickCount === 2) {
-                //     clearTimeout(singleClickTimer);
-                //     clickCount = 0;
-                //     toggleFullScreen();
-                // }
+                //document.addEventListener('keydown', setKeyboardShortcuts);
             }
         }
         document.addEventListener('click', handleClickFocus);
