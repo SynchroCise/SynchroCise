@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { TextField } from '@material-ui/core';
+import { getElementError } from '@testing-library/react';
 
 // import './ChatInput.scss';
 
@@ -14,9 +15,14 @@ const ChatInput = React.memo(({ message, setMessage, sendMessage }) => {
         sendMessage(event);
     }
 
+    useEffect(() => {;
+        document.getElementById("chatTextbox").focus();
+    }, []);
+
     return (
         <React.Fragment>
             <TextField
+                id="chatTextbox"
                 fullWidth
                 placeholder="Type a message here..."
                 value={message}
