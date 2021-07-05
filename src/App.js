@@ -1,9 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-// import "./App.css";
 import Navbar from "./components/Navbar";
 import Home from "./Home/Home";
-// import "./media/CoLab.css";
 import { AppContextProvider } from "./AppContext"
 import CreateRoom from "./Home/CreateRoom/CreateRoom";
 import CreateWorkout from "./Home/CreateRoom/CreateWorkout";
