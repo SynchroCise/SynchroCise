@@ -16,7 +16,6 @@ const VideoSearch = ({ addVideoToQueue, playVideoFromSearch, updateVideoProps })
     const [errSearch, setErrSearch] = useState("")
     const baseURL = 'https://www.googleapis.com/youtube/v3/videos';
     const lastSearch = useRef('');
-
     const handlePlay = async (url) => {
         let trimInput = url.trim();
         if (trimInput === '' || trimInput === lastSearch.current) return;
@@ -45,28 +44,9 @@ const VideoSearch = ({ addVideoToQueue, playVideoFromSearch, updateVideoProps })
             }
         } else {
             setErrSearch('Invalid Youtube URL')
-            // Search phrase on Youtub
-            // search({ term: trimInput, page: 1 });
-            // updateVideoProps({ videoType: 'yt' });
         }
     };
-    /*
-    const search = async ({ term, page = 1 }) => {
-        const limit = (window.matchMedia('(max-width: 960px)').matches) ? 8 : 9;
-        setLoading(true);
-        axios.get(`${baseURL}/ytsearch`, {
-            params: {
-                query: term,
-                page: page,
-                limit: limit
-            }
-        }).then(response => {
-            setSearchResults(response.data.results);
-            setPage(page);
-            setLoading(false);
-        });
-    };
-    */
+
     const getYTVideo = async (ytUrl) => {
         const part = 'id,snippet,statistics'
         const id = youtube_parser(ytUrl);

@@ -6,10 +6,8 @@ import { getVideoType } from '../../utils/video';
 import VideoSearch from './Search/Search';
 import VideoPlayer from "./Player/Player";
 
-
-
 const Video = ({ playerRef }) => {
-    const { username, room, videoProps, updateVideoProps } = useAppContext();
+    const { username, room, videoProps, updateVideoProps, setVideoProps } = useAppContext();
 
     const sendVideoState = useCallback(({ eventName, eventParams }) => {
         if (!room) return;
@@ -37,7 +35,6 @@ const Video = ({ playerRef }) => {
                 updateVideoProps({ playing: true });
                 updateVideoProps({ receiving: false });
             }
-            // sckt.socket.emit('updateRoomData', { video: searchItem }, (error) => { });
         }
     }, [playerRef, updateVideoProps, videoProps]);
 
@@ -70,8 +67,6 @@ const Video = ({ playerRef }) => {
             const { playing, seekTime } = paramsToChange;
             if (playing !== undefined) {
                 updateVideoProps({ playing });
-                // } else if (playbackRate !== undefined) {
-                //     player.setPlaybackRate(playbackRate);
             }
             if (seekTime !== undefined) {
                 playerRef.current.seekTo(seekTime);
@@ -134,9 +129,9 @@ const Video = ({ playerRef }) => {
         };
     }, [loadFromQueue, loadVideo, modifyVideoState, updateVideoProps]);
 
-    // useEffect(() => {
-    //     console.log(videoProps.playing);
-    // }, [videoProps.playing])
+    useEffect(() => {
+        setVideoProps({ queue: [], history: [], playing: true, seekTime: 0, receiving: false, initVideo: false, videoType: 'yt' });
+    }, [setVideoProps]);
 
     return (
         <div style={{ display: "flex", height: "100%", flexDirection: "column", justifyContent: "center" }}>
@@ -153,34 +148,7 @@ const Video = ({ playerRef }) => {
                 loadVideo={loadVideo}
                 loadFromQueue={loadFromQueue}
             />
-            {/*
-            <Segment placeholder>
-                <Grid columns={2} stackable textAlign='center'>
-                    <Divider vertical>Or</Divider>
 
-                    <Grid.Row verticalAlign='middle'>
-                        <Grid.Column>
-                            <Header icon>
-                                <Icon name='search' />
-                                Search for a YouTube video
-                            </Header>
-                            <Button onClick={() => { document.getElementById("searchInput").focus(); }}>Search above!</Button>
-                        </Grid.Column>
-
-                        <Grid.Column>
-                            <Header icon>
-                                <div className="actionIcons">
-                                    <Icon name='youtube' onClick={() => { window.open('https://youtube.com', '_blank'); }} />
-                                    <Icon name='vimeo' onClick={() => { window.open('https://vimeo.com/search', '_blank'); }} />
-                                    <Icon name='twitch' onClick={() => { window.open('https://twitch.tv', '_blank'); }} />
-                                </div>
-                                Paste a video link
-                            </Header>
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
-            </Segment>
-            */}
         </div>
     );
 }

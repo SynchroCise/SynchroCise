@@ -195,6 +195,7 @@ const AppContextProvider = ({ children }) => {
       checkLoggedIn,
       handleLogout,
       roomProps,
+      setVideoProps,
       updateRoomProps,
       videoProps,
       updateVideoProps,
