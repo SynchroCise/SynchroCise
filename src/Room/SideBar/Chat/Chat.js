@@ -21,7 +21,6 @@ const Chat = ({ messages, currUser, users }) => {
         <div style={{ height: "100%", maxHeight: "100%" }} display="flex" data-test="chatComponent">
             <div style={{ height: "100%", maxHeight: "100%", overflowY: 'scroll' }} display="flex" id="chat">
                 <Messages messages={messages} currUser={currUser} users={users} data-test="messageComponent" />
-                <Divider />
             </div>
             <ChatInput message={message} setMessage={setMessage} sendMessage={sendMessage} data-test="chatInputComponent" />
         </div>
