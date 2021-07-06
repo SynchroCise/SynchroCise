@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { sckt } from '../../../Socket';
 import ChatInput from './ChatInput/ChatInput';
 import Messages from './Messages/Messages';
-import { Divider } from '@material-ui/core';
 import { useAppContext } from "../../../AppContext"
 
 const Chat = ({ messages, currUser, users }) => {
