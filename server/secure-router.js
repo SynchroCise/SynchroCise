@@ -46,8 +46,10 @@ router.post('/addWorkout', async (req, res, next) => {
 });
 
 router.post('/deleteWorkout', async (req, res) => {
-  const workoutId = req.body.workoutId;
-  if (workoutId) setDeleteWorkout(workoutId);
+  const workout = await getWorkoutById(req.body.workoutId);
+  if (workout.userId !== req.user.id) return res.status(401);
+  if (req.body.workoutId) setDeleteWorkout(req.body.workoutId);
+  return res.status(200);
 });
 
 router.put('/editWorkout', async (req, res, next) => {
