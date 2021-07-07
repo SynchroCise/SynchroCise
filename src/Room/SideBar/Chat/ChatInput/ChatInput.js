@@ -23,6 +23,7 @@ const ChatInput = React.memo(({ message, setMessage, sendMessage }) => {
                 onChange={e => handleInputChange(e)}
                 onKeyPress={e => e.key === 'Enter' ? handleInputSend(e) : null}
                 data-test="chatInputComponent"
+                autoFocus
             ></TextField>
         </React.Fragment>
     )
