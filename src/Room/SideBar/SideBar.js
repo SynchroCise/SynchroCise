@@ -80,7 +80,7 @@ const SideBar = ({
     // countdown workout counter
     useEffect(() => {
         if (!playWorkoutState) return;
-        const timer = workoutCounter > 0 && setTimeout(() => setWorkoutCounter(workoutCounter - 1), 1000);
+        const timer = workoutCounter > 0 && setTimeout(() => setWorkoutCounter((Math.floor((workoutCounter - 0.1)*10)/10).toFixed(1)), 100);
         if (!(workoutCounter <= 0 && workoutNumber < workout.exercises.length - 1)) return;
         setWorkoutNumber(workoutNumber + 1)
         setWorkoutTime(workout.exercises[workoutNumber].time);
