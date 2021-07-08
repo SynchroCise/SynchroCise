@@ -2,11 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography } from '@material-ui/core';
 import './Participant.scss';
 
-const Participant = ({ participant, names, participantPage }) => {
+const Participant = ({ participant, names, setpinnedParticipantId }) => {
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [displayName, setDisplayName] = useState('');
-
 
   useEffect(() => {
     if (!names) return;
@@ -81,7 +80,7 @@ const Participant = ({ participant, names, participantPage }) => {
   }, [audioTracks]);
 
   return (
-    <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%">
+    <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%" onClick={()=>setpinnedParticipantId(participant.sid)}>
       {/* <div className='name'>{participant.identity}</div> */}
       {(videoTracks[0]) ? <video ref={videoRef} autoPlay={true} style={{ position: "relative", flexGrow: 1, maxWidth: "100%", minHeight: 0 }} data-test="videoComponent" /> : null}
       <div className="name">
