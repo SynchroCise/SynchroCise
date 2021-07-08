@@ -20,6 +20,7 @@ const Room = (props) => {
   const ppp = 4; // participants per page
   const history = useHistory();
   const { username, room, handleLeaveRoom, userId, openSideBar, roomProps, updateRoomProps, workoutType, videoProps, updateVideoProps } = useAppContext();
+  const [pinnedParticipantId, setpinnedParticipantId] = useState("");
   const [nameArr, setNameArray] = useState([room ? { name: username, sid: room.localParticipant.sid } : {}]);
 
   // Initializing Room Stuff
@@ -161,16 +162,9 @@ const Room = (props) => {
 
     sckt.socket.emit('join', { name, room: room.sid, sid, userId }, ({ id, leaderList }) => {
       setLeaderParticipantIDs([...leaderList]);
+      setpinnedParticipantId(leaderList[0])
     });
-  }, [room, userId, username]);
-  // handles leader changes from server
-  useEffect(() => {
-    const handler = (leaderList) => {
-      setLeaderParticipantIDs([...leaderList]);
-    }
-    sckt.socket.on('leader', handler);
-    return () => sckt.socket.off('leader', handler);
-  }, []);
+  }, [room, userId, username, setpinnedParticipantId]);
 
   // handels leader leaves server
   useEffect(() => {
@@ -186,12 +180,12 @@ const Room = (props) => {
   useEffect(() => {
     if (!room) return;
     let all_participants = [...participants, room.localParticipant];
-    all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
+    all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== pinnedParticipantId)
     const viewer_len = all_participants.slice(participantPage * ppp, participantPage * ppp + ppp).length
     if (viewer_len === 0 && participantPage !== 0) {
       setParticipantPage(0)
     }
-  }, [participants, leaderParticipantIDs, participantPage, room, workoutType]);
+  }, [participants, leaderParticipantIDs, participantPage, room, workoutType, pinnedParticipantId]);
 
   // show all the particpants in the room
   const remoteParticipants = () => {
@@ -200,12 +194,12 @@ const Room = (props) => {
       return <Typography color="secondary">No Other Participants</Typography>;
     }
     let all_participants = [...participants, room.localParticipant];
-    all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
+    all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== pinnedParticipantId)
     return (all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
         <Grid item xs={3} key={index} style={{ height: "100%" }}>
-          <Participant participant={participant} names={nameArr} participantPage={participantPage} data-test="remoteParticipantComponent" />
+          <Participant participant={participant} names={nameArr}  setpinnedParticipantId={setpinnedParticipantId} data-test="remoteParticipantComponent" />
         </Grid>
       )));
   };
@@ -214,7 +208,7 @@ const Room = (props) => {
     if (!room) return;
     if (participants.length >= 1) {
       const participant = participants.filter(
-        (participant) => participant.sid === leaderParticipantIDs[0]
+        (participant) => participant.sid === pinnedParticipantId
       )[0];
       if (participant === undefined) {
         return (
@@ -222,6 +216,7 @@ const Room = (props) => {
             key={room.localParticipant.sid}
             names={nameArr}
             participant={room.localParticipant}
+            setpinnedParticipantId= {setpinnedParticipantId}
             data-test="leaderParticipantComponent"
           />
         );
@@ -233,6 +228,7 @@ const Room = (props) => {
           key={room.localParticipant.sid}
           participant={room.localParticipant}
           names={nameArr}
+          setpinnedParticipantId= {setpinnedParticipantId}
           data-test="leaderParticipantComponent"
         />
       );

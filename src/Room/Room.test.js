@@ -44,11 +44,11 @@ describe('<Room /> component tests', () => {
 
     const participantJoins = (sids, leaderSid = contextValues.room.localParticipant.sid) => {
         const participantConnectedCallBack = contextValues.room.on.mock.calls.filter(call => call[0] == "participantConnected")[0][1];
-        const leaderCallback = sckt.socket.on.mock.calls.filter(call => call[0] == "leader")[0][1];
+        const joinCallback = sckt.socket.emit.mock.calls.filter(call => call[0] == "join")[0][2];
         sids.forEach((sid) => {
             participantConnectedCallBack(createParticipant(sid));
         });
-        leaderCallback([leaderSid]);
+        joinCallback({leaderList: [leaderSid]});
         component.update()
     }
 
@@ -120,16 +120,8 @@ describe('<Room /> component tests', () => {
             expect(sckt.socket.on).toHaveBeenCalledWith('startRoomSync', expect.any(Function));
             expect(sckt.socket.on).toHaveBeenCalledWith('startVideoSync', expect.any(Function));
             expect(sckt.socket.on).toHaveBeenCalledWith('newUser', expect.any(Function));
-            expect(sckt.socket.on).toHaveBeenCalledWith('leader', expect.any(Function));
             expect(sckt.socket.on).toHaveBeenCalledWith('killroom', expect.any(Function));
-            expect(sckt.socket.on).toHaveBeenCalledTimes(8);
-        });
-        it('Should ensure leader callback works', () => {
-            component = initContext(contextValues, setUp, props);
-            const leaderSid = '1';
-            expect(findByTestAttr(component, 'leaderParticipantComponent').prop('participant').sid).toBe(contextValues.room.localParticipant.sid)
-            participantJoins(['1'], leaderSid);
-            expect(findByTestAttr(component, 'leaderParticipantComponent').prop('participant').sid).toBe(leaderSid)
+            expect(sckt.socket.on).toHaveBeenCalledTimes(7);
         });
         it('Should ensure getVideoSync callback works', () => {
             component = initContext(contextValues, setUp, props);
