@@ -44,11 +44,11 @@ describe('<Room /> component tests', () => {
 
     const participantJoins = (sids, leaderSid = contextValues.room.localParticipant.sid) => {
         const participantConnectedCallBack = contextValues.room.on.mock.calls.filter(call => call[0] == "participantConnected")[0][1];
-        const leaderCallback = sckt.socket.on.mock.calls.filter(call => call[0] == "leader")[0][1];
+        const joinCallback = sckt.socket.emit.mock.calls.filter(call => call[0] == "join")[0][2];
         sids.forEach((sid) => {
             participantConnectedCallBack(createParticipant(sid));
         });
-        leaderCallback([leaderSid]);
+        joinCallback({leaderList: [leaderSid]});
         component.update()
     }
 
@@ -120,16 +120,8 @@ describe('<Room /> component tests', () => {
             expect(sckt.socket.on).toHaveBeenCalledWith('startRoomSync', expect.any(Function));
             expect(sckt.socket.on).toHaveBeenCalledWith('startVideoSync', expect.any(Function));
             expect(sckt.socket.on).toHaveBeenCalledWith('newUser', expect.any(Function));
-            expect(sckt.socket.on).toHaveBeenCalledWith('leader', expect.any(Function));
             expect(sckt.socket.on).toHaveBeenCalledWith('killroom', expect.any(Function));
-            expect(sckt.socket.on).toHaveBeenCalledTimes(8);
-        });
-        it('Should ensure leader callback works', () => {
-            component = initContext(contextValues, setUp, props);
-            const leaderSid = '1';
-            expect(findByTestAttr(component, 'leaderParticipantComponent').prop('participant').sid).toBe(contextValues.room.localParticipant.sid)
-            participantJoins(['1'], leaderSid);
-            //expect(findByTestAttr(component, 'leaderParticipantComponent').prop('participant').sid).toBe(leaderSid)
+            expect(sckt.socket.on).toHaveBeenCalledTimes(7);
         });
         it('Should ensure getVideoSync callback works', () => {
             component = initContext(contextValues, setUp, props);
@@ -179,7 +171,7 @@ describe('<Room /> component tests', () => {
             participantJoins(['1']);
             callback(nameMapping);
             expect(findByTestAttr(component, 'leaderParticipantComponent').prop('names')).toContainEqual(nameMapping);
-            //expect(findByTestAttr(component, 'remoteParticipantComponent').prop('names')).toContainEqual(nameMapping);
+            expect(findByTestAttr(component, 'remoteParticipantComponent').prop('names')).toContainEqual(nameMapping);
         });
     });
     describe('Test room listeners', () => {
@@ -194,17 +186,17 @@ describe('<Room /> component tests', () => {
             component = initContext(contextValues, setUp, props);
 
             expect(findByTestAttr(component, 'leaderParticipantComponent').length).toBe(1);
-            //expect(findByTestAttr(component, 'remoteParticipantComponent').length).toBe(0);
+            expect(findByTestAttr(component, 'remoteParticipantComponent').length).toBe(0);
 
             // have 1 participant join
             participantJoins(['1']);
             expect(findByTestAttr(component, 'leaderParticipantComponent').length).toBe(1);
-            //expect(findByTestAttr(component, 'remoteParticipantComponent').length).toBe(1);
+            expect(findByTestAttr(component, 'remoteParticipantComponent').length).toBe(1);
 
             // have 1 participant leave
             participantLeaves(['1']);
             expect(findByTestAttr(component, 'leaderParticipantComponent').length).toBe(1);
-            //expect(findByTestAttr(component, 'remoteParticipantComponent').length).toBe(0);
+            expect(findByTestAttr(component, 'remoteParticipantComponent').length).toBe(0);
         });
 
         it('Should ensure that participant max remoteParticipants are 4', () => {
@@ -213,7 +205,7 @@ describe('<Room /> component tests', () => {
             participantJoins(['1', '2', '3', '4', '5', '6', '7', '8', '9']);
 
             expect(findByTestAttr(component, 'leaderParticipantComponent').length).toBe(1);
-            //expect(findByTestAttr(component, 'remoteParticipantComponent').length).toBe(4);
+            expect(findByTestAttr(component, 'remoteParticipantComponent').length).toBe(4);
         });
     });
 
