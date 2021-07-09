@@ -11,7 +11,7 @@ import * as requests from "../../utils/requests"
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const { userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
+  const { userId, connecting, username, roomName, disconnectRoom, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
   const history = useHistory()
   const [selectedWorkout, setSelectedWorkout] = useState(0);
   const [workoutList, setWorkoutList] = useState([]);
@@ -72,12 +72,17 @@ const CreateRoom = () => {
     }
   }
 
+  const handleLeave = () => {
+    history.push(RoutesEnum.Home);
+    disconnectRoom();
+  }
+
   return (
     <Box display="flex" alignItems="center" justifyContent="center" mx={12} my={6} data-test="createRoomComponent">
       <form onSubmit={handleSubmit} data-test="createRoomForm">
         <Grid container justify="center" spacing={4} wrap="nowrap">
           <Grid item xs={1}>
-            <IconButton className={classes.blackButton} onClick={() => { history.push(RoutesEnum.Home) }} data-test="backButton">
+            <IconButton className={classes.blackButton} onClick={() => { handleLeave() }} data-test="backButton">
               <ArrowBack />
             </IconButton>
           </Grid>
