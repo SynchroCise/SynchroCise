@@ -11,7 +11,7 @@ import * as requests from "../../utils/requests"
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const { userId, connecting, username, roomName, disconnectRoom, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
+  const { userId, connecting, username, roomName, handleSetRoomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
   const history = useHistory()
 
   // intialize custom room code
@@ -58,7 +58,7 @@ const CreateRoom = () => {
 
   const handleLeave = () => {
     history.push(RoutesEnum.Home);
-    disconnectRoom();
+    handleSetRoomName("");
   }
 
   return (
