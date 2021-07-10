@@ -33,13 +33,14 @@ const Participant = ({ participant, names, setpinnedParticipantId }) => {
 
     // when audio or video track is added for participant
     const trackSubscribed = (track) => {
+      console.log('track subscribed', track)
       if (track.kind === "video") {
         setVideoTracks((videoTracks) => [...videoTracks, track]);
       } else if (track.kind === "audio") {
         setAudioTracks((audioTracks) => [...audioTracks, track]);
       }
-      track.on('disabled', () => handleMute(track, true))
-      track.on('enabled', () => handleMute(track, false));
+      track.on('disabled', handleMute);
+      track.on('enabled', handleMute);
     };
 
     // when audio or video track is removed for participant
@@ -50,14 +51,13 @@ const Participant = ({ participant, names, setpinnedParticipantId }) => {
         setAudioTracks((audioTracks) => audioTracks.filter((a) => a !== track));
       }
     };
-
-    const handleMute = (track, isMute) => {
-      console.log(track.kind, isMute)
+    const handleMute = (track) => {
+      console.log(track)
       if (track.kind === "video") {
-        setVideoMute(isMute);
+        setVideoMute(track.isEnabled);
       }
       else if (track.kind === "audio") {
-        setAudioMute(isMute);
+        setAudioMute(track.isEnabled);
       }
     }
 
@@ -66,8 +66,8 @@ const Participant = ({ participant, names, setpinnedParticipantId }) => {
     participant.on("trackUnsubscribed", trackUnsubscribed);
     participant.tracks.forEach(publication => {
       if (publication.track) {
-        publication.track.on('disabled', () => handleMute(publication.track, true));
-        publication.track.on('enabled', () => handleMute(publication.track, false));
+        publication.track.on('disabled', handleMute);
+        publication.track.on('enabled', handleMute);
       }
     });
 
@@ -75,6 +75,12 @@ const Participant = ({ participant, names, setpinnedParticipantId }) => {
       setVideoTracks([]);
       setAudioTracks([]);
       participant.removeAllListeners();
+      participant.tracks.forEach((publication) => {
+        if (publication.track) {
+          publication.track.removeListener('disabled', handleMute);
+          publication.track.removeListener('enabled', handleMute);
+        }
+      })
     };
   }, [participant]);
 
