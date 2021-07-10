@@ -66,12 +66,6 @@ const AppContextProvider = ({ children }) => {
 
   const handleOpenSideBar = () => setOpenSideBar(!openSideBar)
 
-  const disconnectRoom = () => {
-    setRoomName("")
-    setUsername("")
-    setRoomState(null)
-  }
-
   const joinRoom = (roomName) => {
     // check if room exists here TODO
     setRoomState('join');
@@ -185,7 +179,6 @@ const AppContextProvider = ({ children }) => {
       handleSetUserId: setUserId,
       isLoggedIn,
       setIsLoggedIn,
-      disconnectRoom,
       joinRoom,
       handleUsernameChange,
       handleRoomTitle,
