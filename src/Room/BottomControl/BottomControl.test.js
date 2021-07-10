@@ -30,11 +30,10 @@ describe('<BottomControl /> component tests', () => {
             handleOpenSideBar: jest.fn()
         };
         props = {
-            participants: [],
             participantPage: 0,
             setParticipantPage: jest.fn(),
-            leaderParticipantIDs: ['local'],
-            ppp: 4
+            ppp: 4,
+            getAllRemoteParticipants: jest.fn()
         }
     });
     it('Should handle videoButton click', () => {
@@ -70,13 +69,14 @@ describe('<BottomControl /> component tests', () => {
 
     describe("Test PPButtons", () => {
         it('Should test forwardPPButtons and backPPButtons works with no participants', () => {
+            props.getAllRemoteParticipants.mockReturnValue([]);
             component = initContext(contextValues, setUp, props);
             findByTestAttr(component, 'forwardPPButton').simulate('click');
             findByTestAttr(component, 'backPPButton').simulate('click');
             expect(props.setParticipantPage).toHaveBeenCalledTimes(0);
         });
         it('Should test forwardPPButtons and backPPButtons works with 4 remote participants', () => {
-            props.participants = participantJoins(['1', '2', '3', '4']);
+            props.getAllRemoteParticipants.mockReturnValue(participantJoins(['1', '2', '3', '4']));
             component = initContext(contextValues, setUp, props);
 
             findByTestAttr(component, 'forwardPPButton').simulate('click');
@@ -84,14 +84,14 @@ describe('<BottomControl /> component tests', () => {
             expect(props.setParticipantPage).toHaveBeenCalledTimes(0);
         });
         it('Should test forwardPPButtons works with 5 remote participants', () => {
-            props.participants = participantJoins(['1', '2', '3', '4', '5']);
+            props.getAllRemoteParticipants.mockReturnValue(participantJoins(['1', '2', '3', '4', '5']));
             component = initContext(contextValues, setUp, props);
 
             findByTestAttr(component, 'forwardPPButton').simulate('click');
             expect(props.setParticipantPage).toHaveBeenCalledWith(1);
         });
         it('Should test backPPButtons works with 5 remote participants', () => {
-            props.participants = participantJoins(['1', '2', '3', '4', '5']);
+            props.getAllRemoteParticipants.mockReturnValue(participantJoins(['1', '2', '3', '4', '5']));
             props.participantPage = 1;
             component = initContext(contextValues, setUp, props);
 
