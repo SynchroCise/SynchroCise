@@ -3,7 +3,7 @@ import { useAppContext } from "../../AppContext";
 import { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles } from '@material-ui/core';
 import { ArrowForward, ArrowBack, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter } from '@material-ui/icons';
 
-const BottomControl = ({ participants, participantPage, setParticipantPage, leaderParticipantIDs, ppp }) => {
+const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteParticipants }) => {
     const { room, sendRoomState, workoutType, setWorkoutType, openSideBar, handleOpenSideBar } = useAppContext();
     const [vid, setVid] = useState(true);
     const [mic, setMic] = useState(true);
@@ -34,8 +34,7 @@ const BottomControl = ({ participants, participantPage, setParticipantPage, lead
 
     const handleParticipantPage = (pageDelta) => {
         if (!room) return;
-        let all_participants = [...participants, room.localParticipant];
-        all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== leaderParticipantIDs[0])
+        let all_participants = getAllRemoteParticipants();
         const newPageNum = participantPage + pageDelta;
         if (all_participants.slice(newPageNum * ppp, newPageNum * ppp + ppp).length > 0) {
             setParticipantPage(newPageNum)
@@ -69,7 +68,7 @@ const BottomControl = ({ participants, participantPage, setParticipantPage, lead
                     <IconButton color="secondary" onClick={() => handleParticipantPage(-1)} data-test="backPPButton">
                         <ArrowBack style={{ fill: "white" }} />
                     </IconButton>
-                    <Typography color="secondary"> {participants.length + leaderParticipantIDs.length}/{participants.length + leaderParticipantIDs.length} participants {participantPage} </Typography>
+                    <Typography color="secondary"> Page {participantPage} </Typography>
                     <IconButton color="secondary" onClick={() => handleParticipantPage(1)} data-test="forwardPPButton">
                         <ArrowForward style={{ fill: "white" }} />
                     </IconButton>

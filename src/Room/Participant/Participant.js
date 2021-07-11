@@ -3,7 +3,7 @@ import { Box, Typography } from '@material-ui/core';
 import placeHolder from "../../media/placeHolder.png";
 import './Participant.scss';
 
-const Participant = ({ participant, names, setpinnedParticipantId }) => {
+const Participant = ({ participant, names, setPinnedParticipantId }) => {
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [displayName, setDisplayName] = useState('');
@@ -81,7 +81,7 @@ const Participant = ({ participant, names, setpinnedParticipantId }) => {
   }, [audioTracks]);
 
   return (
-    <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%" onClick={()=>setpinnedParticipantId(participant.sid)}>
+    <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%" onClick={() => setPinnedParticipantId(participant.sid)}>
       {/* <div className='name'>{participant.identity}</div> */}
       {(videoTracks[0]) ? <video ref={videoRef} autoPlay={true} style={{ position: "relative", flexGrow: 1, maxWidth: "100%", minHeight: 0 }} data-test="videoComponent" /> : 
         <img src={placeHolder} alt="" style={{ objectFit: "contain", width: "100%", height: "100%", }}></img>}

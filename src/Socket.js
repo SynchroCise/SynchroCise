@@ -4,7 +4,7 @@ require('dotenv').config()
 const ENDPOINT = 'http://localhost:3001/';
 
 function Socket() {
-  console.log(process.env.NODE_ENV);
+  if (process.env.NODE_ENV !== 'test') console.log(process.env.NODE_ENV);
   if (process.env.NODE_ENV === 'production') {
     this.socket = io();
   } else {
