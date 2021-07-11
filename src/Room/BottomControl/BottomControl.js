@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useAppContext } from "../../AppContext";
 import { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles } from '@material-ui/core';
-import { ArrowForward, ArrowBack, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter } from '@material-ui/icons';
+import { ArrowForward, ArrowBack, CallEnd, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter } from '@material-ui/icons';
 
-const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteParticipants }) => {
-    const { room, sendRoomState, workoutType, setWorkoutType, openSideBar, handleOpenSideBar } = useAppContext();
+const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteParticipants, handleLeave }) => {
+    const { room, sendRoomState, workoutType, handleLeaveRoom, setWorkoutType, openSideBar, handleOpenSideBar } = useAppContext();
     const [vid, setVid] = useState(true);
     const [mic, setMic] = useState(true);
 
@@ -47,7 +47,7 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
             color: 'white'
         },
     })(BottomNavigationAction);
-
+    
     return (
         <Grid item container xs={12} style={{ width: "100%" }} alignItems="center" data-test="bottomControlComponent">
             <Grid item xs={4}>
@@ -58,9 +58,9 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
                     <IconButton color="secondary" onClick={handleMic} data-test="micButton">
                         {mic ? <Mic data-test="micOn" /> : <MicOff data-test="micOff" />}
                     </IconButton>
-                    {/* <IconButton>
-                        <CallEnd></CallEnd>
-                        </IconButton> */}
+                    <IconButton color="secondary" onClick={handleLeaveRoom}>
+                        <CallEnd/>
+                    </IconButton>
                 </Box>
             </Grid>
             <Grid item xs={4}>
@@ -76,13 +76,6 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
             </Grid>
             <Grid item xs={4}>
                 <Box display="flex" justifyContent="flex-end" alignItems="center">
-                    {/* <IconButton color="secondary" size="medium">
-                    <Apps/>
-                    </IconButton>
-                    <IconButton color="secondary" size="medium">
-                    <Fullscreen/>
-                    </IconButton> */}
-
                     <BottomNavigation
                         value={workoutType === 'yt' ? 1 : 0}
                         onChange={(event, newValue) => {
