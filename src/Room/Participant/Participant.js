@@ -7,6 +7,8 @@ const Participant = ({ participant, names, setpinnedParticipantId }) => {
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [displayName, setDisplayName] = useState('');
+  const [videoMute, setVideoMute] = useState(true);
+  const [audioMute, setAudioMute] = useState(true);
 
   useEffect(() => {
     if (!names) return;
@@ -36,6 +38,8 @@ const Participant = ({ participant, names, setpinnedParticipantId }) => {
       } else if (track.kind === "audio") {
         setAudioTracks((audioTracks) => [...audioTracks, track]);
       }
+      track.on('disabled', () => handleMute(track, true))
+      track.on('enabled', () => handleMute(track, false));
     };
 
     // when audio or video track is removed for participant
@@ -47,9 +51,25 @@ const Participant = ({ participant, names, setpinnedParticipantId }) => {
       }
     };
 
+    const handleMute = (track, isMute) => {
+      console.log(track.kind, isMute)
+      if (track.kind === "video") {
+        setVideoMute(isMute);
+      }
+      else if (track.kind === "audio") {
+        setAudioMute(isMute);
+      }
+    }
+
     // set listeners to the above functions
     participant.on("trackSubscribed", trackSubscribed);
     participant.on("trackUnsubscribed", trackUnsubscribed);
+    participant.tracks.forEach(publication => {
+      if (publication.track) {
+        publication.track.on('disabled', () => handleMute(publication.track, true));
+        publication.track.on('enabled', () => handleMute(publication.track, false));
+      }
+    });
 
     return () => {
       setVideoTracks([]);
@@ -83,12 +103,12 @@ const Participant = ({ participant, names, setpinnedParticipantId }) => {
   return (
     <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%" onClick={()=>setpinnedParticipantId(participant.sid)}>
       {/* <div className='name'>{participant.identity}</div> */}
-      {(videoTracks[0]) ? <video ref={videoRef} autoPlay={true} style={{ position: "relative", flexGrow: 1, maxWidth: "100%", minHeight: 0 }} data-test="videoComponent" /> : 
+      {(videoTracks[0]) ? <video muted={videoMute} ref={videoRef} autoPlay={true} style={{ position: "relative", flexGrow: 1, maxWidth: "100%", minHeight: 0 }} data-test="videoComponent" /> : 
         <img src={placeHolder} alt="" style={{ objectFit: "contain", width: "100%", height: "100%", }}></img>}
       <div className="name">
         <Typography color="secondary" data-test="displayNameComponent">{displayName}</Typography>
       </div>
-      <audio ref={audioRef} autoPlay={true} muted={true} data-test="audioComponent" />
+      <audio ref={audioRef} autoPlay={true} muted={audioMute} data-test="audioComponent" />
     </Box>
   );
 };

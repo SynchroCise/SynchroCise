@@ -41,9 +41,6 @@ const CreateRoom = () => {
     const token = tok_res.body.token;
     const room = await requests.createTwilioRoom(token, roomName);
     if (!room) { handleSetConnecting(false); return; }
-    room.localParticipant.tracks.forEach(localTracks => {
-      localTracks.setPriority('high');
-    });
     // Creates a room in the server
     const room_res = await requests.createRoom(room, workout.id, 'vid');
     if (!room_res.ok) { handleSetConnecting(false); return; }
