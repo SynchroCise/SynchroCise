@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from 'react-router-dom'
 import { RoutesEnum } from '../../App'
 import { useAppContext } from "../../AppContext";
@@ -55,7 +56,17 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
             color: 'white'
         },
     })(BottomNavigationAction);
+
+
+    const useStyles = makeStyles(theme => ({
+        endCall: {
+          backgroundColor: "red",
+          color: "white",
+          "&:hover, &.Mui-focusVisible": { backgroundColor: "#ea4335" }
+        }
+      }));
     
+    const classes = useStyles();
     return (
         <Grid item container xs={12} style={{ width: "100%" }} alignItems="center" data-test="bottomControlComponent">
             <Grid item xs={4}>
@@ -66,7 +77,7 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
                     <IconButton color="secondary" onClick={handleMic} data-test="micButton">
                         {mic ? <Mic data-test="micOn" /> : <MicOff data-test="micOff" />}
                     </IconButton>
-                    <IconButton color="secondary" onClick={endCall}>
+                    <IconButton color="secondary" className={classes.endCall} onClick={endCall}>
                         <CallEnd/>
                     </IconButton>
                 </Box>
