@@ -44,8 +44,8 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
         }
     }
     
-    const endCall = async () => {
-        await handleLeaveRoom();
+    const endCall = () => {
+        handleLeaveRoom();
         history.push(RoutesEnum.Home);
     }
 

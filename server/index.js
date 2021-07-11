@@ -29,8 +29,19 @@ const io = socketio(server);
 const cors = require('cors');
 
 io.on('connection', (socket) => {
-    console.log('New Connection');
-
+    const leaveRoom = async () => {
+        const user = await removeUser(socket.id);
+            if (user.isLeader) {
+                const room = await removeRoom(user.room);
+                io.to(user.room).emit('killroom');
+            }
+            if (user && user.length > 0) {
+                socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has left` });
+                // socket.broadcast.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+                let leaderList = (await getLeadersInRoom(user.room)).map((obj) => obj.sid);
+                io.to(user.room).emit('leader', leaderList);
+            }
+    }
     /** JOINING/LEAVING ROOMS */
     socket.on('getRoomData', ({ room }, callback) => {
         io.to(socket.id).emit('roomData', { room: room, users: getUsersInRoom(room) });
@@ -47,9 +58,6 @@ io.on('connection', (socket) => {
 
         io.to(user.room).emit('message', { user: { name: 'admin' }, text: `Hi ${user.name}! Welcome to your new room! You can invite your friends to watch with you by sending them the link to this page.` });
 
-        // let roomData = (await getRoomsBySID(user.room))[0];
-        // roomData['workout'] = await getWorkoutById(roomData.workoutId)
-        // socket.emit('roomData', roomData);
         let roomUsers = await getUsersInRoom(user.room)
         let leaderList = roomUsers.filter(user => user.isLeader === true).map((obj) => obj.sid);
         // socket.emit('message', { user: { name: 'admin' }, text: `${process.env.CLIENT}/room/${user.room}` });
@@ -70,19 +78,10 @@ io.on('connection', (socket) => {
 
         callback({ id: user.id, leaderList: leaderList });
     });
-    socket.on('disconnect', async () => {
-        const user = await removeUser(socket.id);
-        if (user.isLeader) {
-            const room = await removeRoom(user.room);
-            io.to(user.room).emit('killroom');
-        }
-        if (user && user.length > 0) {
-            socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has left` });
-            // socket.broadcast.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
-            let leaderList = (await getLeadersInRoom(user.room)).map((obj) => obj.sid);
-            io.to(user.room).emit('leader', leaderList);
-        }
-    });
+
+    socket.on('disconnect', () => { leaveRoom() });
+
+    socket.on('handleLeaveRoom', () => { leaveRoom() });
 
     /** ROOM DATA */
 
@@ -109,21 +108,7 @@ io.on('connection', (socket) => {
             socket.broadcast.to(room.twilioRoomSid).emit('roomData', room);
         }
     })
-    // socket.on('getAllRoomData', ({ }, callback) => {
-    //     let rooms = getActiveRooms(io);
-    //     let allRoomData = [];
-    //     for (const currRoom of rooms) {
-    //         let data = {
-    //             room: currRoom,
-    //             numUsers: getUsersInRoom(currRoom).length,
-    //             currVideo: currVideo[currRoom]
-    //         }
-    //         allRoomData.push(data);
-    //     }
-    //     socket.emit('allRoomData', {
-    //         allRoomData
-    //     });
-    // });
+
 
     /** SENDING MESSAGES */
     socket.on('sendMessage', async ({ message, userSid }, callback) => {
@@ -138,7 +123,6 @@ io.on('connection', (socket) => {
 
     /** VIDEO STATE CHANGES */
     socket.on('sendVideoSync', ({ id, ...videoProps }, callback) => {
-        // console.log(videoProps);
         io.to(id).emit('startVideoSync', videoProps);
         callback();
     });
