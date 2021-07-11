@@ -38,7 +38,8 @@ describe('<Home />', () => {
             roomName: '',
             handleRoomNameChange: jest.fn(),
             handleSetOpenAuthDialog: jest.fn(),
-            handleSetIsSignUp: jest.fn()
+            handleSetIsSignUp: jest.fn(),
+            handleSetRoomName: jest.fn()
         }
     });
     it('Should render homeComponent', () => {
