@@ -127,7 +127,7 @@ const AppContextProvider = ({ children }) => {
           trackPub.track.stop();
         });
         prevRoom.disconnect();
-        window.location.reload();
+        sckt.socket.disconnect();
         window.removeEventListener("popstate", handleLeaveRoom);
       }
       return null;

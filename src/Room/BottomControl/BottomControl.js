@@ -1,12 +1,15 @@
 import React, { useState } from "react";
+import { useHistory } from 'react-router-dom'
+import { RoutesEnum } from '../../App'
 import { useAppContext } from "../../AppContext";
 import { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles } from '@material-ui/core';
 import { ArrowForward, ArrowBack, CallEnd, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter } from '@material-ui/icons';
 
-const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteParticipants, handleLeave }) => {
+const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteParticipants }) => {
     const { room, sendRoomState, workoutType, handleLeaveRoom, setWorkoutType, openSideBar, handleOpenSideBar } = useAppContext();
     const [vid, setVid] = useState(true);
     const [mic, setMic] = useState(true);
+    const history = useHistory()
 
     const handleChangeWorkoutType = (value) => {
         const newWorkoutType = value ? 'yt' : 'vid';
@@ -40,6 +43,11 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
             setParticipantPage(newPageNum)
         }
     }
+    
+    const endCall = async () => {
+        await handleLeaveRoom();
+        history.push(RoutesEnum.Home);
+    }
 
     const CustomBottomNavigationAction = withStyles({
         root: {
@@ -58,7 +66,7 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
                     <IconButton color="secondary" onClick={handleMic} data-test="micButton">
                         {mic ? <Mic data-test="micOn" /> : <MicOff data-test="micOff" />}
                     </IconButton>
-                    <IconButton color="secondary" onClick={handleLeaveRoom}>
+                    <IconButton color="secondary" onClick={endCall}>
                         <CallEnd/>
                     </IconButton>
                 </Box>
@@ -82,7 +90,6 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
                             handleChangeWorkoutType(newValue);
                         }}
                         showLabels
-                        // className={classes.root}
                         color="secondary"
                         data-test="changeWorkoutNavigation"
                     >

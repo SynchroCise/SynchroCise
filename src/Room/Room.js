@@ -18,7 +18,7 @@ const Room = (props) => {
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
   const history = useHistory();
-  const { username, room, handleLeaveRoom, userId, openSideBar, roomProps, updateRoomProps, workoutType, videoProps, updateVideoProps } = useAppContext();
+  const { username, room, userId, openSideBar, roomProps, updateRoomProps, workoutType, videoProps, updateVideoProps } = useAppContext();
   const [pinnedParticipantId, setPinnedParticipantId] = useState("");
   const [nameArr, setNameArray] = useState([room ? { name: username, sid: room.localParticipant.sid } : {}]);
 
@@ -28,8 +28,6 @@ const Room = (props) => {
     const { playing, seekTime } = paramsToChange;
     if (playing !== undefined) {
       updateVideoProps({ playing });
-      // } else if (playbackRate !== undefined) {
-      //     player.setPlaybackRate(playbackRate);
     }
     if (seekTime !== undefined) {
       playerRef.current.seekTo(seekTime);
@@ -295,7 +293,6 @@ const Room = (props) => {
         </Grid>
       </Box>
       <SideBar
-        handleLeaveRoom={handleLeaveRoom}
         currUser={room.localParticipant}
         users={participants}
         isYoutube={workoutType === 'yt' ? 1 : 0}
