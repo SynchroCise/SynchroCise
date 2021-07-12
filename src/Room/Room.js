@@ -285,14 +285,12 @@ const Room = (props) => {
             {room && (workoutType === 'vid') ? leaderParticipant() :
               <Video playerRef={playerRef} data-test="youtubeComponent" />}
           </Grid>
-          <div>
-            {alone
-            ? <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
-                {remoteParticipants()}
-              </Grid>
-            : <div></div>
-            }
-          </div>
+          {alone
+          ? <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
+              {remoteParticipants()}
+            </Grid>
+          : <div></div>
+          }
           <Grid item container xs={12} style={{ height: "10%", width: "100%" }} alignItems="center">
             <BottomControl
               participantPage={participantPage}
