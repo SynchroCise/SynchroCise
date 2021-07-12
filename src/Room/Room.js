@@ -270,18 +270,21 @@ const Room = (props) => {
       <Redirect to={`/join-room/${props.match.params.roomCode}`} data-test="redirectComponent" />
     );
   }
-
+  //height go from 70 to 90 and remove grid item container if only one person
+  
   return (
     <React.Fragment>
       <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`} height="100%" bgcolor="text.primary" data-test="roomComponent">
         <Grid container style={{ height: "100vh" }}>
-          <Grid item xs={12} style={{ height: "70%", width: "100%" }}>
+          <Grid item xs={12} style={{ height: participants.length?"70%":"90%", width: "100%" }}>
             {room && (workoutType === 'vid') ? leaderParticipant() :
               <Video playerRef={playerRef} data-test="youtubeComponent" />}
           </Grid>
-          <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
-            {remoteParticipants()}
-          </Grid>
+          {participants.length &&
+           <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
+              {remoteParticipants()}
+            </Grid>
+          }
           <Grid item container xs={12} style={{ height: "10%", width: "100%" }} alignItems="center">
             <BottomControl
               participantPage={participantPage}
