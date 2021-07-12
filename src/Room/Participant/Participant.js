@@ -74,7 +74,8 @@ const Participant = ({ participant, names, setPinnedParticipantId }) => {
     return () => {
       setVideoTracks([]);
       setAudioTracks([]);
-      participant.removeAllListeners();
+      participant.removeListener("trackSubscribed", trackSubscribed);
+      participant.removeListener("trackUnsubscribed", trackUnsubscribed);
       participant.tracks.forEach((publication) => {
         if (publication.track) {
           publication.track.removeListener('disabled', handleMute);
