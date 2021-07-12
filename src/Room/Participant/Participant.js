@@ -7,8 +7,8 @@ const Participant = ({ participant, names, setPinnedParticipantId }) => {
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [displayName, setDisplayName] = useState('');
-  const [videoMute, setVideoMute] = useState(true);
-  const [audioMute, setAudioMute] = useState(true);
+  const [videoMute, setVideoMute] = useState((participant.videoTracks.length === 0) ? true : false);
+  const [audioMute, setAudioMute] = useState((participant.audioTracks.length === 0) ? true : false);
 
   useEffect(() => {
     if (!names) return;
@@ -52,10 +52,10 @@ const Participant = ({ participant, names, setPinnedParticipantId }) => {
     };
     const handleMute = (track) => {
       if (track.kind === "video") {
-        setVideoMute(track.isEnabled);
+        setVideoMute(!track.isEnabled);
       }
       else if (track.kind === "audio") {
-        setAudioMute(track.isEnabled);
+        setAudioMute(!track.isEnabled);
       }
     }
 
@@ -108,8 +108,8 @@ const Participant = ({ participant, names, setPinnedParticipantId }) => {
   return (
     <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%" onClick={() => setPinnedParticipantId(participant.sid)}>
       {/* <div className='name'>{participant.identity}</div> */}
-      {(videoTracks[0]) ? <video muted={videoMute} ref={videoRef} autoPlay={true} style={{ position: "relative", flexGrow: 1, maxWidth: "100%", minHeight: 0 }} data-test="videoComponent" /> : 
-        <img src={placeHolder} alt="" style={{ objectFit: "contain", width: "100%", height: "100%", }}></img>}
+      {videoMute && <img src={placeHolder} alt="" style={{ objectFit: "contain", width: "100%", height: "100%", }} />}
+      <video ref={videoRef} autoPlay={true} style={{ position: "relative", flexGrow: 1, maxWidth: "100%", minHeight: 0, display: (videoMute) && "none" }} data-test="videoComponent" poster={placeHolder} /> 
       <div className="name">
         <Typography color="secondary" data-test="displayNameComponent">{displayName}</Typography>
       </div>
