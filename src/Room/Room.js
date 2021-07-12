@@ -34,6 +34,15 @@ const Room = (props) => {
     }
   }, [updateVideoProps]);
 
+  //handle people leaving and entering
+  const participantDisconnected = useCallback((participant) => {
+    setParticipants((prevParticipants) =>
+      [...prevParticipants].filter((p) => p.sid !== participant.sid)
+    );
+    setNameArray((prevParticipants) =>
+      [...prevParticipants].filter((p) => p.sid !== participant.sid));
+  });
+
   useEffect(() => {
     const getRoomSyncHandler = ({ id }) => {
       let params = {
@@ -119,14 +128,7 @@ const Room = (props) => {
           (v, i, a) => a.indexOf(v) === i
         ))
     };
-    const participantDisconnected = (participant) => {
-      setParticipants((prevParticipants) =>
-        [...prevParticipants].filter((p) => p.sid !== participant.sid)
-      );
-      setNameArray((prevParticipants) =>
-        [...prevParticipants].filter((p) => p.sid !== participant.sid));
-    };
-
+    
     room.on("participantConnected", participantConnected);
     room.on("participantDisconnected", participantDisconnected);
     room.participants.forEach(participantConnected);
@@ -167,6 +169,12 @@ const Room = (props) => {
     sckt.socket.on('killroom', handler);
     return () => sckt.socket.off('killroom', handler);
   }, [history]);
+
+  // handels a random person leaving the server
+  useEffect(() => {
+    sckt.socket.on('leaver', participantDisconnected);
+    return () => sckt.socket.off('leaver', participantDisconnected);
+  });
 
   // gets first joined participant
   const getFirstParticipantId = useCallback(() => {
