@@ -42,13 +42,11 @@ describe('<Room /> component tests', () => {
     let contextValues;
     let props;
 
-    const participantJoins = (sids, leaderSid = contextValues.room.localParticipant.sid) => {
+    const participantJoins = (sids) => {
         const participantConnectedCallBack = contextValues.room.on.mock.calls.filter(call => call[0] == "participantConnected")[0][1];
-        const joinCallback = sckt.socket.emit.mock.calls.filter(call => call[0] == "join")[0][2];
         sids.forEach((sid) => {
             participantConnectedCallBack(createParticipant(sid));
         });
-        joinCallback({leaderList: [leaderSid]});
         component.update()
     }
 
@@ -108,6 +106,15 @@ describe('<Room /> component tests', () => {
         component = initContext(contextValues, setUp, props);
         expect(findByTestAttr(component, 'youtubeComponent').length).toBe(1);
         expect(findByTestAttr(component, 'leaderParticipantComponent').length).toBe(0);
+    });
+    it('Should setPinnedParticipantId on click', () => {
+        component = initContext(contextValues, setUp, props);
+        participantJoins(['1']);
+        expect(findByTestAttr(component, 'leaderParticipantComponent').prop('participant').sid).toBe('1')
+        expect(findByTestAttr(component, 'remoteParticipantComponent').prop('participant').sid).toBe('local')
+        findByTestAttr(component, 'remoteParticipantComponent').prop('setPinnedParticipantId')('local')
+        expect(findByTestAttr(component, 'leaderParticipantComponent').prop('participant').sid).toBe('local')
+        expect(findByTestAttr(component, 'remoteParticipantComponent').prop('participant').sid).toBe('1')
     });
 
     describe('Test socket listeners', () => {
@@ -187,16 +194,20 @@ describe('<Room /> component tests', () => {
 
             expect(findByTestAttr(component, 'leaderParticipantComponent').length).toBe(1);
             expect(findByTestAttr(component, 'remoteParticipantComponent').length).toBe(0);
+            expect(findByTestAttr(component, 'leaderParticipantComponent').prop('participant').sid).toBe('local')
 
             // have 1 participant join
             participantJoins(['1']);
             expect(findByTestAttr(component, 'leaderParticipantComponent').length).toBe(1);
             expect(findByTestAttr(component, 'remoteParticipantComponent').length).toBe(1);
+            expect(findByTestAttr(component, 'leaderParticipantComponent').prop('participant').sid).toBe('1')
+            expect(findByTestAttr(component, 'remoteParticipantComponent').prop('participant').sid).toBe('local')
 
             // have 1 participant leave
             participantLeaves(['1']);
             expect(findByTestAttr(component, 'leaderParticipantComponent').length).toBe(1);
             expect(findByTestAttr(component, 'remoteParticipantComponent').length).toBe(0);
+            expect(findByTestAttr(component, 'leaderParticipantComponent').prop('participant').sid).toBe('local')
         });
 
         it('Should ensure that participant max remoteParticipants are 4', () => {
