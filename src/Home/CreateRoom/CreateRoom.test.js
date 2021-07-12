@@ -36,7 +36,6 @@ describe('<JoinRoom />', () => {
             roomName: 'testRoom',
             workout: { "workoutName": "", "exercises": [{ "time": 1, "exercise": "" }], "id": "" },
             handleSetRoom: jest.fn(),
-            handleSetRoomName: jest.fn(),
             handleUsernameChange: jest.fn(),
             handleSetConnecting: jest.fn(),
             handleSetWorkout: jest.fn(),
@@ -136,7 +135,6 @@ describe('<JoinRoom />', () => {
         const button = findByTestAttr(component, 'backButton');
         button.simulate('click');
         expect(mockPush).toHaveBeenCalledTimes(1);
-        expect(contextValues.handleSetRoomName).toHaveBeenCalledTimes(1);
     });
     it('Should text fields in form', () => {
         component = initContext(contextValues, setUp);

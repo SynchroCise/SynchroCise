@@ -13,7 +13,7 @@ import "aos/dist/aos.css";
 
 // this component renders form to be passed to VideoChat.js
 const Home = () => {
-  const { isLoggedIn, joinRoom, roomName, handleRoomNameChange, handleSetOpenAuthDialog, handleSetIsSignUp } = useAppContext()
+  const { isLoggedIn, handleSetRoomName, joinRoom, roomName, handleRoomNameChange, handleSetOpenAuthDialog, handleSetIsSignUp } = useAppContext()
   const history = useHistory()
   const [errMessage, setErrMessage] = useState('');
 
@@ -25,6 +25,10 @@ const Home = () => {
   useEffect(() => {
     AOS.init({ once: true });
   }, []);
+
+  useEffect(()=>{
+    handleSetRoomName("");
+  })
 
   const handleCreateRoom = () => {
     history.push(RoutesEnum.CreateRoom)

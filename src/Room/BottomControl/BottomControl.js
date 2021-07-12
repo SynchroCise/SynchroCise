@@ -1,12 +1,16 @@
 import React, { useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import { useHistory } from 'react-router-dom'
+import { RoutesEnum } from '../../App'
 import { useAppContext } from "../../AppContext";
 import { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles } from '@material-ui/core';
-import { ArrowForward, ArrowBack, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter } from '@material-ui/icons';
+import { ArrowForward, ArrowBack, CallEnd, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter } from '@material-ui/icons';
 
 const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteParticipants }) => {
-    const { room, sendRoomState, workoutType, setWorkoutType, openSideBar, handleOpenSideBar } = useAppContext();
+    const { room, sendRoomState, workoutType, handleLeaveRoom, setWorkoutType, openSideBar, handleOpenSideBar } = useAppContext();
     const [vid, setVid] = useState(true);
     const [mic, setMic] = useState(true);
+    const history = useHistory()
 
     const handleChangeWorkoutType = (value) => {
         const newWorkoutType = value ? 'yt' : 'vid';
@@ -40,6 +44,11 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
             setParticipantPage(newPageNum)
         }
     }
+    
+    const endCall = () => {
+        handleLeaveRoom();
+        history.push(RoutesEnum.Home);
+    }
 
     const CustomBottomNavigationAction = withStyles({
         root: {
@@ -48,6 +57,16 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
         },
     })(BottomNavigationAction);
 
+
+    const useStyles = makeStyles(theme => ({
+        endCall: {
+          backgroundColor: "red",
+          color: "white",
+          "&:hover, &.Mui-focusVisible": { backgroundColor: "#ea4335" }
+        }
+      }));
+    
+    const classes = useStyles();
     return (
         <Grid item container xs={12} style={{ width: "100%" }} alignItems="center" data-test="bottomControlComponent">
             <Grid item xs={4}>
@@ -58,9 +77,9 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
                     <IconButton color="secondary" onClick={handleMic} data-test="micButton">
                         {mic ? <Mic data-test="micOn" /> : <MicOff data-test="micOff" />}
                     </IconButton>
-                    {/* <IconButton>
-                        <CallEnd></CallEnd>
-                        </IconButton> */}
+                    <IconButton color="secondary" className={classes.endCall} onClick={endCall}>
+                        <CallEnd/>
+                    </IconButton>
                 </Box>
             </Grid>
             <Grid item xs={4}>
@@ -76,20 +95,12 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
             </Grid>
             <Grid item xs={4}>
                 <Box display="flex" justifyContent="flex-end" alignItems="center">
-                    {/* <IconButton color="secondary" size="medium">
-                    <Apps/>
-                    </IconButton>
-                    <IconButton color="secondary" size="medium">
-                    <Fullscreen/>
-                    </IconButton> */}
-
                     <BottomNavigation
                         value={workoutType === 'yt' ? 1 : 0}
                         onChange={(event, newValue) => {
                             handleChangeWorkoutType(newValue);
                         }}
                         showLabels
-                        // className={classes.root}
                         color="secondary"
                         data-test="changeWorkoutNavigation"
                     >

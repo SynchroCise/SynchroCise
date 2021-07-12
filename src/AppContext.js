@@ -111,6 +111,7 @@ const AppContextProvider = ({ children }) => {
     setIsLoggedIn(true);
     return true;
   }, []);
+
   const handleLogout = async () => {
     const res = await requests.userLogout();
     if (res.ok) {
@@ -127,7 +128,7 @@ const AppContextProvider = ({ children }) => {
           trackPub.track.stop();
         });
         prevRoom.disconnect();
-        window.location.reload();
+        sckt.socket.emit("handleLeaveRoom")
         window.removeEventListener("popstate", handleLeaveRoom);
       }
       return null;
