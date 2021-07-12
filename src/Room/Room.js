@@ -11,7 +11,6 @@ import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
 import * as requests from "../utils/requests"
-import ReactDOM from 'react-dom';
 
 // using roomName and token, we will create a room
 const Room = (props) => {
@@ -22,7 +21,6 @@ const Room = (props) => {
   const { username, room, handleLeaveRoom, userId, openSideBar, roomProps, updateRoomProps, workoutType, videoProps, updateVideoProps } = useAppContext();
   const [pinnedParticipantId, setPinnedParticipantId] = useState("");
   const [nameArr, setNameArray] = useState([room ? { name: username, sid: room.localParticipant.sid } : {}]);
-  const [alone,setAlone] = useState(true);
 
   // Initializing Room Stuff
   const modifyVideoState = useCallback((paramsToChange) => {
@@ -192,7 +190,6 @@ const Room = (props) => {
   useEffect(() => {
     if (!room) return;
     let all_participants = getAllRemoteParticipants();
-    setAlone(participants.length ? true : false);
     const viewer_len = all_participants.slice(participantPage * ppp, participantPage * ppp + ppp).length
     if (viewer_len === 0 && participantPage !== 0) {
       setParticipantPage(0)
@@ -281,15 +278,14 @@ const Room = (props) => {
     <React.Fragment>
       <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`} height="100%" bgcolor="text.primary" data-test="roomComponent">
         <Grid container style={{ height: "100vh" }}>
-          <Grid item xs={12} style={{ height: alone?"70%":"90%", width: "100%" }}>
+          <Grid item xs={12} style={{ height: participants.length?"70%":"90%", width: "100%" }}>
             {room && (workoutType === 'vid') ? leaderParticipant() :
               <Video playerRef={playerRef} data-test="youtubeComponent" />}
           </Grid>
-          {alone
-          ? <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
+          {participants.length &&
+           <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
               {remoteParticipants()}
             </Grid>
-          : <div></div>
           }
           <Grid item container xs={12} style={{ height: "10%", width: "100%" }} alignItems="center">
             <BottomControl
