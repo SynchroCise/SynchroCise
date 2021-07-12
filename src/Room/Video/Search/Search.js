@@ -88,7 +88,7 @@ const VideoSearch = ({ addVideoToQueue, playVideoFromSearch, updateVideoProps })
     })(TextField);
 
     return (
-        <div className="videoSearchContainer">
+        <div className="videoSearchContainer" style={{display: 'flex',  justifyContent:'center'}}>
             <Box width="75%">
                 <CustomTextField
                     placeholder='Paste Youtube Link Here!'
