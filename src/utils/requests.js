@@ -197,9 +197,9 @@ export const createTwilioRoom = async (token, roomName) => {
       mode: "collaboration",
       maxSubscriptionBitrate: 2400000,
       renderDimensions: {
-        high: { width: 1080, height: 720 },
-        standard: { width: 640, height: 480 },
-        low: { width: 320, height: 240 },
+        high: { width: 1920, height: 1080  },
+        standard: { width: 1280, height: 720  },
+        low: { width: 426, height: 240 },
       },
     },
   });
