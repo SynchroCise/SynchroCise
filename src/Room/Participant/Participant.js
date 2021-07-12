@@ -33,7 +33,6 @@ const Participant = ({ participant, names, setPinnedParticipantId }) => {
 
     // when audio or video track is added for participant
     const trackSubscribed = (track) => {
-      console.log('track subscribed', track)
       if (track.kind === "video") {
         setVideoTracks((videoTracks) => [...videoTracks, track]);
       } else if (track.kind === "audio") {
@@ -52,7 +51,6 @@ const Participant = ({ participant, names, setPinnedParticipantId }) => {
       }
     };
     const handleMute = (track) => {
-      console.log(track)
       if (track.kind === "video") {
         setVideoMute(track.isEnabled);
       }
