@@ -31,21 +31,18 @@ const cors = require('cors');
 io.on('connection', (socket) => {
     const leaveRoom = async () => {
         const user = await removeUser(socket.id);
-            if (user.isLeader) {
-                const room = await removeRoom(user.room);
-                io.to(user.room).emit('killroom');
-            }
-            if (user && user.length > 0) {
-                socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has left` });
-                // socket.broadcast.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
-                let leaderList = (await getLeadersInRoom(user.room)).map((obj) => obj.sid);
-                io.to(user.room).emit('leader', leaderList);
-            }
+        if (user.isLeader) {
+            const room = await removeRoom(user.room);
+            io.to(user.room).emit('killroom');
+        }
+        if (user) {
+            socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has left` });
+            io.to(user.room).emit('leaver', user);
+        }
     }
     /** JOINING/LEAVING ROOMS */
     socket.on('getRoomData', ({ room }, callback) => {
         io.to(socket.id).emit('roomData', { room: room, users: getUsersInRoom(room) });
-        // callback();
     });
     socket.on('checkUser', ({ name, room }, callback) => {
         const { error } = checkUser({ name, room });

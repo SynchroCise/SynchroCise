@@ -128,7 +128,8 @@ describe('<Room /> component tests', () => {
             expect(sckt.socket.on).toHaveBeenCalledWith('startVideoSync', expect.any(Function));
             expect(sckt.socket.on).toHaveBeenCalledWith('newUser', expect.any(Function));
             expect(sckt.socket.on).toHaveBeenCalledWith('killroom', expect.any(Function));
-            expect(sckt.socket.on).toHaveBeenCalledTimes(7);
+            expect(sckt.socket.on).toHaveBeenCalledWith('leaver', expect.any(Function));
+            expect(sckt.socket.on).toHaveBeenCalledTimes(8);
         });
         it('Should ensure getVideoSync callback works', () => {
             component = initContext(contextValues, setUp, props);
