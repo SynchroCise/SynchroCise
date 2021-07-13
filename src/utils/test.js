@@ -28,11 +28,13 @@ export const initTrack = (kind) => ({
     },
     attach: jest.fn(),
     detach: jest.fn(),
-    kind
+    kind,
+    on: jest.fn()
 })
 
 export const createParticipant = (sid) => ({
     sid,
+    tracks: [],
     videoTracks: [initTrack('video')],
     audioTracks: [initTrack('audio')],
     removeAllListeners: jest.fn(),

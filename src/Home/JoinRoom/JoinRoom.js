@@ -96,9 +96,6 @@ const JoinRoom = (props) => {
     const tracks = videoTracks.concat(audioTracks);
     const room = await requests.joinTwilioRoom(token, roomName, tracks);
     if (!room) { handleSetConnecting(false); return; }
-    room.localParticipant.tracks.forEach(localTracks => {
-      localTracks.setPriority('low')
-    });
     handleSetConnecting(false);
     await handleSetRoom(room);
     history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`);

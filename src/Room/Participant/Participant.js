@@ -7,6 +7,8 @@ const Participant = ({ participant, names, setPinnedParticipantId }) => {
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [displayName, setDisplayName] = useState('');
+  const [videoMute, setVideoMute] = useState((participant.videoTracks.length === 0) ? true : false);
+  const [audioMute, setAudioMute] = useState((participant.audioTracks.length === 0) ? true : false);
 
   useEffect(() => {
     if (!names) return;
@@ -36,6 +38,8 @@ const Participant = ({ participant, names, setPinnedParticipantId }) => {
       } else if (track.kind === "audio") {
         setAudioTracks((audioTracks) => [...audioTracks, track]);
       }
+      track.on('disabled', handleMute);
+      track.on('enabled', handleMute);
     };
 
     // when audio or video track is removed for participant
@@ -46,15 +50,36 @@ const Participant = ({ participant, names, setPinnedParticipantId }) => {
         setAudioTracks((audioTracks) => audioTracks.filter((a) => a !== track));
       }
     };
+    const handleMute = (track) => {
+      if (track.kind === "video") {
+        setVideoMute(!track.isEnabled);
+      }
+      else if (track.kind === "audio") {
+        setAudioMute(!track.isEnabled);
+      }
+    }
 
     // set listeners to the above functions
     participant.on("trackSubscribed", trackSubscribed);
     participant.on("trackUnsubscribed", trackUnsubscribed);
+    participant.tracks.forEach(publication => {
+      if (publication.track) {
+        publication.track.on('disabled', handleMute);
+        publication.track.on('enabled', handleMute);
+      }
+    });
 
     return () => {
       setVideoTracks([]);
       setAudioTracks([]);
-      participant.removeAllListeners();
+      participant.removeListener("trackSubscribed", trackSubscribed);
+      participant.removeListener("trackUnsubscribed", trackUnsubscribed);
+      participant.tracks.forEach((publication) => {
+        if (publication.track) {
+          publication.track.removeListener('disabled', handleMute);
+          publication.track.removeListener('enabled', handleMute);
+        }
+      })
     };
   }, [participant]);
 
@@ -83,12 +108,12 @@ const Participant = ({ participant, names, setPinnedParticipantId }) => {
   return (
     <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%" onClick={() => setPinnedParticipantId(participant.sid)}>
       {/* <div className='name'>{participant.identity}</div> */}
-      {(videoTracks[0]) ? <video ref={videoRef} autoPlay={true} style={{ position: "relative", flexGrow: 1, maxWidth: "100%", minHeight: 0 }} data-test="videoComponent" /> : 
-        <img src={placeHolder} alt="" style={{ objectFit: "contain", width: "100%", height: "100%", }}></img>}
+      {videoMute && <img src={placeHolder} alt="" style={{ objectFit: "contain", width: "100%", height: "100%", }} />}
+      <video ref={videoRef} autoPlay={true} style={{ position: "relative", flexGrow: 1, maxWidth: "100%", minHeight: 0, display: (videoMute) && "none" }} data-test="videoComponent" poster={placeHolder} /> 
       <div className="name">
         <Typography color="secondary" data-test="displayNameComponent">{displayName}</Typography>
       </div>
-      <audio ref={audioRef} autoPlay={true} muted={true} data-test="audioComponent" />
+      <audio ref={audioRef} autoPlay={true} muted={audioMute} data-test="audioComponent" />
     </Box>
   );
 };

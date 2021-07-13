@@ -193,15 +193,6 @@ export const createTwilioRoom = async (token, roomName) => {
     audio: audPerm,
     name: roomName,
     tracks: tracks,
-    bandwidthProfile: {
-      mode: "collaboration",
-      maxSubscriptionBitrate: 2400000,
-      renderDimensions: {
-        high: { width: 1920, height: 1080  },
-        standard: { width: 1280, height: 720  },
-        low: { width: 426, height: 240 },
-      },
-    },
   });
   return room;
 };
