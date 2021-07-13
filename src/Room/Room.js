@@ -41,7 +41,7 @@ const Room = (props) => {
     );
     setNameArray((prevParticipants) =>
       [...prevParticipants].filter((p) => p.sid !== participant.sid));
-  });
+  }, []);
 
   useEffect(() => {
     const getRoomSyncHandler = ({ id }) => {
@@ -137,7 +137,7 @@ const Room = (props) => {
       room.off("participantConnected", participantConnected);
       room.off("participantDisconnected", participantDisconnected);
     };
-  }, [room]);
+  }, [room, participantDisconnected]);
 
   useEffect(() => {
     if (!room) return;
