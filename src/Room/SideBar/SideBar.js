@@ -3,7 +3,7 @@ import ExerciseList from "./ExerciseList/ExerciseList.js"
 import { sckt } from '../.././Socket';
 import { useAppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
-import { Drawer, Typography, IconButton, Box, Grid, Tab, Tabs } from '@material-ui/core';
+import { Drawer, Typography, IconButton, Box, Grid, Tab, Tabs, Slide, Card } from '@material-ui/core';
 import { Link } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from 'prop-types';
@@ -97,6 +97,9 @@ const SideBar = ({
             width: drawerWidth,
         },
         drawer: {
+            position: "absolute",
+            top: 0,
+            right: 0,
             width: drawerWidth,
             flexShrink: 0,
         },
@@ -134,42 +137,43 @@ const SideBar = ({
     )
 
     return (
-        <Drawer
-            variant="persistent"
-            anchor="right"
-            open={openSideBar}
+        <Slide
+            direction="left"
+            in={openSideBar}
+            data-test="sidebarComponent"
             className={classes.drawer}
-            classes={{
-                paper: classes.drawerPaper,
-            }}
-            data-test="sidebarComponent">
-            <Box mx={2} my={2} height="95%">
-                <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}</Typography>
-                <Tabs
-                    indicatorColor="primary"
-                    textColor="primary"
-                    value={sideBarType}
-                    onChange={(event, value) => { handleChange(value) }}
-                    data-test="tabsComponent"
-                >
-                    <Tab value={0} label="Workout"  {...a11yProps(0)} />
-                    <Tab value={1} label="Chat"  {...a11yProps(1)} />
-                </Tabs>
-                <TabPanel value={sideBarType} index={0}>
-                    <Grid item>
-                        {!isYoutube && <ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise} data-test="exerciseListComponent" />}
-                    </Grid>
-                </TabPanel>
-                <TabPanel value={sideBarType} index={1} style={{ height: "85%" }} id="TabPanelChat">
-                    <Chat
-                        messages={messages}
-                        currUser={currUser}
-                        users={users}
-                        data-test="chatComponent"
-                    />
-                </TabPanel>
-            </Box>
-        </Drawer>
+            mountOnEnter
+            unmountOnExit
+        >
+            <Card>
+                <Box mx={2} my={2} height="95%">
+                    <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}</Typography>
+                    <Tabs
+                        indicatorColor="primary"
+                        textColor="primary"
+                        value={sideBarType}
+                        onChange={(event, value) => { handleChange(value) }}
+                        data-test="tabsComponent"
+                    >
+                        <Tab value={0} label="Workout"  {...a11yProps(0)} />
+                        <Tab value={1} label="Chat"  {...a11yProps(1)} />
+                    </Tabs>
+                    <TabPanel value={sideBarType} index={0}>
+                        <Grid item>
+                            {!isYoutube && <ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise} data-test="exerciseListComponent" />}
+                        </Grid>
+                    </TabPanel>
+                    <TabPanel value={sideBarType} index={1} style={{ height: "85%" }} id="TabPanelChat">
+                        <Chat
+                            messages={messages}
+                            currUser={currUser}
+                            users={users}
+                            data-test="chatComponent"
+                        />
+                    </TabPanel>
+                </Box>
+            </Card>
+        </Slide>
     );
 };
 

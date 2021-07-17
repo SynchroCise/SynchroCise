@@ -107,7 +107,7 @@ const Room = (props) => {
 
   // sending sync video
   const playerRef = useRef(null);
-  const drawerWidth = 300;
+  const drawerWidth = 360;
 
   // once room is rendered do below
   useEffect(() => {
@@ -274,8 +274,8 @@ const Room = (props) => {
   
   return (
     <React.Fragment>
-      <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`} height="100%" bgcolor="text.primary" data-test="roomComponent">
-        <Grid container style={{ height: "100vh" }}>
+      <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`} bgcolor="text.primary" data-test="roomComponent">
+        <Grid container style={{ height: "100vh", width: "100vw" }}>
           <Grid item xs={12} style={{ height: participants.length?"70%":"90%", width: "100%" }}>
             {room && (workoutType === 'vid') ? leaderParticipant() :
               <Video playerRef={playerRef} data-test="youtubeComponent" />}
@@ -285,7 +285,7 @@ const Room = (props) => {
               {remoteParticipants()}
             </Grid>
           }
-          <Grid item container xs={12} style={{ height: "10%", width: "100%" }} alignItems="center">
+          <Grid item container xs={12} style={{ position: "fixed", bottom: 0}} alignItems="center">
             <BottomControl
               participantPage={participantPage}
               setParticipantPage={setParticipantPage}
