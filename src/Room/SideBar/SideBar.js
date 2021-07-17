@@ -98,10 +98,12 @@ const SideBar = ({
         },
         drawer: {
             position: "absolute",
+            width: drawerWidth,
             top: 0,
             right: 0,
-            width: drawerWidth,
-            flexShrink: 0,
+            bottom: 80,
+            marginRight: 16,
+            marginTop: 16,
         },
         fullWidth: {
             width: "100%"
@@ -146,7 +148,7 @@ const SideBar = ({
             unmountOnExit
         >
             <Card>
-                <Box mx={2} my={2} height="95%">
+                <Box mx={2} my={2}>
                     <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}</Typography>
                     <Tabs
                         indicatorColor="primary"
