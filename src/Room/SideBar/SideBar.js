@@ -3,7 +3,7 @@ import ExerciseList from "./ExerciseList/ExerciseList.js"
 import { sckt } from '../.././Socket';
 import { useAppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
-import { Drawer, Typography, IconButton, Box, Grid, Tab, Tabs, Slide, Card } from '@material-ui/core';
+import { Typography, IconButton, Box, Grid, Tab, Tabs, Slide, Card } from '@material-ui/core';
 import { Link } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from 'prop-types';
