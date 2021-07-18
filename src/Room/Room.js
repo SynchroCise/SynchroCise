@@ -278,7 +278,6 @@ const Room = (props) => {
       <Redirect to={`/join-room/${props.match.params.roomCode}`} data-test="redirectComponent" />
     );
   }
-  //height go from 70 to 90 and remove grid item container if only one person
   
   return (
     <React.Fragment>
@@ -288,8 +287,8 @@ const Room = (props) => {
             {room && (workoutType === 'vid') ? leaderParticipant() :
               <Video playerRef={playerRef} data-test="youtubeComponent" />}
           </Grid>
-          {participants.length &&
-           <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
+          {participants.length > 0 &&
+            <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
               {remoteParticipants()}
             </Grid>
           }
