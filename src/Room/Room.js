@@ -292,10 +292,12 @@ const Room = (props) => {
           width="100%"
           className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`}
         >
-          <Box height="70%">
+          <Box height={participants.length > 0?"70%":"100%"}>
             {room && (workoutType === 'vid') ? leaderParticipant() : <Video playerRef={playerRef} data-test="youtubeComponent" />}
           </Box>
-          <Box height="30%" flexDirection="row" display="flex">{remoteParticipants()}</Box>
+          {participants.length > 0 &&
+            <Box height="30%" flexDirection="row" display="flex" justifyContent="space-around">{remoteParticipants()}</Box>
+          }
         </Box>
         <Box style={{position: "fixed", width: "100vw", bottom: 0}}>
           <BottomControl
