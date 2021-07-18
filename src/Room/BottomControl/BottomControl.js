@@ -68,7 +68,7 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
     
     const classes = useStyles();
     return (
-        <Grid item container xs={12} style={{ width: "100%" }} alignItems="center" data-test="bottomControlComponent">
+        <Grid item container xs={12} style={{ width: "100%", height: "80px" }} alignItems="center" data-test="bottomControlComponent">
             <Grid item xs={4}>
                 <Box display="flex" justifyContent="flex-start" alignItems="center">
                     <IconButton color="secondary" onClick={handleVid} data-test="videoButton">

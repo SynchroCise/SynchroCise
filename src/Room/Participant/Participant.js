@@ -106,7 +106,7 @@ const Participant = ({ participant, names, setPinnedParticipantId }) => {
   }, [audioTracks]);
 
   return (
-    <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%" onClick={() => setPinnedParticipantId(participant.sid)}>
+    <Box m={2} display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%" onClick={() => setPinnedParticipantId(participant.sid)}>
       {/* <div className='name'>{participant.identity}</div> */}
       {videoMute && <img src={placeHolder} alt="" style={{ objectFit: "contain", width: "100%", height: "100%", }} />}
       <video ref={videoRef} autoPlay={true} style={{ position: "relative", flexGrow: 1, maxWidth: "100%", minHeight: 0, display: (videoMute) && "none" }} data-test="videoComponent" poster={placeHolder} /> 
