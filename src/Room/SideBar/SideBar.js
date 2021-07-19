@@ -3,8 +3,7 @@ import ExerciseList from "./ExerciseList/ExerciseList.js"
 import { sckt } from '../.././Socket';
 import { useAppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
-import { Typography, IconButton, Box, Grid, Tab, Tabs, Slide, Card } from '@material-ui/core';
-import { Link } from '@material-ui/icons';
+import {Box, Grid, Tab, Tabs, Slide, Card } from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from 'prop-types';
 function TabPanel(props) {
@@ -53,7 +52,7 @@ const SideBar = ({
     isYoutube,
     drawerWidth
 }) => {
-    const { workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, roomName } = useAppContext();
+    const { workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter } = useAppContext();
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { return workout.exercise }));
     const [messages, setMessages] = useState([]);
@@ -130,14 +129,6 @@ const SideBar = ({
     // const sideBarContentMarkup = sideBarType ?
     //    :
 
-    const roomCode = roomName.substring(0, 6).toUpperCase();
-
-    const copyRoomCodeButtonMarkup = (
-        <IconButton color="primary" onClick={() => navigator.clipboard.writeText(roomCode)}>
-            <Link />
-        </IconButton>
-    )
-
     return (
         <Slide
             direction="left"
@@ -149,7 +140,6 @@ const SideBar = ({
         >
             <Card>
                 <Box mx={2} my={2}>
-                    <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}</Typography>
                     <Tabs
                         indicatorColor="primary"
                         textColor="primary"

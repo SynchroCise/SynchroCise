@@ -5,12 +5,13 @@ import { useHistory } from 'react-router-dom'
 import SideBar from "./SideBar/SideBar";
 import BottomControl from "./BottomControl/BottomControl"
 import { useAppContext } from "../AppContext";
-import { Typography, Box } from '@material-ui/core';
+import { Typography, Box, AppBar, Toolbar } from '@material-ui/core';
 import Video from './Video/Video';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
 import * as requests from "../utils/requests"
+import TopBar from "./TopBar/TopBar";
 
 // using roomName and token, we will create a room
 const Room = (props) => {
@@ -283,36 +284,52 @@ const Room = (props) => {
   
   return (
     <React.Fragment>
+      <AppBar position="sticky">
+        <TopBar />
+      </AppBar>
       <Box
         bgcolor="text.primary"
         data-test="roomComponent"
-        style={{position: "fixed", minHeight: "100%", width: "100%"}}
+        style={{ position: "fixed", minHeight: "95vh", width: "100%" }}
       >
         <Box
           width="100%"
-          className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`}
+          className={`${classes.content} ${
+            openSideBar ? "" : classes.contentShift
+          }`}
         >
-          <Box height={participants.length > 0?"70%":"100%"}>
-            {room && (workoutType === 'vid') ? leaderParticipant() : <Video playerRef={playerRef} data-test="youtubeComponent" />}
+          <Box height={participants.length > 0 ? "70%" : "100%"}>
+            {room && workoutType === "vid" ? (
+              leaderParticipant()
+            ) : (
+              <Video playerRef={playerRef} data-test="youtubeComponent" />
+            )}
           </Box>
-          {participants.length > 0 &&
-            <Box height="30%" flexDirection="row" display="flex" justifyContent="space-around">{remoteParticipants()}</Box>
-          }
+          {participants.length > 0 && (
+            <Box
+              height="30%"
+              flexDirection="row"
+              display="flex"
+              justifyContent="space-around"
+            >
+              {remoteParticipants()}
+            </Box>
+          )}
         </Box>
-        <Box style={{position: "fixed", width: "100vw", bottom: 0}}>
+        <Box style={{ position: "fixed", width: "100vw", bottom: 0 }}>
           <BottomControl
-              participantPage={participantPage}
-              setParticipantPage={setParticipantPage}
-              getAllRemoteParticipants={getAllRemoteParticipants}
-              ppp={ppp}
+            participantPage={participantPage}
+            setParticipantPage={setParticipantPage}
+            getAllRemoteParticipants={getAllRemoteParticipants}
+            ppp={ppp}
           />
         </Box>
         <SideBar
           currUser={room.localParticipant}
           users={participants}
-          isYoutube={workoutType === 'yt' ? 1 : 0}
+          isYoutube={workoutType === "yt" ? 1 : 0}
           drawerWidth={drawerWidth}
-        />  
+        />
       </Box>
     </React.Fragment>
   );
