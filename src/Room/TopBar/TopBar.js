@@ -9,7 +9,7 @@ const TopBar = () =>{
   const roomCode = roomName.substring(0, 6).toUpperCase();
 
   const copyRoomCodeButtonMarkup = (
-      <IconButton color="primary" onClick={() => navigator.clipboard.writeText(roomCode)}>
+      <IconButton color="secondary" onClick={() => navigator.clipboard.writeText(roomCode)}>
           <Link />
       </IconButton>
   )
