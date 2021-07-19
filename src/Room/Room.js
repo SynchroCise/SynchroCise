@@ -284,7 +284,7 @@ const Room = (props) => {
   
   return (
     <React.Fragment>
-      <AppBar position="sticky">
+      <AppBar position="sticky" bgcolor="text.primary">
         <TopBar />
       </AppBar>
       <Box
