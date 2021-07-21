@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom'
 import SideBar from "./SideBar/SideBar";
 import BottomControl from "./BottomControl/BottomControl"
 import { useAppContext } from "../AppContext";
-import { Grid, Typography, Box, IconButton } from '@material-ui/core';
+import { Typography, Box } from '@material-ui/core';
 import Video from './Video/Video';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
@@ -117,7 +117,7 @@ const Room = (props) => {
 
   // sending sync video
   const playerRef = useRef(null);
-  const drawerWidth = 300;
+  const drawerWidth = 360;
 
   // once room is rendered do below
   useEffect(() => {
@@ -213,7 +213,6 @@ const Room = (props) => {
     return (all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
-        <Grid item xs={3} key={index} style={{ height: "100%" }}>
           <Participant
             key={participant.sid}
             participant={participant}
@@ -221,7 +220,6 @@ const Room = (props) => {
             setPinnedParticipantId={setPinnedParticipantId}
             data-test="remoteParticipantComponent"
           />
-        </Grid>
       )));
   };
 
@@ -265,19 +263,22 @@ const Room = (props) => {
 
   const useStyles = makeStyles(theme => ({
     content: {
-      flexGrow: 1,
-      transition: theme.transitions.create('margin', {
+      position: "absolute",
+      transition: theme.transitions.create('padding', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
       }),
-      marginRight: drawerWidth,
+      paddingRight: drawerWidth + 16,
+      top: 0,
+      bottom: 80,
+      overflow: "hidden"
     },
     contentShift: {
-      transition: theme.transitions.create('margin', {
+      transition: theme.transitions.create('padding', {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
       }),
-      marginRight: 0,
+      paddingRight: 0,
     },
   }));
   const classes = useStyles();
@@ -293,39 +294,37 @@ const Room = (props) => {
 
   return (
     <React.Fragment>
-      <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`} height="100%" bgcolor="text.primary" data-test="roomComponent">
-        <Grid container style={{ height: "100vh" }}>
-          <Grid item xs={12} style={{ height: participants.length ? "70%" : "90%", width: "100%" }}>
-            {room && (workoutType === 'vid') ? leaderParticipant() :
-              <Video playerRef={playerRef} data-test="youtubeComponent" />}
-          </Grid>
-          {participants.length &&
-            <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
-              <IconButton color="secondary" onClick={() => handleParticipantPage(-1)} data-test="backPPButton">
-                <ArrowBack style={{ fill: "white" }} />
-              </IconButton>
-              {remoteParticipants()}
-              <IconButton color="secondary" onClick={() => handleParticipantPage(1)} data-test="forwardPPButton">
-                <ArrowForward style={{ fill: "white" }} />
-              </IconButton>
-            </Grid>
+      <Box
+        bgcolor="text.primary"
+        data-test="roomComponent"
+        style={{position: "fixed", minHeight: "100%", width: "100%"}}
+      >
+        <Box
+          width="100%"
+          className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`}
+        >
+          <Box height={participants.length > 0?"70%":"100%"}>
+            {room && (workoutType === 'vid') ? leaderParticipant() : <Video playerRef={playerRef} data-test="youtubeComponent" />}
+          </Box>
+          {participants.length > 0 &&
+            <Box height="30%" flexDirection="row" display="flex" justifyContent="space-around">{remoteParticipants()}</Box>
           }
-          <Grid item container xs={12} style={{ height: "10%", width: "100%" }} alignItems="center">
-            <BottomControl
+        </Box>
+        <Box style={{position: "fixed", width: "100vw", bottom: 0}}>
+          <BottomControl
               participantPage={participantPage}
               setParticipantPage={setParticipantPage}
               getAllRemoteParticipants={getAllRemoteParticipants}
               ppp={ppp}
-            />
-          </Grid>
-        </Grid>
+          />
+        </Box>
+        <SideBar
+          currUser={room.localParticipant}
+          users={participants}
+          isYoutube={workoutType === 'yt' ? 1 : 0}
+          drawerWidth={drawerWidth}
+        />  
       </Box>
-      <SideBar
-        currUser={room.localParticipant}
-        users={participants}
-        isYoutube={workoutType === 'yt' ? 1 : 0}
-        drawerWidth={drawerWidth}
-      />
     </React.Fragment>
   );
 };
