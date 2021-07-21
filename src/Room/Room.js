@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom'
 import SideBar from "./SideBar/SideBar";
 import BottomControl from "./BottomControl/BottomControl"
 import { useAppContext } from "../AppContext";
-import { Typography, Box } from '@material-ui/core';
+import { Typography, Box, IconButton } from '@material-ui/core';
 import Video from './Video/Video';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
@@ -213,13 +213,13 @@ const Room = (props) => {
     return (all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
-          <Participant
-            key={participant.sid}
-            participant={participant}
-            names={nameArr}
-            setPinnedParticipantId={setPinnedParticipantId}
-            data-test="remoteParticipantComponent"
-          />
+        <Participant
+          key={participant.sid}
+          participant={participant}
+          names={nameArr}
+          setPinnedParticipantId={setPinnedParticipantId}
+          data-test="remoteParticipantComponent"
+        />
       )));
   };
 
@@ -297,25 +297,36 @@ const Room = (props) => {
       <Box
         bgcolor="text.primary"
         data-test="roomComponent"
-        style={{position: "fixed", minHeight: "100%", width: "100%"}}
+        style={{ position: "fixed", minHeight: "100%", width: "100%" }}
       >
         <Box
           width="100%"
           className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`}
         >
-          <Box height={participants.length > 0?"70%":"100%"}>
+          <Box height={participants.length > 0 ? "70%" : "100%"}>
             {room && (workoutType === 'vid') ? leaderParticipant() : <Video playerRef={playerRef} data-test="youtubeComponent" />}
           </Box>
+
           {participants.length > 0 &&
-            <Box height="30%" flexDirection="row" display="flex" justifyContent="space-around">{remoteParticipants()}</Box>
+            <Box height="30%" flexDirection="row" display="flex" justifyContent="space-around">
+              <IconButton color="secondary" onClick={() => handleParticipantPage(-1)} data-test="backPPButton">
+                <ArrowBack style={{ fill: "white" }} />
+              </IconButton>
+              {
+                remoteParticipants()
+              }
+              <IconButton color="secondary" onClick={() => handleParticipantPage(1)} data-test="forwardPPButton">
+                <ArrowForward style={{ fill: "white" }} />
+              </IconButton>
+            </Box>
           }
         </Box>
-        <Box style={{position: "fixed", width: "100vw", bottom: 0}}>
+        <Box style={{ position: "fixed", width: "100vw", bottom: 0 }}>
           <BottomControl
-              participantPage={participantPage}
-              setParticipantPage={setParticipantPage}
-              getAllRemoteParticipants={getAllRemoteParticipants}
-              ppp={ppp}
+            participantPage={participantPage}
+            setParticipantPage={setParticipantPage}
+            getAllRemoteParticipants={getAllRemoteParticipants}
+            ppp={ppp}
           />
         </Box>
         <SideBar
@@ -323,7 +334,7 @@ const Room = (props) => {
           users={participants}
           isYoutube={workoutType === 'yt' ? 1 : 0}
           drawerWidth={drawerWidth}
-        />  
+        />
       </Box>
     </React.Fragment>
   );
