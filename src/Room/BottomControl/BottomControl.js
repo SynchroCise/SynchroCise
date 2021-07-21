@@ -44,7 +44,7 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
             setParticipantPage(newPageNum)
         }
     }
-    
+
     const endCall = () => {
         handleLeaveRoom();
         history.push(RoutesEnum.Home);
@@ -60,12 +60,12 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
 
     const useStyles = makeStyles(theme => ({
         endCall: {
-          backgroundColor: "red",
-          color: "white",
-          "&:hover, &.Mui-focusVisible": { backgroundColor: "#ea4335" }
+            backgroundColor: "red",
+            color: "white",
+            "&:hover, &.Mui-focusVisible": { backgroundColor: "#ea4335" }
         }
-      }));
-    
+    }));
+
     const classes = useStyles();
     return (
         <Grid item container xs={12} style={{ width: "100%" }} alignItems="center" data-test="bottomControlComponent">
@@ -78,7 +78,7 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
                         {mic ? <Mic data-test="micOn" /> : <MicOff data-test="micOff" />}
                     </IconButton>
                     <IconButton color="secondary" className={classes.endCall} onClick={endCall}>
-                        <CallEnd/>
+                        <CallEnd />
                     </IconButton>
                 </Box>
             </Grid>

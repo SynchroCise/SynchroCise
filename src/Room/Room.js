@@ -5,12 +5,13 @@ import { useHistory } from 'react-router-dom'
 import SideBar from "./SideBar/SideBar";
 import BottomControl from "./BottomControl/BottomControl"
 import { useAppContext } from "../AppContext";
-import { Grid, Typography, Box } from '@material-ui/core';
+import { Grid, Typography, Box, IconButton } from '@material-ui/core';
 import Video from './Video/Video';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
 import * as requests from "../utils/requests"
+import { ArrowForward, ArrowBack } from '@material-ui/icons';
 
 // using roomName and token, we will create a room
 const Room = (props) => {
@@ -128,7 +129,7 @@ const Room = (props) => {
           (v, i, a) => a.indexOf(v) === i
         ))
     };
-    
+
     room.on("participantConnected", participantConnected);
     room.on("participantDisconnected", participantDisconnected);
     room.participants.forEach(participantConnected);
@@ -157,7 +158,7 @@ const Room = (props) => {
     const sid = room.localParticipant.sid;
     const name = username;
 
-    sckt.socket.emit('join', { name, room: room.sid, sid, userId }, ({ id, leaderList }) => {    });
+    sckt.socket.emit('join', { name, room: room.sid, sid, userId }, ({ id, leaderList }) => { });
   }, [room, userId, username]);
 
   // handels leader leaves server
@@ -182,7 +183,7 @@ const Room = (props) => {
     const sortedParticipants = participants.sort((a, b) => a.startDate - b.startDate);
     return sortedParticipants[0].sid
   }, [participants]);
-  
+
   // get all participants
   const getAllRemoteParticipants = useCallback(() => {
     if (!room) return [];
@@ -216,13 +217,23 @@ const Room = (props) => {
           <Participant
             key={participant.sid}
             participant={participant}
-            names={nameArr} 
+            names={nameArr}
             setPinnedParticipantId={setPinnedParticipantId}
             data-test="remoteParticipantComponent"
           />
         </Grid>
       )));
   };
+
+  //set functionality to scroll through participant screens
+  const handleParticipantPage = (pageDelta) => {
+    if (!room) return;
+    let all_participants = getAllRemoteParticipants();
+    const newPageNum = participantPage + pageDelta;
+    if (all_participants.slice(newPageNum * ppp, newPageNum * ppp + ppp).length > 0) {
+      setParticipantPage(newPageNum)
+    }
+  }
 
   const leaderParticipant = () => {
     if (!room) return;
@@ -279,18 +290,24 @@ const Room = (props) => {
     );
   }
   //height go from 70 to 90 and remove grid item container if only one person
-  
+
   return (
     <React.Fragment>
       <Box display="flex" alignItems="center" justifyContent="center" className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`} height="100%" bgcolor="text.primary" data-test="roomComponent">
         <Grid container style={{ height: "100vh" }}>
-          <Grid item xs={12} style={{ height: participants.length?"70%":"90%", width: "100%" }}>
+          <Grid item xs={12} style={{ height: participants.length ? "70%" : "90%", width: "100%" }}>
             {room && (workoutType === 'vid') ? leaderParticipant() :
               <Video playerRef={playerRef} data-test="youtubeComponent" />}
           </Grid>
           {participants.length &&
-           <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
+            <Grid item container xs={12} style={{ height: "20%", width: "100%" }}>
+              <IconButton color="secondary" onClick={() => handleParticipantPage(-1)} data-test="backPPButton">
+                <ArrowBack style={{ fill: "white" }} />
+              </IconButton>
               {remoteParticipants()}
+              <IconButton color="secondary" onClick={() => handleParticipantPage(1)} data-test="forwardPPButton">
+                <ArrowForward style={{ fill: "white" }} />
+              </IconButton>
             </Grid>
           }
           <Grid item container xs={12} style={{ height: "10%", width: "100%" }} alignItems="center">
