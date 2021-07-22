@@ -106,7 +106,6 @@ io.on('connection', (socket) => {
         }
     })
 
-
     /** SENDING MESSAGES */
     socket.on('sendMessage', async ({ message, userSid }, callback) => {
         const user = (await getUsersBySid(userSid))[0];
