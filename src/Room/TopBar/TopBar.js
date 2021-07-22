@@ -1,8 +1,9 @@
 import React from "react";
 import { useAppContext } from "../../AppContext";
-import { IconButton, Link, Typography, Toolbar, Grid } from "@material-ui/core";
+import { Link, Typography, Toolbar, Grid } from "@material-ui/core";
 import DropMenu from "./DropMenu/DropMenu";
 import Timer from "./DropMenu/Timer";
+import LinkIcon from "@material-ui/icons/Link";
 
 const TopBar = () => {
   const { roomName } = useAppContext();
@@ -17,12 +18,11 @@ const TopBar = () => {
           alignContent="center"
           style={{ width: "15vw" }}
         >
-          <IconButton
-            onClick={() => navigator.clipboard.writeText(roomCode)}
-            edge="start"
-          >
-            <Link />
-          </IconButton>
+          <Link>
+            <LinkIcon
+              onClick={() => navigator.clipboard.writeText(roomCode)}
+            />
+          </Link>
           <Typography variant="body1">
             Room: {roomName.substring(0, 6).toUpperCase()}
           </Typography>

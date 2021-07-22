@@ -7,6 +7,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import { FitnessCenter, YouTube } from "@material-ui/icons";
 import { Grid, makeStyles } from "@material-ui/core";
+import LinkIcon from "@material-ui/icons/Link";
 
   const useStyles = makeStyles((theme) => ({
     smItem: {
