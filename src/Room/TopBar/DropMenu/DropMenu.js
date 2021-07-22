@@ -7,7 +7,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import { FitnessCenter, YouTube } from "@material-ui/icons";
 import { Grid, makeStyles } from "@material-ui/core";
-import LinkIcon from "@material-ui/icons/Link";
+import { useAppContext } from "../../../AppContext";
 
   const useStyles = makeStyles((theme) => ({
     smItem: {
@@ -46,8 +46,10 @@ const StyledMenuItem = withStyles((theme) => ({
   },
 }))(MenuItem);
 
+
 export default function DropMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const {sendRoomState, setWorkoutType} = useAppContext();
   
   const classes = useStyles();
   const handleClick = (event) => {
@@ -57,6 +59,16 @@ export default function DropMenu() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+
+
+  const handleChangeWorkoutType = (value) => {
+    const newWorkoutType = value ? 'yt' : 'vid';
+    sendRoomState({
+        eventName: 'syncWorkoutType',
+        eventParams: { workoutType: newWorkoutType }
+    }, () => { setWorkoutType(newWorkoutType) });
+  }
 
   return (
     <Grid style={{width:"20vw"}}>
@@ -76,13 +88,13 @@ export default function DropMenu() {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <StyledMenuItem>
+        <StyledMenuItem button onClick={()=>handleChangeWorkoutType(0)}> 
           <ListItemIcon>
             <FitnessCenter fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Custom" />
         </StyledMenuItem>
-        <StyledMenuItem>
+        <StyledMenuItem button onClick={()=>handleChangeWorkoutType(1)}> 
           <ListItemIcon>
             <YouTube fontSize="small" />
           </ListItemIcon>
