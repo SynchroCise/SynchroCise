@@ -79,7 +79,7 @@ export default function DropMenu() {
         color="primary"
         onClick={handleClick}
       >
-        CHOOSE WORKOUT
+        CHOOSE WORKO
       </Button>
       <StyledMenu
         id="customized-menu"
