@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppContext } from "../../AppContext";
 import { IconButton, Link, Typography, Toolbar, Grid } from "@material-ui/core";
-import ControlledOpenSelect from "./DropMenu/DropMenu";
+import DropMenu from "./DropMenu/DropMenu";
 import Timer from "./DropMenu/Timer";
 
 const TopBar = () => {
@@ -27,9 +27,9 @@ const TopBar = () => {
             Room: {roomName.substring(0, 6).toUpperCase()}
           </Typography>
         </Grid>
-        <ControlledOpenSelect />
+        <DropMenu />
         <Grid style={{ width: "4vw" }} container alignContent="center">
-          <Timer/>
+          <Timer />
         </Grid>
       </Grid>
     </Toolbar>

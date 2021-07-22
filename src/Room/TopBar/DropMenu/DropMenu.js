@@ -1,58 +1,93 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import InputLabel from "@material-ui/core/InputLabel";
+import { withStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import { Grid } from "@material-ui/core";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import { FitnessCenter, YouTube } from "@material-ui/icons";
+import { Grid, makeStyles } from "@material-ui/core";
 
-const useStyles = makeStyles((theme) => ({
-  button: {
-    display: "block",
-  },
-  formControl: {
-    minWidth: 120,
-    
-  },
-}));
+  const useStyles = makeStyles((theme) => ({
+    smItem: {
+      backgroundColor: "rgba(0, 0, 0, 0.87)",
+    },
+  }));
 
-export default function ControlledOpenSelect() {
+const StyledMenu = withStyles({
+  paper: {
+    border: "1px solid #d3d4d5",
+  },
+})((props) => (
+  <Menu
+    elevation={0}
+    getContentAnchorEl={null}
+    anchorOrigin={{
+      vertical: "bottom",
+      horizontal: "center",
+    }}
+    transformOrigin={{
+      vertical: "top",
+      horizontal: "center",
+    }}
+    {...props}
+  />
+));
+
+const StyledMenuItem = withStyles((theme) => ({
+  root: {
+    "&:focus": {
+      backgroundColor: "rgba(0, 0, 0, 0.87)",
+      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+        color: theme.palette.common.white,
+      },
+    },
+  },
+}))(MenuItem);
+
+export default function DropMenu() {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  
   const classes = useStyles();
-  const [age, setAge] = React.useState("");
-  const [open, setOpen] = React.useState(false);
-
-  const handleChange = (event) => {
-    setAge(event.target.value);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleOpen = () => {
-    setOpen(true);
+    setAnchorEl(null);
   };
 
   return (
-    <Grid>
-      <FormControl className={classes.formControl}>
-        <InputLabel>Custom</InputLabel>
-        <Select
-          open={open}
-          onClose={handleClose}
-          onOpen={handleOpen}
-          value={age}
-          onChange={handleChange}
-          autoWidth
-        >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
-        </Select>
-      </FormControl>
+    <Grid style={{width:"20vw"}}>
+      <Button
+        aria-controls="customized-menu"
+        aria-haspopup="true"
+        variant="contained"
+        color="primary"
+        onClick={handleClick}
+      >
+        CHOOSE WORKOUT
+      </Button>
+      <StyledMenu
+        id="customized-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <StyledMenuItem>
+          <ListItemIcon>
+            <FitnessCenter fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Custom" />
+        </StyledMenuItem>
+        <StyledMenuItem>
+          <ListItemIcon>
+            <YouTube fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Youtube" />
+        </StyledMenuItem>
+      </StyledMenu>
     </Grid>
   );
 }
