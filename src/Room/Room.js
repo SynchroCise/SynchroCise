@@ -270,6 +270,9 @@ const Room = (props) => {
       }),
       paddingRight: 0,
     },
+    abRoot:{
+      backgroundColor: "rgba(0, 0, 0, 0.87)",
+    }
   }));
   const classes = useStyles();
 
@@ -284,7 +287,7 @@ const Room = (props) => {
   
   return (
     <React.Fragment>
-      <AppBar position="sticky" bgcolor="text.primary">
+      <AppBar position="sticky" bgcolor="text.primary" classes={{root:classes.abRoot}}>
         <TopBar />
       </AppBar>
       <Box
