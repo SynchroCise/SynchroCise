@@ -9,6 +9,7 @@ import { makeStyles, Grid } from "@material-ui/core";
 const useStyles = makeStyles((theme)=>({
   dpMenu: {
     color: "white",
+    borderRadius:"0"
   },
 }));
 
