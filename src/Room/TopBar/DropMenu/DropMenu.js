@@ -4,7 +4,7 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import { FitnessCenter, YouTube } from "@material-ui/icons";
 import { useAppContext } from "../../../AppContext";
-import { makeStyles, Grid } from "@material-ui/core";
+import { makeStyles, Grid, withStyles } from "@material-ui/core";
 
 const useStyles = makeStyles((theme)=>({
   dpMenu: {
@@ -12,6 +12,26 @@ const useStyles = makeStyles((theme)=>({
     borderRadius:"0"
   },
 }));
+
+const StyledMenu = withStyles({
+  paper: {
+    border: "1px solid #d3d4d5",
+  },
+})((props) => (
+  <Menu
+    elevation={0}
+    getContentAnchorEl={null}
+    anchorOrigin={{
+      vertical: "bottom",
+      horizontal: "center",
+    }}
+    transformOrigin={{
+      vertical: "top",
+      horizontal: "center",
+    }}
+    {...props}
+  />
+));
 
 export default function SimpleMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -50,7 +70,7 @@ export default function SimpleMenu() {
       >
         CHANGE WORKOUT
       </Button>
-      <Menu
+      <StyledMenu
         id="simple-menu"
         anchorEl={anchorEl}
         keepMounted
@@ -77,7 +97,7 @@ export default function SimpleMenu() {
             <YouTube /> YouTube
           </MenuItem>
         </Grid>
-      </Menu>
+      </StyledMenu>
     </Grid>
   );
 }
