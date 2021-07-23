@@ -16,7 +16,7 @@ const TopBar = () => {
           container
           direction="row"
           alignContent="center"
-          style={{ width: "15vw" }}
+          style={{ width: "auto" }}
         >
           <Link>
             <LinkIcon
@@ -28,7 +28,7 @@ const TopBar = () => {
           </Typography>
         </Grid>
         <DropMenu />
-        <Grid style={{ width: "4vw" }} container alignContent="center">
+        <Grid style={{ width: "auto" }} container alignContent="center">
           <Timer />
         </Grid>
       </Grid>
