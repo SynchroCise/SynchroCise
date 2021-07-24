@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom'
 import { RoutesEnum } from '../../App'
 import { useAppContext } from "../../AppContext";
 import { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles } from '@material-ui/core';
-import { ArrowForward, ArrowBack, CallEnd, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter } from '@material-ui/icons';
+import { CallEnd, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter } from '@material-ui/icons';
 
 const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteParticipants }) => {
     const { room, sendRoomState, workoutType, handleLeaveRoom, setWorkoutType, openSideBar, handleOpenSideBar } = useAppContext();
@@ -36,15 +36,6 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
         setVid(!vid);
     };
 
-    const handleParticipantPage = (pageDelta) => {
-        if (!room) return;
-        let all_participants = getAllRemoteParticipants();
-        const newPageNum = participantPage + pageDelta;
-        if (all_participants.slice(newPageNum * ppp, newPageNum * ppp + ppp).length > 0) {
-            setParticipantPage(newPageNum)
-        }
-    }
-    
     const endCall = () => {
         handleLeaveRoom();
         history.push(RoutesEnum.Home);
@@ -60,12 +51,12 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
 
     const useStyles = makeStyles(theme => ({
         endCall: {
-          backgroundColor: "red",
-          color: "white",
-          "&:hover, &.Mui-focusVisible": { backgroundColor: "#ea4335" }
+            backgroundColor: "red",
+            color: "white",
+            "&:hover, &.Mui-focusVisible": { backgroundColor: "#ea4335" }
         }
-      }));
-    
+    }));
+
     const classes = useStyles();
     return (
         <Grid item container xs={12} style={{ width: "100%", height: "80px" }} alignItems="center" data-test="bottomControlComponent">
@@ -78,19 +69,13 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
                         {mic ? <Mic data-test="micOn" /> : <MicOff data-test="micOff" />}
                     </IconButton>
                     <IconButton color="secondary" className={classes.endCall} onClick={endCall}>
-                        <CallEnd/>
+                        <CallEnd />
                     </IconButton>
                 </Box>
             </Grid>
             <Grid item xs={4}>
                 <Box display="flex" justifyContent="center" alignItems="center" l={3} r={3}>
-                    <IconButton color="secondary" onClick={() => handleParticipantPage(-1)} data-test="backPPButton">
-                        <ArrowBack style={{ fill: "white" }} />
-                    </IconButton>
                     <Typography color="secondary"> Page {participantPage} </Typography>
-                    <IconButton color="secondary" onClick={() => handleParticipantPage(1)} data-test="forwardPPButton">
-                        <ArrowForward style={{ fill: "white" }} />
-                    </IconButton>
                 </Box>
             </Grid>
             <Grid item xs={4}>
