@@ -46,7 +46,7 @@ export const createParticipant = (sid) => ({
 export const initRoomObj = () => ({
     sid: 'room',
     localParticipant: createParticipant('local'),
-    participants: [],
+    participants: new Map(),
     on: jest.fn(),
     off: jest.fn()
 });
