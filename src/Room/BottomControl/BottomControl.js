@@ -3,13 +3,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from 'react-router-dom'
 import { RoutesEnum } from '../../App'
 import { useAppContext } from "../../AppContext";
-import { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles } from '@material-ui/core';
-import { ArrowForward, ArrowBack, CallEnd, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter } from '@material-ui/icons';
+import { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles, Badge } from '@material-ui/core';
+import { ArrowForward, ArrowBack, CallEnd, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter, ChatOutlined, GroupOutlined } from '@material-ui/icons';
 
 const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteParticipants }) => {
     const { room, sendRoomState, workoutType, handleLeaveRoom, setWorkoutType, openSideBar, handleOpenSideBar } = useAppContext();
     const [vid, setVid] = useState(true);
     const [mic, setMic] = useState(true);
+    const [navValue, setNavValue] = useState(0);
     const history = useHistory()
 
     const handleChangeWorkoutType = (value) => {
@@ -18,6 +19,16 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
             eventName: 'syncWorkoutType',
             eventParams: { workoutType: newWorkoutType }
         }, () => { setWorkoutType(newWorkoutType) });
+    }
+
+    const handleSidebarNav = (value) => {
+        if (!openSideBar) handleOpenSideBar();
+        if (navValue === value) {
+            handleOpenSideBar();
+            setNavValue(-1);
+            return
+        }
+        setNavValue(value);
     }
 
     const handleMic = () => {
@@ -96,20 +107,18 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
             <Grid item xs={4}>
                 <Box display="flex" justifyContent="flex-end" alignItems="center">
                     <BottomNavigation
-                        value={workoutType === 'yt' ? 1 : 0}
+                        value={navValue}
                         onChange={(event, newValue) => {
-                            handleChangeWorkoutType(newValue);
+                            handleSidebarNav(newValue);
                         }}
                         showLabels
                         color="secondary"
                         data-test="changeWorkoutNavigation"
                     >
-                        <CustomBottomNavigationAction label="Custom" icon={<FitnessCenter />} />
-                        <CustomBottomNavigationAction color="secondary" label="Youtube" icon={<YouTube />} />
+                        <CustomBottomNavigationAction icon={<FitnessCenter />} />
+                        <CustomBottomNavigationAction icon={<ChatOutlined />} />
+                        <CustomBottomNavigationAction icon={<Badge badgeContent={room.participants.size + 1} color="primary"><GroupOutlined /></Badge>} />
                     </BottomNavigation>
-                    <IconButton color="secondary" onClick={handleOpenSideBar} data-test="sidebarButton">
-                        {openSideBar ? <ChevronRight /> : <ChevronLeft />}
-                    </IconButton>
                 </Box>
             </Grid>
         </Grid>
