@@ -1,114 +1,91 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
-import Menu from "@material-ui/core/Menu";
+import { makeStyles } from "@material-ui/core/styles";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
 import MenuItem from "@material-ui/core/MenuItem";
-import { FitnessCenter, YouTube } from "@material-ui/icons";
-import { useAppContext } from "../../../AppContext";
-import { makeStyles, Grid, withStyles } from "@material-ui/core";
+import Menu from "@material-ui/core/Menu";
 
-const useStyles = makeStyles((theme)=>({
-  dpMenu: {
-    color: "white",
-    borderRadius:"0"
+const useStyles = makeStyles((theme) => ({
+  root: {
+    backgroundColor: theme.palette.background.paper,
   },
 }));
 
-const StyledMenu = withStyles({
-  paper: {
-    border: "1px solid #d3d4d5",
-  },
-})((props) => (
-  <Menu
-    elevation={0}
-    getContentAnchorEl={null}
-    anchorOrigin={{
-      vertical: "bottom",
-      horizontal: "center",
-    }}
-    transformOrigin={{
-      vertical: "top",
-      horizontal: "center",
-    }}
-    {...props}
-  />
-));
+const options = [
+  "Show some love to Material-UI",
+  "Show all notification content",
+  "Hide sensitive notification content",
+  "Hide all notification content",
+];
 
-const StyledMenuItem = withStyles((theme) => ({
-  root: {
-    "&:focus": {
-      backgroundColor: theme.palette.primary.main,
-      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-        color: theme.palette.common.white,
-      },
-    },
-  },
-}))(MenuItem);
-
-export default function SimpleMenu() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const {sendRoomState, setWorkoutType} = useAppContext();
-
+export default function SimpleListMenu() {
   const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [selectedIndex, setSelectedIndex] = React.useState(1);
 
-  const handleClick = (event) => {
+  const handleClickListItem = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuItemClick = (event, index) => {
+    setSelectedIndex(index);
+    setAnchorEl(null);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  const handleChangeWorkoutType = (value) => {
-    const newWorkoutType = value ? "yt" : "vid";
-    sendRoomState(
-      {
-        eventName: "syncWorkoutType",
-        eventParams: { workoutType: newWorkoutType },
-      },
-      () => {
-        setWorkoutType(newWorkoutType);
-      }
-    );
-  };
-
   return (
-    <Grid style={{ width: "auto" }}>
-      <Button
-        aria-controls="simple-menu"
-        aria-haspopup="true"
-        onClick={handleClick}
-        className={classes.dpMenu}
-      >
-        CHANGE WORKOUT
-      </Button>
-      <StyledMenu
-        id="simple-menu"
+    <div className={classes.root}>
+      <List component="nav" aria-label="Device settings">
+        <ListItem
+          button
+          aria-haspopup="true"
+          aria-controls="lock-menu"
+          aria-label="when device is locked"
+          onClick={handleClickListItem}
+        >
+          <ListItemText
+            primary="When device is locked"
+            secondary={options[selectedIndex]}
+          />
+        </ListItem>
+      </List>
+      <Menu
+        id="lock-menu"
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <Grid container justify="center">
+        {options.map((option, index) => (
           <MenuItem
-            onClick={() => {
-              handleChangeWorkoutType(0);
-              handleClose();
-            }}
+            key={option}
+            disabled={index === 0}
+            selected={index === selectedIndex}
+            onClick={(event) => handleMenuItemClick(event, index)}
           >
-            <FitnessCenter /> Custom
+            {option}
           </MenuItem>
-        </Grid>
-        <Grid container justify="center">
-          <MenuItem
-            onClick={() => {
-              handleChangeWorkoutType(1);
-              handleClose();
-            }}
-          >
-            <YouTube /> YouTube
-          </MenuItem>
-        </Grid>
-      </StyledMenu>
-    </Grid>
+        ))}
+      </Menu>
+    </div>
   );
 }
+
+// import { FitnessCenter, YouTube } from "@material-ui/icons";
+
+// const handleChangeWorkoutType = (value) => {
+//   const newWorkoutType = value ? "yt" : "vid";
+//   sendRoomState(
+//     {
+//       eventName: "syncWorkoutType",
+//       eventParams: { workoutType: newWorkoutType },
+//     },
+//     () => {
+//       setWorkoutType(newWorkoutType);
+//     }
+//   );
+// };
