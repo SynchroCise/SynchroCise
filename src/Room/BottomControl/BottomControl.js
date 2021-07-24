@@ -4,31 +4,21 @@ import { useHistory } from 'react-router-dom'
 import { RoutesEnum } from '../../App'
 import { useAppContext } from "../../AppContext";
 import { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles, Badge } from '@material-ui/core';
-import { ArrowForward, ArrowBack, CallEnd, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter, ChatOutlined, GroupOutlined } from '@material-ui/icons';
+import { CallEnd, Videocam, VideocamOff, Mic, MicOff, FitnessCenter, ChatOutlined, GroupOutlined } from '@material-ui/icons';
 
-const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteParticipants }) => {
-    const { room, sendRoomState, workoutType, handleLeaveRoom, setWorkoutType, openSideBar, handleOpenSideBar } = useAppContext();
+const BottomControl = ({ participantPage, setParticipantPage }) => {
+    const { room, handleLeaveRoom, openSideBar, handleOpenSideBar, sideBarType, setSideBarType } = useAppContext();
     const [vid, setVid] = useState(true);
     const [mic, setMic] = useState(true);
-    const [navValue, setNavValue] = useState(0);
     const history = useHistory()
-
-    const handleChangeWorkoutType = (value) => {
-        const newWorkoutType = value ? 'yt' : 'vid';
-        sendRoomState({
-            eventName: 'syncWorkoutType',
-            eventParams: { workoutType: newWorkoutType }
-        }, () => { setWorkoutType(newWorkoutType) });
-    }
 
     const handleSidebarNav = (value) => {
         if (!openSideBar) handleOpenSideBar();
-        if (navValue === value) {
+        if (sideBarType === value) {
             handleOpenSideBar();
-            setNavValue(-1);
             return
         }
-        setNavValue(value);
+        setSideBarType(value);
     }
 
     const handleMic = () => {
@@ -92,7 +82,7 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
             <Grid item xs={4}>
                 <Box display="flex" justifyContent="flex-end" alignItems="center">
                     <BottomNavigation
-                        value={navValue}
+                        value={sideBarType}
                         onChange={(event, newValue) => {
                             handleSidebarNav(newValue);
                         }}
@@ -101,8 +91,8 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
                         data-test="changeWorkoutNavigation"
                     >
                         <CustomBottomNavigationAction icon={<FitnessCenter />} />
-                        <CustomBottomNavigationAction icon={<ChatOutlined />} />
                         <CustomBottomNavigationAction icon={<Badge badgeContent={room.participants.size + 1} color="primary"><GroupOutlined /></Badge>} />
+                        <CustomBottomNavigationAction icon={<ChatOutlined />} />
                     </BottomNavigation>
                 </Box>
             </Grid>

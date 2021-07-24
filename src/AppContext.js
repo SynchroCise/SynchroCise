@@ -35,6 +35,7 @@ const AppContextProvider = ({ children }) => {
     initVideo: false,
     videoType: 'yt'
   });
+  const [sideBarType, setSideBarType] = useState(0);
 
   const sendRoomState = ({ eventName, eventParams }, callback) => {
     let params = {
@@ -194,7 +195,9 @@ const AppContextProvider = ({ children }) => {
       videoProps,
       updateVideoProps,
       sendRoomState,
-      createTempUser
+      createTempUser,
+      sideBarType,
+      setSideBarType
     }}>
       {children}
     </AppContext.Provider>
