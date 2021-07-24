@@ -148,7 +148,7 @@ const SideBar = ({
             unmountOnExit
         >
             <Card>
-                <Box mx={2} my={2}>
+                <Box mx={2} my={2} height="100%">
                     <Typography variant="body1">{copyRoomCodeButtonMarkup}Room: {roomName.substring(0, 6).toUpperCase()}</Typography>
                     <Tabs
                         indicatorColor="primary"
