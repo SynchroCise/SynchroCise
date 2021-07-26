@@ -251,28 +251,29 @@ const Room = (props) => {
     );
   };
 
-  const useStyles = makeStyles(theme => ({
+  const useStyles = makeStyles((theme) => ({
     content: {
       position: "absolute",
-      transition: theme.transitions.create('padding', {
+      transition: theme.transitions.create("padding", {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
       }),
       paddingRight: drawerWidth + 16,
       top: 0,
       bottom: 80,
-      overflow: "hidden"
+      overflow: "hidden",
     },
     contentShift: {
-      transition: theme.transitions.create('padding', {
+      transition: theme.transitions.create("padding", {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
       }),
       paddingRight: 0,
     },
-    abRoot:{
+    abRoot: {
       backgroundColor: "rgba(0, 0, 0, 0.87)",
-    }
+      boxShadow: "none",
+    },
   }));
   const classes = useStyles();
 

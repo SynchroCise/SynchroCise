@@ -18,7 +18,7 @@ const StyledMenu = withStyles({
     border: "1px solid #d3d4d5",
     backgroundColor:"rgba(0, 0, 0, 0.87)",
     borderRadius: "5px",
-    width:"10vw",
+    width:"166px",
     color:"white",
   },
 })((props) => (
@@ -66,12 +66,12 @@ export default function SimpleMenu() {
   };
 
   return (
-    <Grid style={{ width: "auto" }}>
+    <Grid style={{ width: "auto" }} container>
       <Button
         aria-controls="simple-menu"
         aria-haspopup="true"
         onClick={handleClick}
-        variant="outlined"
+        variant="contained"
         color="primary"
         style={{ color: "white" }}
         disableElevation
@@ -80,7 +80,10 @@ export default function SimpleMenu() {
         {workoutType === "vid" && <FitnessCenter />}
         Change Workout
       </Button>
-      <Grid container style={{ backgroundColor: "rgba(0, 0, 0, 0.87)", color: "white" }}>
+      <Grid
+        container
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.87)", color: "white" }}
+      >
         <StyledMenu
           id="simple-menu"
           anchorEl={anchorEl}

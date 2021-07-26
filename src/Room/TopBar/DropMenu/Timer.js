@@ -13,12 +13,29 @@ export default function Timer() {
     }
   },[]);
 
-  const time =
-    String(today.getHours()).padStart(2, "0") +
-    ":" +
-    String(today.getMinutes()).padStart(2, "0") +
-    ":" +
-    String(today.getSeconds()).padStart(2, "0");
+  let hour = today.getHours();
+  hour = hour > 12 ? hour-12 : hour;
+  
+  let minutes = String(today.getMinutes()).padStart(2, "0");
+  
+  const toggleSemi = () => {
+    if(today.getSeconds()%2){
+      return " "
+    }
+    else{
+      return ":"
+    }
+  };
+
+  const amPm = () => {
+    if (today.getHours() > 12) {
+      return " pm";
+    } else {
+      return " am";
+    }
+  };
+
+  const time = hour + toggleSemi() + minutes + amPm();
 
   return <Typography>{time}</Typography>;
 }

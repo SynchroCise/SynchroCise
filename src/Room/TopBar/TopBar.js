@@ -11,24 +11,22 @@ const TopBar = () => {
 
   return (
     <Toolbar width="100vw" style={{ minHeight: "5vh" }}>
-      <Grid container flex justify="space-between" direction="row">
-        <Grid
-          container
-          direction="row"
-          alignContent="center"
-          style={{ width: "auto" }}
-        >
+      <Grid
+        container
+        justify="space-between"
+        direction="row"
+        alignItems="flex-end"
+      >
+        <Grid container style={{ width: "auto"}} >
           <Link>
-            <LinkIcon
-              onClick={() => navigator.clipboard.writeText(roomCode)}
-            />
+            <LinkIcon onClick={() => navigator.clipboard.writeText(roomCode)} />
           </Link>
           <Typography variant="body1">
             Room: {roomName.substring(0, 6).toUpperCase()}
           </Typography>
         </Grid>
         <DropMenu />
-        <Grid style={{ width: "auto" }} container alignContent="center">
+        <Grid style={{ width: "auto"}} container>
           <Timer />
         </Grid>
       </Grid>
