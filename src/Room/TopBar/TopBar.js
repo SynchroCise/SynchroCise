@@ -16,9 +16,8 @@ const TopBar = () => {
           container
           justify="space-between"
           direction="row"
-          alignItems="center"
         >
-          <Grid container style={{ width: "auto" }}>
+          <Grid container style={{ width: "auto" }} alignItems="center">
             <Link>
               <LinkIcon
                 onClick={() => navigator.clipboard.writeText(roomCode)}
@@ -29,7 +28,7 @@ const TopBar = () => {
             </Typography>
           </Grid>
           <DropMenu />
-          <Grid style={{ width: "auto" }} container>
+          <Grid style={{ width: "auto" }} container alignContent="center">
             <Timer />
           </Grid>
         </Grid>
