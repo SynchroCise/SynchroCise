@@ -251,7 +251,7 @@ const Room = (props) => {
     );
   };
 
-  const useStyles = makeStyles((theme) => ({
+  const useStyles = makeStyles(theme => ({
     content: {
       position: "absolute",
       transition: theme.transitions.create("padding", {
@@ -284,11 +284,14 @@ const Room = (props) => {
       <Redirect to={`/join-room/${props.match.params.roomCode}`} data-test="redirectComponent" />
     );
   }
-  //height go from 70 to 90 and remove grid item container if only one person
   
   return (
     <React.Fragment>
-      <AppBar position="sticky" bgcolor="text.primary" classes={{root:classes.abRoot}}>
+      <AppBar
+        position="sticky"
+        bgcolor="text.primary"
+        classes={{ root: classes.abRoot }}
+      >
         <TopBar />
       </AppBar>
       <Box

@@ -10,20 +10,21 @@ const TopBar = () => {
   const roomCode = roomName.substring(0, 6).toUpperCase();
 
   return (
-    <Toolbar width="100vw" >
-      <Grid container width="100vw" style={{height:"5vh"}} alignItems="flex-end">
-        <Grid
-          container
-          justify="space-between"
-          direction="row"
-        >
+    <Toolbar width="100vw">
+      <Grid
+        container
+        width="100vw"
+        style={{ height: "5vh" }}
+        alignItems="flex-end"
+      >
+        <Grid container justify="space-between" direction="row">
           <Grid container style={{ width: "auto" }} alignItems="center">
             <Link>
               <LinkIcon
                 onClick={() => navigator.clipboard.writeText(roomCode)}
               />
             </Link>
-            <Typography variant="body1">
+            <Typography variant="body1" style={{ position:"relative", left:"5px" }}>
               Room: {roomName.substring(0, 6).toUpperCase()}
             </Typography>
           </Grid>

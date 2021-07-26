@@ -2,14 +2,32 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import { FitnessCenter, YouTube } from "@material-ui/icons";
+import {
+  FitnessCenter,
+  YouTube,
+  ArrowDropDown,
+} from "@material-ui/icons";
 import { useAppContext } from "../../../AppContext";
-import { makeStyles, Grid, withStyles } from "@material-ui/core";
+import {
+  makeStyles,
+  Grid,
+  withStyles,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton
+} from "@material-ui/core";
 
 const useStyles = makeStyles((theme)=>({
   dpMenu: {
     color: "white",
     borderRadius:"0"
+  },
+  dpList: {
+    secondary:{
+      color:"white"
+    }
   },
 }));
 
@@ -41,7 +59,6 @@ export default function SimpleMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const {sendRoomState, setWorkoutType, workoutType} = useAppContext();
   
-
   const classes = useStyles();
 
   const handleClick = (event) => {
@@ -66,20 +83,66 @@ export default function SimpleMenu() {
   };
 
   return (
-    <Grid style={{ width: "auto" }} container>
-      <Button
-        aria-controls="simple-menu"
-        aria-haspopup="true"
-        onClick={handleClick}
-        variant="contained"
-        color="primary"
-        style={{ color: "white" }}
-        disableElevation
+    <Grid style={{ width: "auto", height: "5vh" }} container>
+      <List
+        component="nav"
+        aria-label="Device settings"
+        style={{ height: "5vh" }}
       >
-        {workoutType === "yt" && <YouTube />}
-        {workoutType === "vid" && <FitnessCenter />}
-        Change Workout
-      </Button>
+        <ListItem
+          button
+          aria-controls="simple-menu"
+          aria-haspopup="true"
+          variant="contained"
+          color="primary"
+          disableElevation
+          onClick={handleClick}
+          style={{
+            height: "5vh",
+            position: "relative",
+            top: "-8px",
+          }}
+          className={classes.dpList}
+        >
+          <ListItemText
+            disableTypography
+            primary={
+              <Typography style={{ fontSize: "10px" }}>
+                Choose Workout
+              </Typography>
+            }
+            secondary={
+              <>
+                {workoutType === "yt" && (
+                  <Grid container alignItems="center">
+                    <YouTube />
+                    <Typography
+                      variant="h6"
+                      style={{ position: "relative", left: "5px" }}
+                    >
+                      YouTube
+                    </Typography>
+                  </Grid>
+                )}
+                {workoutType === "vid" && (
+                  <Grid container alignItems="center">
+                    <FitnessCenter />
+                    <Typography
+                      variant="h6"
+                      style={{ position: "relative", left: "5px" }}
+                    >
+                      Custom
+                    </Typography>
+                  </Grid>
+                )}
+              </>
+            }
+          />
+          <Grid style={{ color: "rgb(72, 160, 241)" }}>
+            <ArrowDropDown />
+          </Grid>
+        </ListItem>
+      </List>
       <Grid
         container
         style={{ backgroundColor: "rgba(0, 0, 0, 0.87)", color: "white" }}
@@ -91,24 +154,34 @@ export default function SimpleMenu() {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <Grid container justify="center">
+          <Grid container justify="center" alignItems="center">
             <MenuItem
               onClick={() => {
                 handleChangeWorkoutType(0);
                 handleClose();
               }}
             >
-              <FitnessCenter /> Custom
+              <FitnessCenter />
+              <Typography
+                style={{ position: "relative", left: "5px" }}
+              >
+                Custom
+              </Typography>{" "}
             </MenuItem>
           </Grid>
-          <Grid container justify="center">
+          <Grid container justify="center" alignItems="center">
             <MenuItem
               onClick={() => {
                 handleChangeWorkoutType(1);
                 handleClose();
               }}
             >
-              <YouTube /> YouTube
+              <YouTube />
+              <Typography
+                style={{ position: "relative", left: "5px" }}
+              >
+                YouTube
+              </Typography>
             </MenuItem>
           </Grid>
         </StyledMenu>

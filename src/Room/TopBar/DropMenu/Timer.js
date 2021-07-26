@@ -29,13 +29,13 @@ export default function Timer() {
 
   const amPm = () => {
     if (today.getHours() > 12) {
-      return " pm";
+      return " PM";
     } else {
-      return " am";
+      return " AM";
     }
   };
 
-  const time = hour + toggleSemi() + minutes + amPm();
+  const time = hour + ":" + minutes + amPm();
 
   return <Typography>{time}</Typography>;
 }
