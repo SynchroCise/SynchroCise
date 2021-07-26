@@ -87,7 +87,7 @@ export default function SimpleMenu() {
       <List
         component="nav"
         aria-label="Device settings"
-        style={{ height: "5vh" }}
+        style={{ height: "5vh"}}
       >
         <ListItem
           button
@@ -101,13 +101,14 @@ export default function SimpleMenu() {
             height: "5vh",
             position: "relative",
             top: "-8px",
+            width:"10vw"
           }}
           className={classes.dpList}
         >
           <ListItemText
             disableTypography
             primary={
-              <Typography style={{ fontSize: "10px" }}>
+              <Typography style={{ fontSize: "10px"}}>
                 Choose Workout
               </Typography>
             }
@@ -139,7 +140,7 @@ export default function SimpleMenu() {
             }
           />
           <Grid style={{ color: "rgb(72, 160, 241)" }}>
-            <ArrowDropDown />
+            <ArrowDropDown style={{position:"relative", left:"5px"}} />
           </Grid>
         </ListItem>
       </List>
@@ -166,7 +167,7 @@ export default function SimpleMenu() {
                 style={{ position: "relative", left: "5px" }}
               >
                 Custom
-              </Typography>{" "}
+              </Typography>
             </MenuItem>
           </Grid>
           <Grid container justify="center" alignItems="center">
