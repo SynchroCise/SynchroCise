@@ -16,6 +16,10 @@ const useStyles = makeStyles((theme)=>({
 const StyledMenu = withStyles({
   paper: {
     border: "1px solid #d3d4d5",
+    backgroundColor:"rgba(0, 0, 0, 0.87)",
+    borderRadius: "5px",
+    width:"10vw",
+    color:"white",
   },
 })((props) => (
   <Menu
@@ -35,7 +39,8 @@ const StyledMenu = withStyles({
 
 export default function SimpleMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const {sendRoomState, setWorkoutType} = useAppContext();
+  const {sendRoomState, setWorkoutType, workoutType} = useAppContext();
+  
 
   const classes = useStyles();
 
@@ -66,38 +71,45 @@ export default function SimpleMenu() {
         aria-controls="simple-menu"
         aria-haspopup="true"
         onClick={handleClick}
-        className={classes.dpMenu}
+        variant="outlined"
+        color="primary"
+        style={{ color: "white" }}
+        disableElevation
       >
-        CHANGE WORKOUT
+        {workoutType === "yt" && <YouTube />}
+        {workoutType === "vid" && <FitnessCenter />}
+        Change Workout
       </Button>
-      <StyledMenu
-        id="simple-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        <Grid container justify="center">
-          <MenuItem
-            onClick={() => {
-              handleChangeWorkoutType(0);
-              handleClose();
-            }}
-          >
-            <FitnessCenter /> Custom
-          </MenuItem>
-        </Grid>
-        <Grid container justify="center">
-          <MenuItem
-            onClick={() => {
-              handleChangeWorkoutType(1);
-              handleClose();
-            }}
-          >
-            <YouTube /> YouTube
-          </MenuItem>
-        </Grid>
-      </StyledMenu>
+      <Grid container style={{ backgroundColor: "rgba(0, 0, 0, 0.87)", color: "white" }}>
+        <StyledMenu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <Grid container justify="center">
+            <MenuItem
+              onClick={() => {
+                handleChangeWorkoutType(0);
+                handleClose();
+              }}
+            >
+              <FitnessCenter /> Custom
+            </MenuItem>
+          </Grid>
+          <Grid container justify="center">
+            <MenuItem
+              onClick={() => {
+                handleChangeWorkoutType(1);
+                handleClose();
+              }}
+            >
+              <YouTube /> YouTube
+            </MenuItem>
+          </Grid>
+        </StyledMenu>
+      </Grid>
     </Grid>
   );
 }
