@@ -84,7 +84,10 @@ describe('<Room /> component tests', () => {
                 initVideo: false,
                 videoType: 'yt'
             },
-            updateVideoProps: jest.fn()
+            updateVideoProps: jest.fn(),
+            nameArray: [],
+            setNameArray: jest.fn(),
+            pinnedParticipantId: ""
         };
         props = { match: { params: { roomCode: "ROOMCODE" } } }
         requests.getDisplayNamesInRoom.mockResolvedValue({ ok: false });
@@ -106,15 +109,6 @@ describe('<Room /> component tests', () => {
         component = initContext(contextValues, setUp, props);
         expect(findByTestAttr(component, 'youtubeComponent').length).toBe(1);
         expect(findByTestAttr(component, 'leaderParticipantComponent').length).toBe(0);
-    });
-    it('Should setPinnedParticipantId on click', () => {
-        component = initContext(contextValues, setUp, props);
-        participantJoins(['1']);
-        expect(findByTestAttr(component, 'leaderParticipantComponent').prop('participant').sid).toBe('1')
-        expect(findByTestAttr(component, 'remoteParticipantComponent').prop('participant').sid).toBe('local')
-        findByTestAttr(component, 'remoteParticipantComponent').prop('setPinnedParticipantId')('local')
-        expect(findByTestAttr(component, 'leaderParticipantComponent').prop('participant').sid).toBe('local')
-        expect(findByTestAttr(component, 'remoteParticipantComponent').prop('participant').sid).toBe('1')
     });
 
     describe('Test socket listeners', () => {
@@ -176,10 +170,7 @@ describe('<Room /> component tests', () => {
             component = initContext(contextValues, setUp, props);
             const callback = sckt.socket.on.mock.calls.filter(call => call[0] == "newUser")[0][1];
             const nameMapping = { name: 'hi', sid: 'hello' }
-            participantJoins(['1']);
-            callback(nameMapping);
-            expect(findByTestAttr(component, 'leaderParticipantComponent').prop('names')).toContainEqual(nameMapping);
-            expect(findByTestAttr(component, 'remoteParticipantComponent').prop('names')).toContainEqual(nameMapping);
+            expect(contextValues.setNameArray).toHaveBeenCalledTimes(1);
         });
     });
     describe('Test room listeners', () => {
