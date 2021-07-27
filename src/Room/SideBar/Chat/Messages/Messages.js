@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 // import './Messages.scss';
 
-const Messages = ({ messages, currUser, users, times }) => {
+const Messages = ({ messages }) => {
     const useStyles = makeStyles(theme => ({
         messages: {
             flexDirection: "column",
@@ -24,7 +24,7 @@ const Messages = ({ messages, currUser, users, times }) => {
             {
                 messages.map((message, i) =>
                     <ListItem key={i} >
-                        <Message message={message} currUser={currUser} users={users} data-test="messageComponent" />
+                        <Message message={message} data-test="messageComponent" />
                     </ListItem>
                 )
             }

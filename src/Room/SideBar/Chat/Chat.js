@@ -4,7 +4,7 @@ import ChatInput from './ChatInput/ChatInput';
 import Messages from './Messages/Messages';
 import { useAppContext } from "../../../AppContext"
 
-const Chat = ({ messages, currUser, users }) => {
+const Chat = ({ messages }) => {
     const { room } = useAppContext();
     const [message, setMessage] = useState('');
 
@@ -19,7 +19,7 @@ const Chat = ({ messages, currUser, users }) => {
     return (
         <div style={{ display:"flex" ,height: "100%", flexDirection:"column" }} data-test="chatComponent">
             <div style={{ overflowY: 'scroll', flexGrow: 1 }} id="chat">
-                <Messages messages={messages} currUser={currUser} users={users} data-test="messageComponent" />
+                <Messages messages={messages} data-test="messageComponent" />
             </div>
             <div style={{margin: '16px'}}>
                 <ChatInput message={message} setMessage={setMessage} sendMessage={sendMessage} data-test="chatInputComponent" />
