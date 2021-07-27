@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography } from '@material-ui/core';
+import { useAppContext } from "../../AppContext";
 import placeHolder from "../../media/placeHolder.png";
 import './Participant.scss';
 
-const Participant = ({ participant, names, setPinnedParticipantId }) => {
+const Participant = ({ participant }) => {
+  const { nameArray, setPinnedParticipantId } = useAppContext(); 
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [displayName, setDisplayName] = useState('');
@@ -11,10 +13,10 @@ const Participant = ({ participant, names, setPinnedParticipantId }) => {
   const [audioMute, setAudioMute] = useState((participant.audioTracks.length === 0) ? true : false);
 
   useEffect(() => {
-    if (!names) return;
-    if (!names.find(x => x.sid === participant.sid)) return;
-    setDisplayName(names.find(x => x.sid === participant.sid).name)
-  }, [names, participant.sid]);
+    if (!nameArray) return;
+    if (!nameArray.find(x => x.sid === participant.sid)) return;
+    setDisplayName(nameArray.find(x => x.sid === participant.sid).name)
+  }, [nameArray, participant.sid]);
 
   // creates ref to html element
   const videoRef = useRef();

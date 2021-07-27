@@ -19,9 +19,7 @@ const Room = (props) => {
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
   const history = useHistory();
-  const { username, room, userId, openSideBar, roomProps, updateRoomProps, workoutType, videoProps, updateVideoProps } = useAppContext();
-  const [pinnedParticipantId, setPinnedParticipantId] = useState("");
-  const [nameArr, setNameArray] = useState([room ? { name: username, sid: room.localParticipant.sid } : {}]);
+  const { username, room, userId, openSideBar, roomProps, updateRoomProps, workoutType, videoProps, updateVideoProps, setNameArray, pinnedParticipantId } = useAppContext();
 
   // Initializing Room Stuff
   const modifyVideoState = useCallback((paramsToChange) => {
@@ -42,7 +40,7 @@ const Room = (props) => {
     );
     setNameArray((prevParticipants) =>
       [...prevParticipants].filter((p) => p.sid !== participant.sid));
-  }, []);
+  }, [setNameArray]);
 
   useEffect(() => {
     const getRoomSyncHandler = ({ id }) => {
@@ -112,7 +110,7 @@ const Room = (props) => {
     }
     sckt.socket.on("newUser", handler);
     return () => sckt.socket.off('newUser', handler);
-  }, []);
+  }, [setNameArray]);
 
 
   // sending sync video
@@ -150,16 +148,16 @@ const Room = (props) => {
       }
     }
     gettingNames();
-  }, [room]);
+  }, [room, setNameArray]);
 
   // joins the room through sockets
   useEffect(() => {
     if (!room) return;
     const sid = room.localParticipant.sid;
     const name = username;
-
+    setNameArray((oldArray) => [...oldArray, { name, sid }]);
     sckt.socket.emit('join', { name, room: room.sid, sid, userId }, ({ id, leaderList }) => { });
-  }, [room, userId, username]);
+  }, [room, userId, username, setNameArray]);
 
   // handels leader leaves server
   useEffect(() => {
@@ -216,8 +214,6 @@ const Room = (props) => {
         <Participant
           key={participant.sid}
           participant={participant}
-          names={nameArr}
-          setPinnedParticipantId={setPinnedParticipantId}
           data-test="remoteParticipantComponent"
         />
       )));
@@ -244,8 +240,6 @@ const Room = (props) => {
         <Participant
           key={room.localParticipant.sid}
           participant={room.localParticipant}
-          names={nameArr}
-          setPinnedParticipantId={setPinnedParticipantId}
           data-test="leaderParticipantComponent"
         />
       );
@@ -254,8 +248,6 @@ const Room = (props) => {
       <Participant
         key={participant.sid}
         participant={participant}
-        names={nameArr}
-        setPinnedParticipantId={setPinnedParticipantId}
         data-test="leaderParticipantComponent"
       />
     );
@@ -332,7 +324,6 @@ const Room = (props) => {
         <SideBar
           currUser={room.localParticipant}
           users={participants}
-          isYoutube={workoutType === 'yt' ? 1 : 0}
           drawerWidth={drawerWidth}
         />
       </Box>

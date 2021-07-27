@@ -3,14 +3,12 @@ import ExerciseList from "./ExerciseList/ExerciseList.js"
 import { sckt } from '../.././Socket';
 import { useAppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
+import People from './People/People';
 import { Typography, IconButton, Box, Slide, Card } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
 
 const SideBar = ({
-    currUser,
-    users,
-    isYoutube,
     drawerWidth
 }) => {
     const { workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, sideBarType, handleOpenSideBar } = useAppContext();
@@ -84,16 +82,6 @@ const SideBar = ({
     }));
     const classes = useStyles();
 
-    // const sideBarContentMarkup = sideBarType ?
-    //    :
-
-    // const roomCode = roomName.substring(0, 6).toUpperCase();
-
-    // const copyRoomCodeButtonMarkup = (
-    //     <IconButton color="primary" onClick={() => navigator.clipboard.writeText(roomCode)}>
-    //         <Link />
-    //     </IconButton>
-    // )
     useEffect(() => {
         switch (sideBarType) {
             case 0:
@@ -102,15 +90,13 @@ const SideBar = ({
                 break;
             case 1:
                 setSideBarTitle('People');
-                setSideBarContent(null);
+                setSideBarContent(<People></People>);
                 break;
             case 2:
                 setSideBarTitle('In-call messages');
                 setSideBarContent(
                     <Chat
                         messages={messages}
-                        currUser={currUser}
-                        users={users}
                         data-test="chatComponent"
                     />
                 );
@@ -119,7 +105,7 @@ const SideBar = ({
                 setSideBarTitle('');
                 setSideBarContent(null);
         }
-    }, [sideBarType, currUser, messages, nextUpExercise, users, workoutTime]);
+    }, [sideBarType, messages, nextUpExercise, workoutTime]);
 
     return (
         <Slide
@@ -131,8 +117,8 @@ const SideBar = ({
             unmountOnExit
         >
             <Card>
-                <Box py={1} height="100%" display="flex" flexDirection="column">
-                    <Box pl={3} display="flex" flexDirection="row" alignItems="center">
+                <Box height="100%" display="flex" flexDirection="column">
+                    <Box pl={3} display="flex" flexDirection="row" alignItems="center" height="64px">
                         <Box flexGrow={1}>
                             <Typography variant="h6">{sideBarTitle}</Typography>
                         </Box>
