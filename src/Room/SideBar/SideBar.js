@@ -126,7 +126,7 @@ const SideBar = ({
                             <IconButton onClick={handleOpenSideBar}><Close /></IconButton>
                         </Box>
                     </Box>
-                    <Box flexGrow={1}>
+                    <Box flexGrow={1} height="100%">
                         {sideBarContent}
                     </Box>
                 </Box>
