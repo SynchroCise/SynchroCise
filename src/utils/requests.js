@@ -76,8 +76,8 @@ export const createTempUser = async (name) => {
   return formatResults(res);
 };
 
-export const getUserProfile = async () => {
-  const res = await fetch("/user/profile", {
+export const checkLoggedIn = async () => {
+  const res = await fetch("/user/checkLoggedIn", {
     method: "GET",
   });
   return formatResults(res);

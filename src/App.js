@@ -6,6 +6,7 @@ import { AppContextProvider } from "./AppContext"
 import CreateRoom from "./Home/CreateRoom/CreateRoom";
 import CreateWorkout from "./Home/CreateRoom/CreateWorkout";
 import JoinRoom from "./Home/JoinRoom/JoinRoom";
+import Profile from "./Profile/Profile";
 import Room from "./Room/Room";
 import theme from './theme'
 import { ThemeProvider } from '@material-ui/core/styles'
@@ -17,7 +18,8 @@ const RoutesEnum = {
   CreateRoom: '/create-room',
   JoinRoom: '/join-room',
   CreateWorkout: '/create-workout',
-  EditWorkout: '/edit-workout'
+  EditWorkout: '/edit-workout',
+  Profile: '/profile'
 }
 
 const App = () => {
@@ -37,6 +39,7 @@ const App = () => {
                   <Route path={`${RoutesEnum.JoinRoom}/:roomCode?`} component={JoinRoom} />
                   <Route path={`${RoutesEnum.EditWorkout}/:workoutId?`} component={CreateWorkout} />
                   <Route path={RoutesEnum.CreateWorkout} component={CreateWorkout} />
+                  <Route path={RoutesEnum.Profile} component={Profile} />
                 </>
               </Switch>
             </Router>

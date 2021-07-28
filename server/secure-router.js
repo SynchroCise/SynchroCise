@@ -5,7 +5,7 @@ const { getUsersById } = require('./users.js');
 
 
 router.get(
-  '/profile',
+  '/checkLoggedIn',
   (req, res, next) => {
     res.json({
       message: 'You made it to the secure route',
