@@ -19,6 +19,9 @@ const AppContextProvider = ({ children }) => {
   const [openAuthDialog, setOpenAuthDialog] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [sideBarType, setSideBarType] = useState(0);
+  const [nameArray, setNameArray] = useState([]);
+  const [pinnedParticipantId, setPinnedParticipantId] = useState("");
   const [roomProps, setRoomProps] = useState({
     workoutType: 'vid', // 'yt', 'custom',
     workout: { "workoutName": "", "exercises": [{ "time": 1, "exercise": "" }], "id": "" },
@@ -194,7 +197,13 @@ const AppContextProvider = ({ children }) => {
       videoProps,
       updateVideoProps,
       sendRoomState,
-      createTempUser
+      createTempUser,
+      sideBarType,
+      setSideBarType,
+      nameArray,
+      setNameArray,
+      pinnedParticipantId,
+      setPinnedParticipantId
     }}>
       {children}
     </AppContext.Provider>

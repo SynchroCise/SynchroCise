@@ -5,12 +5,13 @@ import { useHistory } from 'react-router-dom'
 import SideBar from "./SideBar/SideBar";
 import BottomControl from "./BottomControl/BottomControl"
 import { useAppContext } from "../AppContext";
-import { Typography, Box } from '@material-ui/core';
+import { Typography, Box, IconButton } from '@material-ui/core';
 import Video from './Video/Video';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
 import * as requests from "../utils/requests"
+import { ArrowForward, ArrowBack } from '@material-ui/icons';
 
 // using roomName and token, we will create a room
 const Room = (props) => {
@@ -18,9 +19,7 @@ const Room = (props) => {
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
   const history = useHistory();
-  const { username, room, userId, openSideBar, roomProps, updateRoomProps, workoutType, videoProps, updateVideoProps } = useAppContext();
-  const [pinnedParticipantId, setPinnedParticipantId] = useState("");
-  const [nameArr, setNameArray] = useState([room ? { name: username, sid: room.localParticipant.sid } : {}]);
+  const { username, room, userId, openSideBar, roomProps, updateRoomProps, workoutType, videoProps, updateVideoProps, setNameArray, pinnedParticipantId } = useAppContext();
 
   // Initializing Room Stuff
   const modifyVideoState = useCallback((paramsToChange) => {
@@ -41,7 +40,7 @@ const Room = (props) => {
     );
     setNameArray((prevParticipants) =>
       [...prevParticipants].filter((p) => p.sid !== participant.sid));
-  }, []);
+  }, [setNameArray]);
 
   useEffect(() => {
     const getRoomSyncHandler = ({ id }) => {
@@ -111,7 +110,7 @@ const Room = (props) => {
     }
     sckt.socket.on("newUser", handler);
     return () => sckt.socket.off('newUser', handler);
-  }, []);
+  }, [setNameArray]);
 
 
   // sending sync video
@@ -128,7 +127,7 @@ const Room = (props) => {
           (v, i, a) => a.indexOf(v) === i
         ))
     };
-    
+
     room.on("participantConnected", participantConnected);
     room.on("participantDisconnected", participantDisconnected);
     room.participants.forEach(participantConnected);
@@ -149,16 +148,16 @@ const Room = (props) => {
       }
     }
     gettingNames();
-  }, [room]);
+  }, [room, setNameArray]);
 
   // joins the room through sockets
   useEffect(() => {
     if (!room) return;
     const sid = room.localParticipant.sid;
     const name = username;
-
-    sckt.socket.emit('join', { name, room: room.sid, sid, userId }, ({ id, leaderList }) => {    });
-  }, [room, userId, username]);
+    setNameArray((oldArray) => [...oldArray, { name, sid }]);
+    sckt.socket.emit('join', { name, room: room.sid, sid, userId }, ({ id, leaderList }) => { });
+  }, [room, userId, username, setNameArray]);
 
   // handels leader leaves server
   useEffect(() => {
@@ -182,7 +181,7 @@ const Room = (props) => {
     const sortedParticipants = participants.sort((a, b) => a.startDate - b.startDate);
     return sortedParticipants[0].sid
   }, [participants]);
-  
+
   // get all participants
   const getAllRemoteParticipants = useCallback(() => {
     if (!room) return [];
@@ -212,15 +211,23 @@ const Room = (props) => {
     return (all_participants
       .slice(participantPage * ppp, participantPage * ppp + ppp)
       .map((participant, index) => (
-          <Participant
-            key={participant.sid}
-            participant={participant}
-            names={nameArr} 
-            setPinnedParticipantId={setPinnedParticipantId}
-            data-test="remoteParticipantComponent"
-          />
+        <Participant
+          key={participant.sid}
+          participant={participant}
+          data-test="remoteParticipantComponent"
+        />
       )));
   };
+
+  //set functionality to scroll through participant screens
+  const handleParticipantPage = (pageDelta) => {
+    if (!room) return;
+    let all_participants = getAllRemoteParticipants();
+    const newPageNum = participantPage + pageDelta;
+    if (all_participants.slice(newPageNum * ppp, newPageNum * ppp + ppp).length > 0) {
+      setParticipantPage(newPageNum)
+    }
+  }
 
   const leaderParticipant = () => {
     if (!room) return;
@@ -233,8 +240,6 @@ const Room = (props) => {
         <Participant
           key={room.localParticipant.sid}
           participant={room.localParticipant}
-          names={nameArr}
-          setPinnedParticipantId={setPinnedParticipantId}
           data-test="leaderParticipantComponent"
         />
       );
@@ -243,8 +248,6 @@ const Room = (props) => {
       <Participant
         key={participant.sid}
         participant={participant}
-        names={nameArr}
-        setPinnedParticipantId={setPinnedParticipantId}
         data-test="leaderParticipantComponent"
       />
     );
@@ -280,39 +283,49 @@ const Room = (props) => {
     );
   }
   //height go from 70 to 90 and remove grid item container if only one person
-  
+
   return (
     <React.Fragment>
       <Box
         bgcolor="text.primary"
         data-test="roomComponent"
-        style={{position: "fixed", minHeight: "100%", width: "100%"}}
+        style={{ position: "fixed", minHeight: "100%", width: "100%" }}
       >
         <Box
           width="100%"
           className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`}
         >
-          <Box height={participants.length > 0?"70%":"100%"}>
+          <Box height={participants.length > 0 ? "70%" : "100%"}>
             {room && (workoutType === 'vid') ? leaderParticipant() : <Video playerRef={playerRef} data-test="youtubeComponent" />}
           </Box>
+
           {participants.length > 0 &&
-            <Box height="30%" flexDirection="row" display="flex" justifyContent="space-around">{remoteParticipants()}</Box>
+            <Box height="30%" flexDirection="row" display="flex" justifyContent="space-around">
+              <IconButton color="secondary" onClick={() => handleParticipantPage(-1)} data-test="backPPButton">
+                <ArrowBack style={{ fill: "white" }} />
+              </IconButton>
+              {
+                remoteParticipants()
+              }
+              <IconButton color="secondary" onClick={() => handleParticipantPage(1)} data-test="forwardPPButton">
+                <ArrowForward style={{ fill: "white" }} />
+              </IconButton>
+            </Box>
           }
         </Box>
-        <Box style={{position: "fixed", width: "100vw", bottom: 0}}>
+        <Box style={{ position: "fixed", width: "100vw", bottom: 0 }}>
           <BottomControl
-              participantPage={participantPage}
-              setParticipantPage={setParticipantPage}
-              getAllRemoteParticipants={getAllRemoteParticipants}
-              ppp={ppp}
+            participantPage={participantPage}
+            setParticipantPage={setParticipantPage}
+            getAllRemoteParticipants={getAllRemoteParticipants}
+            ppp={ppp}
           />
         </Box>
         <SideBar
           currUser={room.localParticipant}
           users={participants}
-          isYoutube={workoutType === 'yt' ? 1 : 0}
           drawerWidth={drawerWidth}
-        />  
+        />
       </Box>
     </React.Fragment>
   );
