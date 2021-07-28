@@ -18,15 +18,15 @@ const Navbar = () => {
     handleSetOpenAuthDialog(true);
   }
   return (
-    <AppBar position="static" data-test="navbarComponent">
+    <AppBar position="fixed" data-test="navbarComponent">
       <Toolbar>
         <Typography variant="h5" style={{ flexGrow: 1 }}>
           <Link component="button" style={{ textDecoration: 'none' }} color="secondary" onClick={() => history.push(RoutesEnum.Home)} >SynchroCise</Link>
         </Typography>
         {(isLoggedIn) ? (
           <Box>
-            <Button onClick={handleLogout} data-test="logoutButton">Profile</Button>
-            <Button onClick={history.push("profile")} data-test="logoutButton">Logout</Button>
+            <Button onClick={() => history.push(RoutesEnum.Profile)} data-test="logoutButton">Profile</Button>
+            <Button onClick={handleLogout} data-test="logoutButton">Logout</Button>
           </Box>) :
           (
             <div>

@@ -26,7 +26,7 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <div className="app">
+      <div className="app" >
         <main>
           <AppContextProvider>
             <Router>
