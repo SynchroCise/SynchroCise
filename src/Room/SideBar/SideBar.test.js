@@ -77,7 +77,7 @@ describe('<SideBar /> component tests', () => {
 
         jest.advanceTimersByTime(1000);
         expect(setTimeout).toHaveBeenCalledTimes(0);
-        expect(contextValues.setWorkoutNumber).toHaveBeenCalledTimes(1);
-        expect(contextValues.setWorkoutCounter).toHaveBeenCalledTimes(1);
+        expect(contextValues.setWorkoutNumber).toHaveBeenCalledWith(1);
+        expect(contextValues.setWorkoutCounter).toHaveBeenCalledWith(5);
     });
 });

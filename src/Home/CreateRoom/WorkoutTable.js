@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useAppContext } from "../../AppContext";
+import { fancyTimeFormat } from "../../utils/utils";
 import { Table, TableBody, TableCell, TableHead, TableRow, Collapse, IconButton, Typography } from '@material-ui/core';
 import { KeyboardArrowDown, KeyboardArrowUp, Close, Create } from '@material-ui/icons';
 import * as requests from "../../utils/requests"
@@ -59,23 +60,6 @@ const WorkoutTable = ({ workoutList, setWorkoutList, selectedWorkout, setSelecte
 export const Row = ({ row, index, handleSelect, handleDeleteWorkout, selectedWorkout, handleEditWorkout }) => {
   const [open, setOpen] = useState(false);
   // https://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds
-  const fancyTimeFormat = (duration) => {
-    // Hours, minutes and seconds
-    var hrs = ~~(duration / 3600);
-    var mins = ~~((duration % 3600) / 60);
-    var secs = ~~duration % 60;
-
-    // Output like "1:01" or "4:03:59" or "123:03:59"
-    var ret = "";
-
-    if (hrs > 0) {
-      ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
-    }
-
-    ret += "" + mins + ":" + (secs < 10 ? "0" : "");
-    ret += "" + secs;
-    return ret;
-  }
   const useStyles = makeStyles(theme => ({
     tableRow: {
       "&$selected, &$selected:hover": {

@@ -41,9 +41,9 @@ const SideBar = ({
         if (!playWorkoutState) return;
         const timer = workoutCounter > 0 && setTimeout(() => setWorkoutCounter((Math.floor((workoutCounter - 0.1)*10)/10).toFixed(1)), 100);
         if (!(workoutCounter <= 0 && workoutNumber < workout.exercises.length - 1)) return;
+        setWorkoutTime(workout.exercises[workoutNumber + 1].time);
+        setWorkoutCounter(workout.exercises[workoutNumber + 1].time);
         setWorkoutNumber(workoutNumber + 1)
-        setWorkoutTime(workout.exercises[workoutNumber].time);
-        setWorkoutCounter(workout.exercises[workoutNumber].time);
         return () => clearTimeout(timer)
     }, [workoutCounter, playWorkoutState, workoutNumber, workoutTime, setWorkoutCounter, setWorkoutNumber, workout.exercises]);
 
@@ -126,7 +126,7 @@ const SideBar = ({
                             <IconButton onClick={handleOpenSideBar}><Close /></IconButton>
                         </Box>
                     </Box>
-                    <Box flexGrow={1} height="100%">
+                    <Box flexGrow={1} height="calc(100% - 64px)">
                         {sideBarContent}
                     </Box>
                 </Box>
