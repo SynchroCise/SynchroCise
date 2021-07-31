@@ -173,18 +173,23 @@ export const twilioToken = async (tempUserId, roomName) => {
 };
 
 export const createTwilioRoom = async (token, roomName) => {
-  let vidPerm;
-  let audPerm;
+  let vidParam = {
+    width: {max: 640},
+    height: {max: 480},
+    aspectRatio: 16/9,
+    resizeMode: "crop-and-scale",
+    frameRate: 24
+  };
+  let vidPerm = true;
+  let audPerm = true;
   let tracks = [];
   try {
-    tracks.push(await Video.createLocalVideoTrack());
-    vidPerm = true;
+    tracks.push(await Video.createLocalVideoTrack(vidParam));
   } catch {
     vidPerm = false;
   }
   try {
-    tracks.push(await Video.createLocalAudioTrack());
-    audPerm = true;
+    tracks.push(await Video.createLocalAudioTrack(vidParam));
   } catch {
     audPerm = false;
   }
