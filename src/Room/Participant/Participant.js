@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography } from '@material-ui/core';
+import { useAppContext } from "../../AppContext";
 import placeHolder from "../../media/placeHolder.png";
 import './Participant.scss';
 
-const Participant = ({ participant, names, setPinnedParticipantId }) => {
+const Participant = ({ participant }) => {
+  const { nameArray, setPinnedParticipantId } = useAppContext(); 
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
   const [displayName, setDisplayName] = useState('');
@@ -11,10 +13,10 @@ const Participant = ({ participant, names, setPinnedParticipantId }) => {
   const [audioMute, setAudioMute] = useState((participant.audioTracks.length === 0) ? true : false);
 
   useEffect(() => {
-    if (!names) return;
-    if (!names.find(x => x.sid === participant.sid)) return;
-    setDisplayName(names.find(x => x.sid === participant.sid).name)
-  }, [names, participant.sid]);
+    if (!nameArray) return;
+    if (!nameArray.find(x => x.sid === participant.sid)) return;
+    setDisplayName(nameArray.find(x => x.sid === participant.sid).name)
+  }, [nameArray, participant.sid]);
 
   // creates ref to html element
   const videoRef = useRef();
@@ -106,10 +108,10 @@ const Participant = ({ participant, names, setPinnedParticipantId }) => {
   }, [audioTracks]);
 
   return (
-    <Box m={2} display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%" onClick={() => setPinnedParticipantId(participant.sid)}>
+    <Box p={2} display="flex" flexDirection="column" alignItems="center" height="100%" onClick={() => setPinnedParticipantId(participant.sid)}>
       {/* <div className='name'>{participant.identity}</div> */}
       {videoMute && <img src={placeHolder} alt="" style={{ objectFit: "contain", width: "100%", height: "100%", }} />}
-      <video ref={videoRef} autoPlay={true} style={{ position: "relative", flexGrow: 1, maxWidth: "100%", minHeight: 0, display: (videoMute) && "none" }} data-test="videoComponent" poster={placeHolder} /> 
+      <video ref={videoRef} autoPlay={true} style={{ width: "100%", height: "100%", display: (videoMute) && "none" }} data-test="videoComponent" poster={placeHolder} /> 
       <div className="name">
         <Typography color="secondary" data-test="displayNameComponent">{displayName}</Typography>
       </div>

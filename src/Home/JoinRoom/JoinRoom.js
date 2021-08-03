@@ -24,8 +24,15 @@ const JoinRoom = (props) => {
   useEffect(() => {
     if (!roomName) return;
     let isMounted = true;
+    const vidParam = {
+      width: {max: 640},
+      height: {max: 480},
+      aspectRatio: 16/9,
+      resizeMode: "crop-and-scale",
+      frameRate: 24
+    };
     async function getLocalVideoTrack() {
-      const videoTrack = await Video.createLocalVideoTrack();
+      const videoTrack = await Video.createLocalVideoTrack(vidParam);
       if (isMounted) { setVideoTracks((prevVideoTrack) => [...prevVideoTrack, videoTrack]); }
     }
     async function getLocalAudioTrack() {

@@ -27,7 +27,9 @@ describe('<BottomControl /> component tests', () => {
             workoutType: 'vid',
             setWorkoutType: jest.fn(),
             openSideBar: true,
-            handleOpenSideBar: jest.fn()
+            handleOpenSideBar: jest.fn(),
+            sideBarType: 0,
+            setSideBarType: jest.fn()
         };
         props = {
             participantPage: 0,
@@ -56,47 +58,9 @@ describe('<BottomControl /> component tests', () => {
         component = initContext(contextValues, setUp, props);
         const navigation = findByTestAttr(component, 'changeWorkoutNavigation');
         navigation.simulate('change', null, 1);
+        navigation.simulate('change', null, 2);
         navigation.simulate('change', null, 0);
-        expect(contextValues.sendRoomState).toHaveBeenCalledTimes(2);
-        expect(contextValues.setWorkoutType).toHaveBeenCalledTimes(2);
-    });
-    it('Should handleOpenSideBar on change', () => {
-        component = initContext(contextValues, setUp, props);
-        const button = findByTestAttr(component, 'sidebarButton');
-        button.simulate('click');
+        expect(contextValues.setSideBarType).toHaveBeenCalledTimes(2);
         expect(contextValues.handleOpenSideBar).toHaveBeenCalledTimes(1);
-    });
-
-    describe("Test PPButtons", () => {
-        it('Should test forwardPPButtons and backPPButtons works with no participants', () => {
-            props.getAllRemoteParticipants.mockReturnValue([]);
-            component = initContext(contextValues, setUp, props);
-            findByTestAttr(component, 'forwardPPButton').simulate('click');
-            findByTestAttr(component, 'backPPButton').simulate('click');
-            expect(props.setParticipantPage).toHaveBeenCalledTimes(0);
-        });
-        it('Should test forwardPPButtons and backPPButtons works with 4 remote participants', () => {
-            props.getAllRemoteParticipants.mockReturnValue(participantJoins(['1', '2', '3', '4']));
-            component = initContext(contextValues, setUp, props);
-
-            findByTestAttr(component, 'forwardPPButton').simulate('click');
-            findByTestAttr(component, 'backPPButton').simulate('click')
-            expect(props.setParticipantPage).toHaveBeenCalledTimes(0);
-        });
-        it('Should test forwardPPButtons works with 5 remote participants', () => {
-            props.getAllRemoteParticipants.mockReturnValue(participantJoins(['1', '2', '3', '4', '5']));
-            component = initContext(contextValues, setUp, props);
-
-            findByTestAttr(component, 'forwardPPButton').simulate('click');
-            expect(props.setParticipantPage).toHaveBeenCalledWith(1);
-        });
-        it('Should test backPPButtons works with 5 remote participants', () => {
-            props.getAllRemoteParticipants.mockReturnValue(participantJoins(['1', '2', '3', '4', '5']));
-            props.participantPage = 1;
-            component = initContext(contextValues, setUp, props);
-
-            findByTestAttr(component, 'backPPButton').simulate('click')
-            expect(props.setParticipantPage).toHaveBeenCalledWith(0);
-        });
     });
 });

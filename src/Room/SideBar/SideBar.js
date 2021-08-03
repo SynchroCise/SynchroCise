@@ -3,60 +3,20 @@ import ExerciseList from "./ExerciseList/ExerciseList.js"
 import { sckt } from '../.././Socket';
 import { useAppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
-import {Box, Grid, Tab, Tabs, Slide, Card } from '@material-ui/core';
+import {Box, Grid, Tab, Tabs, Slide, Card, Typography, IconButton } from '@material-ui/core';
+import People from './People/People';
+import { Close } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
-import PropTypes from 'prop-types';
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`simple-tabpanel-${index}`}
-            aria-labelledby={`simple-tab-${index}`}
-            {...other}
-        >
-            {value === index && (
-                <Box style={{ height: "100%" }}>
-                    <div style={{ height: "100%" }}>{children}</div>
-                </Box>
-            )}
-        </div>
-    );
-}
-
-TabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.any.isRequired,
-    value: PropTypes.any.isRequired,
-};
-
-function a11yProps(index) {
-    return {
-        id: `simple-tab-${index}`,
-        'aria-controls': `simple-tabpanel-${index}`,
-    };
-}
-
-// const useStyles = makeStyles((theme) => ({
-//     root: {
-//         flexGrow: 1,
-//         backgroundColor: theme.palette.background.paper,
-//     },
-// }));
 
 const SideBar = ({
-    currUser,
-    users,
-    isYoutube,
     drawerWidth
 }) => {
-    const { workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter } = useAppContext();
+    const { workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, sideBarType, handleOpenSideBar } = useAppContext();
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { return workout.exercise }));
     const [messages, setMessages] = useState([]);
-    const [sideBarType, setSideBarType] = useState(0);
+    const [sideBarTitle, setSideBarTitle] = useState('');
+    const [sideBarContent, setSideBarContent] = useState(null);
 
     //Also does scrolliung
     useEffect(() => {
@@ -81,15 +41,11 @@ const SideBar = ({
         if (!playWorkoutState) return;
         const timer = workoutCounter > 0 && setTimeout(() => setWorkoutCounter((Math.floor((workoutCounter - 0.1)*10)/10).toFixed(1)), 100);
         if (!(workoutCounter <= 0 && workoutNumber < workout.exercises.length - 1)) return;
+        setWorkoutTime(workout.exercises[workoutNumber + 1].time);
+        setWorkoutCounter(workout.exercises[workoutNumber + 1].time);
         setWorkoutNumber(workoutNumber + 1)
-        setWorkoutTime(workout.exercises[workoutNumber].time);
-        setWorkoutCounter(workout.exercises[workoutNumber].time);
         return () => clearTimeout(timer)
     }, [workoutCounter, playWorkoutState, workoutNumber, workoutTime, setWorkoutCounter, setWorkoutNumber, workout.exercises]);
-
-    const handleChange = (value) => {
-        setSideBarType(value);
-    }
 
     const useStyles = makeStyles(theme => ({
         drawerPaper: {
@@ -126,8 +82,30 @@ const SideBar = ({
     }));
     const classes = useStyles();
 
-    // const sideBarContentMarkup = sideBarType ?
-    //    :
+    useEffect(() => {
+        switch (sideBarType) {
+            case 0:
+                setSideBarTitle('Workout');
+                setSideBarContent(<ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise} data-test="exerciseListComponent" />);
+                break;
+            case 1:
+                setSideBarTitle('People');
+                setSideBarContent(<People></People>);
+                break;
+            case 2:
+                setSideBarTitle('In-call messages');
+                setSideBarContent(
+                    <Chat
+                        messages={messages}
+                        data-test="chatComponent"
+                    />
+                );
+                break;
+            default:
+                setSideBarTitle('');
+                setSideBarContent(null);
+        }
+    }, [sideBarType, messages, nextUpExercise, workoutTime]);
 
     return (
         <Slide
@@ -139,30 +117,18 @@ const SideBar = ({
             unmountOnExit
         >
             <Card>
-                <Box mx={2} my={2}>
-                    <Tabs
-                        indicatorColor="primary"
-                        textColor="primary"
-                        value={sideBarType}
-                        onChange={(event, value) => { handleChange(value) }}
-                        data-test="tabsComponent"
-                    >
-                        <Tab value={0} label="Workout"  {...a11yProps(0)} />
-                        <Tab value={1} label="Chat"  {...a11yProps(1)} />
-                    </Tabs>
-                    <TabPanel value={sideBarType} index={0}>
-                        <Grid item>
-                            {!isYoutube && <ExerciseList workoutTime={workoutTime} nextUpExercise={nextUpExercise} data-test="exerciseListComponent" />}
-                        </Grid>
-                    </TabPanel>
-                    <TabPanel value={sideBarType} index={1} style={{ height: "85%" }} id="TabPanelChat">
-                        <Chat
-                            messages={messages}
-                            currUser={currUser}
-                            users={users}
-                            data-test="chatComponent"
-                        />
-                    </TabPanel>
+                <Box height="100%" display="flex" flexDirection="column">
+                    <Box pl={3} display="flex" flexDirection="row" alignItems="center" height="64px">
+                        <Box flexGrow={1}>
+                            <Typography variant="h6">{sideBarTitle}</Typography>
+                        </Box>
+                        <Box mr={1}>
+                            <IconButton onClick={handleOpenSideBar}><Close /></IconButton>
+                        </Box>
+                    </Box>
+                    <Box flexGrow={1} height="calc(100% - 64px)">
+                        {sideBarContent}
+                    </Box>
                 </Box>
             </Card>
         </Slide>

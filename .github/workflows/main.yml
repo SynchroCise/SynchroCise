@@ -7,7 +7,7 @@ on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
-  pull_request_target:
+  pull_request:
     branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -28,14 +28,14 @@ jobs:
         with:
           node-version: '12'
       
-      # Adds secrets to 
-      - name: Add secrets to main directory
-        run: |
-          echo $FIREBASE_SECRET > firebaseServiceAccountKey.json
-          echo $ENV_SECRET > .env
-        env:
-            FIREBASE_SECRET: ${{ secrets.FIREBASE_SECRET }}
-            ENV_SECRET: ${{ secrets.ENV_SECRET }}
+      # Adds secrets
+      # - name: Add secrets to main directory
+      #   run: |
+      #     echo $FIREBASE_SECRET > firebaseServiceAccountKey.json
+      #     echo $ENV_SECRET > .env
+      #   env:
+      #       FIREBASE_SECRET: ${{ secrets.FIREBASE_SECRET }}
+      #       ENV_SECRET: ${{ secrets.ENV_SECRET }}
 
       - run: npm install
       - run: npm run test

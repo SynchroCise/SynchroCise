@@ -3,21 +3,22 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from 'react-router-dom'
 import { RoutesEnum } from '../../App'
 import { useAppContext } from "../../AppContext";
-import { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles } from '@material-ui/core';
-import { ArrowForward, ArrowBack, CallEnd, Videocam, VideocamOff, Mic, MicOff, ChevronLeft, ChevronRight, YouTube, FitnessCenter } from '@material-ui/icons';
+import { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles, Badge } from '@material-ui/core';
+import { CallEnd, Videocam, VideocamOff, Mic, MicOff, FitnessCenter, ChatOutlined, GroupOutlined } from '@material-ui/icons';
 
-const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteParticipants }) => {
-    const { room, sendRoomState, workoutType, handleLeaveRoom, setWorkoutType, openSideBar, handleOpenSideBar } = useAppContext();
+const BottomControl = ({ participantPage, setParticipantPage }) => {
+    const { room, handleLeaveRoom, openSideBar, handleOpenSideBar, sideBarType, setSideBarType } = useAppContext();
     const [vid, setVid] = useState(true);
     const [mic, setMic] = useState(true);
     const history = useHistory()
 
-    const handleChangeWorkoutType = (value) => {
-        const newWorkoutType = value ? 'yt' : 'vid';
-        sendRoomState({
-            eventName: 'syncWorkoutType',
-            eventParams: { workoutType: newWorkoutType }
-        }, () => { setWorkoutType(newWorkoutType) });
+    const handleSidebarNav = (value) => {
+        if (!openSideBar) handleOpenSideBar();
+        if (sideBarType === value) {
+            handleOpenSideBar();
+            return
+        }
+        setSideBarType(value);
     }
 
     const handleMic = () => {
@@ -36,15 +37,6 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
         setVid(!vid);
     };
 
-    const handleParticipantPage = (pageDelta) => {
-        if (!room) return;
-        let all_participants = getAllRemoteParticipants();
-        const newPageNum = participantPage + pageDelta;
-        if (all_participants.slice(newPageNum * ppp, newPageNum * ppp + ppp).length > 0) {
-            setParticipantPage(newPageNum)
-        }
-    }
-    
     const endCall = () => {
         handleLeaveRoom();
         history.push(RoutesEnum.Home);
@@ -60,12 +52,17 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
 
     const useStyles = makeStyles(theme => ({
         endCall: {
-          backgroundColor: "red",
-          color: "white",
-          "&:hover, &.Mui-focusVisible": { backgroundColor: "#ea4335" }
+            backgroundColor: "red",
+            color: "white",
+            "&:hover, &.Mui-focusVisible": { backgroundColor: "#ea4335" }
+        },
+        notSelected: {
+            '&.Mui-selected' : {
+                color: 'white'
+            }
         }
-      }));
-    
+    }));
+
     const classes = useStyles();
     return (
         <Grid item container xs={12} style={{ width: "100%", height: "80px" }} alignItems="center" data-test="bottomControlComponent">
@@ -78,38 +75,30 @@ const BottomControl = ({ participantPage, setParticipantPage, ppp, getAllRemoteP
                         {mic ? <Mic data-test="micOn" /> : <MicOff data-test="micOff" />}
                     </IconButton>
                     <IconButton color="secondary" className={classes.endCall} onClick={endCall}>
-                        <CallEnd/>
+                        <CallEnd />
                     </IconButton>
                 </Box>
             </Grid>
             <Grid item xs={4}>
                 <Box display="flex" justifyContent="center" alignItems="center" l={3} r={3}>
-                    <IconButton color="secondary" onClick={() => handleParticipantPage(-1)} data-test="backPPButton">
-                        <ArrowBack style={{ fill: "white" }} />
-                    </IconButton>
                     <Typography color="secondary"> Page {participantPage} </Typography>
-                    <IconButton color="secondary" onClick={() => handleParticipantPage(1)} data-test="forwardPPButton">
-                        <ArrowForward style={{ fill: "white" }} />
-                    </IconButton>
                 </Box>
             </Grid>
             <Grid item xs={4}>
                 <Box display="flex" justifyContent="flex-end" alignItems="center">
                     <BottomNavigation
-                        value={workoutType === 'yt' ? 1 : 0}
+                        value={sideBarType}
                         onChange={(event, newValue) => {
-                            handleChangeWorkoutType(newValue);
+                            handleSidebarNav(newValue);
                         }}
                         showLabels
                         color="secondary"
                         data-test="changeWorkoutNavigation"
                     >
-                        <CustomBottomNavigationAction label="Custom" icon={<FitnessCenter />} />
-                        <CustomBottomNavigationAction color="secondary" label="Youtube" icon={<YouTube />} />
+                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<FitnessCenter />} />
+                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<Badge badgeContent={room.participants.size + 1} color="primary"><GroupOutlined /></Badge>} />
+                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<ChatOutlined />} />
                     </BottomNavigation>
-                    <IconButton color="secondary" onClick={handleOpenSideBar} data-test="sidebarButton">
-                        {openSideBar ? <ChevronRight /> : <ChevronLeft />}
-                    </IconButton>
                 </Box>
             </Grid>
         </Grid>

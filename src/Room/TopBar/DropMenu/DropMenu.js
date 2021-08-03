@@ -140,7 +140,7 @@ export default function SimpleMenu() {
             }
           />
           <Grid style={{ color: "rgb(72, 160, 241)" }}>
-            <ArrowDropDown style={{position:"relative", left:"5px"}} />
+            <ArrowDropDown style={{position:"relative", left:"0px"}} />
           </Grid>
         </ListItem>
       </List>
