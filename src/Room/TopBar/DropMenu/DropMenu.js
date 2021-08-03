@@ -101,7 +101,7 @@ export default function SimpleMenu() {
             height: "5vh",
             position: "relative",
             top: "-8px",
-            width:"10vw"
+            width:"8vw"
           }}
           className={classes.dpList}
         >
@@ -134,14 +134,15 @@ export default function SimpleMenu() {
                     >
                       Custom
                     </Typography>
+                    <Grid style={{ color: "rgb(72, 160, 241)" }}>
+                      <ArrowDropDown style={{position:"relative", left:"10px"}} />
+                    </Grid>
                   </Grid>
                 )}
               </>
             }
           />
-          <Grid style={{ color: "rgb(72, 160, 241)" }}>
-            <ArrowDropDown style={{position:"relative", left:"0px"}} />
-          </Grid>
+          
         </ListItem>
       </List>
       <Grid
