@@ -1,5 +1,4 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import {
@@ -16,7 +15,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  IconButton
 } from "@material-ui/core";
 
 const useStyles = makeStyles((theme)=>({
@@ -29,6 +27,16 @@ const useStyles = makeStyles((theme)=>({
       color:"white"
     }
   },
+  iconGap: {
+    position: "relative", 
+    left: "5px",
+  },
+  dropArrow: {
+    color: "white", 
+    position:"absolute", 
+    left:"125px", 
+    top:"20px",
+  }
 }));
 
 const StyledMenu = withStyles({
@@ -89,6 +97,7 @@ export default function SimpleMenu() {
         aria-label="Device settings"
         style={{ height: "5vh"}}
       >
+        <ArrowDropDown className={classes.dropArrow} />
         <ListItem
           button
           aria-controls="simple-menu"
@@ -108,9 +117,11 @@ export default function SimpleMenu() {
           <ListItemText
             disableTypography
             primary={
-              <Typography style={{ fontSize: "10px"}}>
-                Choose Workout
-              </Typography>
+              <Grid>
+                <Typography style={{ fontSize: "10px"}}>
+                  Choose Workout
+                </Typography>
+              </Grid>
             }
             secondary={
               <>
@@ -119,7 +130,7 @@ export default function SimpleMenu() {
                     <YouTube />
                     <Typography
                       variant="h6"
-                      style={{ position: "relative", left: "5px" }}
+                      className={classes.iconGap}
                     >
                       YouTube
                     </Typography>
@@ -130,13 +141,10 @@ export default function SimpleMenu() {
                     <FitnessCenter />
                     <Typography
                       variant="h6"
-                      style={{ position: "relative", left: "5px" }}
+                      className={classes.iconGap}
                     >
                       Custom
                     </Typography>
-                    <Grid style={{ color: "rgb(72, 160, 241)" }}>
-                      <ArrowDropDown style={{position:"relative", left:"10px"}} />
-                    </Grid>
                   </Grid>
                 )}
               </>
@@ -145,9 +153,10 @@ export default function SimpleMenu() {
           
         </ListItem>
       </List>
+      
       <Grid
         container
-        style={{ backgroundColor: "rgba(0, 0, 0, 0.87)", color: "white" }}
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.87)"}}
       >
         <StyledMenu
           id="simple-menu"
@@ -163,9 +172,9 @@ export default function SimpleMenu() {
                 handleClose();
               }}
             >
-              <FitnessCenter />
+              <FitnessCenter/>
               <Typography
-                style={{ position: "relative", left: "5px" }}
+                className={classes.iconGap}
               >
                 Custom
               </Typography>
@@ -180,7 +189,7 @@ export default function SimpleMenu() {
             >
               <YouTube />
               <Typography
-                style={{ position: "relative", left: "5px" }}
+                className={classes.iconGap}
               >
                 YouTube
               </Typography>
