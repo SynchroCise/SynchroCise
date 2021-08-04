@@ -12,6 +12,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
 import * as requests from "../utils/requests"
 import { ArrowForward, ArrowBack } from '@material-ui/icons';
+import { buildOptions } from "../utils/jitsi";
 
 // using roomName and token, we will create a room
 const Room = (props) => {
@@ -19,7 +20,7 @@ const Room = (props) => {
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
   const history = useHistory();
-  const { username, room, userId, openSideBar, roomProps, updateRoomProps, workoutType, videoProps, updateVideoProps, setNameArray, pinnedParticipantId } = useAppContext();
+  const { username, room, userId, openSideBar, roomProps, updateRoomProps, workoutType, videoProps, updateVideoProps, setNameArray, pinnedParticipantId, JitsiMeetJS } = useAppContext();
 
   // Initializing Room Stuff
   const modifyVideoState = useCallback((paramsToChange) => {
@@ -41,6 +42,18 @@ const Room = (props) => {
     setNameArray((prevParticipants) =>
       [...prevParticipants].filter((p) => p.sid !== participant.sid));
   }, [setNameArray]);
+
+  useEffect(() => {
+    const startJitsi = async () => {
+      const options = buildOptions('hello', 'world')
+        await JitsiMeetJS.init()
+        let connection = new JitsiMeetJS.JitsiConnection(null, null, options.connection)
+        console.log(connection)
+    }
+    if (JitsiMeetJS) {
+      startJitsi()
+    }
+  }, [JitsiMeetJS]);
 
   useEffect(() => {
     const getRoomSyncHandler = ({ id }) => {

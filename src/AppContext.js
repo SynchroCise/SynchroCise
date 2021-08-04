@@ -1,12 +1,14 @@
 import React, { useState, createContext, useCallback, useEffect, useContext } from 'react';
 import { sckt } from './Socket';
 import * as requests from './utils/requests'
+import { useJitsi } from './utils/jitsi'
 
 export const useAppContext = () => useContext(AppContext)
 
 const AppContext = createContext([{}, () => { }]);
 
 const AppContextProvider = ({ children }) => {
+  const { JitsiMeetJS } = useJitsi();
   const [room, setRoom] = useState(null);
   const [connecting, setConnecting] = useState(false);
   const [username, setUsername] = useState("");
@@ -203,7 +205,8 @@ const AppContextProvider = ({ children }) => {
       nameArray,
       setNameArray,
       pinnedParticipantId,
-      setPinnedParticipantId
+      setPinnedParticipantId,
+      JitsiMeetJS
     }}>
       {children}
     </AppContext.Provider>
