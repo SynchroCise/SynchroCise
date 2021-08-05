@@ -10,6 +10,7 @@ const AppContextProvider = ({ children }) => {
   const [room, setRoom] = useState(null);
   const [connecting, setConnecting] = useState(false);
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   // const [workout, setWorkout] = useState({"workoutName": "", "exercises": [{"time": 1, "exercise":""}]})
   const [roomName, setRoomName] = useState("");
   const [roomState, setRoomState] = useState(null);
@@ -104,13 +105,15 @@ const AppContextProvider = ({ children }) => {
 
   const checkLoggedIn = useCallback(async () => {
     const res = await requests.checkLoggedIn();
+    console.log(res.body)
     if (!res.ok) {
       setUserId('');
       setIsLoggedIn(false);
       return false;
     }
     setUserId(res.body.user.id)
-    setUsername(res.body.user.displayName)
+    setUsername(res.body.user.name)
+    setEmail(res.body.user.email)
     setIsLoggedIn(true);
     return true;
   }, []);
@@ -157,6 +160,8 @@ const AppContextProvider = ({ children }) => {
       handleSetConnecting: setConnecting,
       username,
       handleSetUsername: setUsername,
+      email,
+      handleSetEmail: setEmail,
       roomName,
       handleSetRoomName: setRoomName,
       roomState,

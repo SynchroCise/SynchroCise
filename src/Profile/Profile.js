@@ -1,18 +1,11 @@
-import React from 'react';
+import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+import { ListItemIcon, ListItemText, ListItem, Divider, Typography, List, Link, Toolbar, CssBaseline, Drawer, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, Button, DialogActions } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit';
-import MailIcon from '@material-ui/icons/Mail';
+import { useAppContext } from "../AppContext";
 import PersonIcon from '@material-ui/icons/Person';
 import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
+import * as requests from './../utils/requests'
 
 const drawerWidth = 240;
 
@@ -37,8 +30,86 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ClippedDrawer() {
+export default function Profile() {
+  const { email, username, checkLoggedIn } = useAppContext();
+  const [open, setOpen] = useState(false);
+  const [changeOption, setOption] = useState(3);
+  const handleClickOpen = () => { setOpen(true) };
+  const handleClose = () => { setOpen(false) };
   const classes = useStyles();
+  const changeProfileDetails = async (option) => {
+    handleClickOpen();
+    setOption(option);
+  }
+  const handleRequest = async () => {
+    let res;
+    switch (changeOption) {
+      case 0:
+        res = await requests.changeEmail(document.getElementById("name").value);
+        if (res.ok) {
+          handleClose();
+        }
+        break;
+      case 1:
+        res = await requests.changeUsername(document.getElementById("name").value);
+        if (res.ok) {
+          handleClose();
+        }
+        break;
+      case 2:
+        res = await requests.changePassword(document.getElementById("name").value);
+        if (res.ok) {
+          handleClose();
+        }
+        break;
+      default:
+        break;
+    }
+    checkLoggedIn();
+  }
+
+  const popupChanger = () => {
+    let type;
+    switch (changeOption) {
+      case 0:
+        type = "Email"
+        break;
+      case 1:
+        type = "Username"
+        break;
+      case 2:
+        type = "Password"
+        break;
+      default:
+        break;
+    }
+
+    return (
+      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">Change {type}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            To change your {type}, please enter in your new {type} below.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label={"New " + type}
+            type="email"
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleRequest} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>)
+  };
 
   return (
     <div className={classes.root}>
@@ -53,24 +124,34 @@ export default function ClippedDrawer() {
         <Toolbar />
         <div className={classes.drawerContainer}>
           <List>
-              <ListItem button key={"actOvrvw"}>
-                <ListItemIcon><PersonIcon /> </ListItemIcon>
-                <ListItemText primary={"Account Overview"} />
-              </ListItem>
-              <ListItem button key={"wrkoutHist"}>
-                <ListItemIcon><FitnessCenterIcon /> </ListItemIcon>
-                <ListItemText primary={"Workout History"} />
-              </ListItem>
-              <ListItem button key={"edtwrkout"}>
-                <ListItemIcon><EditIcon /> </ListItemIcon>
-                <ListItemText primary={"Edit Your Workouts"} />
-              </ListItem>
+            <ListItem button key={"actOvrvw"}>
+              <ListItemIcon><PersonIcon /> </ListItemIcon>
+              <ListItemText primary={"Account Overview"} />
+            </ListItem>
+            <ListItem button key={"wrkoutHist"}>
+              <ListItemIcon><FitnessCenterIcon /> </ListItemIcon>
+              <ListItemText primary={"Workout History"} />
+            </ListItem>
+            <ListItem button key={"edtwrkout"}>
+              <ListItemIcon><EditIcon /> </ListItemIcon>
+              <ListItemText primary={"Edit Your Workouts"} />
+            </ListItem>
           </List>
           <Divider />
         </div>
       </Drawer>
       <main className={classes.content}>
         <Toolbar />
+        {popupChanger()}
+        <Typography>
+          Email: {email} <Link onClick={() => changeProfileDetails(0)} style={{ fontSize: '10px' }}>change email</Link>
+        </Typography>
+        <Typography>
+          Username: {username} <Link onClick={() => changeProfileDetails(1)} style={{ fontSize: '10px' }}>change username</Link>
+        </Typography>
+        <Typography>
+          Password: <Link onClick={() => changeProfileDetails(2)} style={{ fontSize: '10px' }}>change password</Link>
+        </Typography>
       </main>
     </div>
   );

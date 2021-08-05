@@ -88,6 +88,39 @@ export const userLogout = async () => {
   return formatResults(res);
 };
 
+export const changeEmail = async (email) => {
+  const res = await fetch(`/user/changeEmail`, {
+    method: "PUT",
+    body: JSON.stringify({ email }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return formatResults(res);
+};
+
+export const changePassword = async (password) => {
+  const res = await fetch(`/user/changePassword`, {
+    method: "PUT",
+    body: JSON.stringify({ password }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return formatResults(res);
+};
+
+export const changeUsername = async (username) => {
+  const res = await fetch(`/user/changeUsername`, {
+    method: "PUT",
+    body: JSON.stringify({ username }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return formatResults(res);
+};
+
 export const userLogin = async (formData) => {
   const res = await fetch("/login", {
     method: "POST",
