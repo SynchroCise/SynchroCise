@@ -25,7 +25,7 @@ const Navbar = () => {
         </Typography>
         {(isLoggedIn) ? (
           <Box>
-            <Button onClick={() => history.push(RoutesEnum.Profile)} data-test="logoutButton">Profile</Button>
+            <Button onClick={() => history.push(RoutesEnum.Profile)}>Profile</Button>
             <Button onClick={handleLogout} data-test="logoutButton">Logout</Button>
           </Box>) :
           (
