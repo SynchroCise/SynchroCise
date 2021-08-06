@@ -6,7 +6,7 @@ import { getVideoType } from '../../utils/video';
 import VideoSearch from './Search/Search';
 import VideoPlayer from "./Player/Player";
 
-const Video = ({ playerRef }) => {
+const Youtube = ({ playerRef }) => {
     const { username, room, videoProps, updateVideoProps, setVideoProps } = useAppContext();
 
     const sendVideoState = useCallback(({ eventName, eventParams }) => {
@@ -153,4 +153,4 @@ const Video = ({ playerRef }) => {
     );
 }
 
-export default Video;
+export default Youtube;

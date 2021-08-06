@@ -6,13 +6,12 @@ import SideBar from "./SideBar/SideBar";
 import BottomControl from "./BottomControl/BottomControl"
 import { useAppContext } from "../AppContext";
 import { Typography, Box, IconButton } from '@material-ui/core';
-import Video from './Video/Video';
+import Youtube from './Youtube/Youtube';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
 import * as requests from "../utils/requests"
 import { ArrowForward, ArrowBack } from '@material-ui/icons';
-import { buildOptions } from "../utils/jitsi";
 
 // using roomName and token, we will create a room
 const Room = (props) => {
@@ -42,18 +41,6 @@ const Room = (props) => {
     setNameArray((prevParticipants) =>
       [...prevParticipants].filter((p) => p.sid !== participant.sid));
   }, [setNameArray]);
-
-  useEffect(() => {
-    const startJitsi = async () => {
-      const options = buildOptions('hello', 'world')
-        await JitsiMeetJS.init()
-        let connection = new JitsiMeetJS.JitsiConnection(null, null, options.connection)
-        console.log(connection)
-    }
-    if (JitsiMeetJS) {
-      startJitsi()
-    }
-  }, [JitsiMeetJS]);
 
   useEffect(() => {
     const getRoomSyncHandler = ({ id }) => {
@@ -309,7 +296,7 @@ const Room = (props) => {
           className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`}
         >
           <Box height={participants.length > 0 ? "70%" : "100%"}>
-            {room && (workoutType === 'vid') ? leaderParticipant() : <Video playerRef={playerRef} data-test="youtubeComponent" />}
+            {room && (workoutType === 'vid') ? leaderParticipant() : <Youtube playerRef={playerRef} data-test="youtubeComponent" />}
           </Box>
 
           {participants.length > 0 &&
