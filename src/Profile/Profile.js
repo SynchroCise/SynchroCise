@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import { ListItemIcon, ListItemText, ListItem, Divider, Typography, List, Link, Toolbar, CssBaseline, Drawer, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, Button, DialogActions } from '@material-ui/core'
+import { ListItemIcon, ListItemText, ListItem, Divider, IconButton, Typography, List, Link, Toolbar, CssBaseline, Drawer, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, Button, DialogActions } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit';
 import { useAppContext } from "../AppContext";
 import PersonIcon from '@material-ui/icons/Person';
+import Add from '@material-ui/icons/Add';
 import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
 import * as requests from './../utils/requests'
+import WorkoutTable from "../Home/CreateRoom/WorkoutTable"
+import { RoutesEnum } from '../App'
+import { useHistory } from 'react-router-dom'
 
 const drawerWidth = 240;
 
@@ -31,16 +35,32 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Profile() {
-  const { email, username, checkLoggedIn } = useAppContext();
+  const history = useHistory()
+  const { email, username, checkLoggedIn, isLoggedIn, handleSetWorkout } = useAppContext();
   const [open, setOpen] = useState(false);
   const [changeOption, setOption] = useState(3);
+  const [tabNumber, setTabNumber] = useState(0);
   const handleClickOpen = () => { setOpen(true) };
   const handleClose = () => { setOpen(false) };
-  const classes = useStyles();
+  const classes = useStyles(); const [selectedWorkout, setSelectedWorkout] = useState(0);
+  const [workoutList, setWorkoutList] = useState([]);
+
   const changeProfileDetails = async (option) => {
     handleClickOpen();
     setOption(option);
   }
+  // initialize workouts and userId
+  useEffect(() => {
+    const initWorkouts = async () => {
+      if (!isLoggedIn) return setWorkoutList([]);
+      const res = await requests.getUserWorkouts();
+      if (!res.ok) return setWorkoutList([]);
+      setWorkoutList(res.body);
+      handleSetWorkout(res.body[0]);
+    }
+    initWorkouts();
+  }, [isLoggedIn, handleSetWorkout]);
+
   const handleRequest = async () => {
     let res;
     switch (changeOption) {
@@ -83,7 +103,6 @@ export default function Profile() {
       default:
         break;
     }
-
     return (
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Change {type}</DialogTitle>
@@ -111,6 +130,40 @@ export default function Profile() {
       </Dialog>)
   };
 
+  const mainContents = () => {
+    switch (tabNumber) {
+      case (0):
+        return (
+          <React.Fragment>
+            {popupChanger()}
+            <Typography>
+              Email: {email} <Link onClick={() => changeProfileDetails(0)} style={{ fontSize: '10px' }}>change email</Link>
+            </Typography>
+            <Typography>
+              Username: {username} <Link onClick={() => changeProfileDetails(1)} style={{ fontSize: '10px' }}>change username</Link>
+            </Typography>
+            <Typography>
+              Password: <Link onClick={() => changeProfileDetails(2)} style={{ fontSize: '10px' }}>change password</Link>
+            </Typography>
+          </React.Fragment>
+        )
+      case (1):
+        break;
+      case (2):
+        return (
+          <React.Fragment>
+            <WorkoutTable
+              workoutList={workoutList}
+              selectedWorkout={selectedWorkout}
+              setSelectedWorkout={setSelectedWorkout}
+              setWorkoutList={setWorkoutList}
+              data-test="workoutTableComponent"
+            />
+            <IconButton onClick={() => { history.push(RoutesEnum.CreateWorkout) }} ><Add /></IconButton>
+          </React.Fragment >)
+    }
+  }
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -124,15 +177,15 @@ export default function Profile() {
         <Toolbar />
         <div className={classes.drawerContainer}>
           <List>
-            <ListItem button key={"actOvrvw"}>
-              <ListItemIcon><PersonIcon /> </ListItemIcon>
+            <ListItem button key={"actOvrvw"} onClick={() => setTabNumber(0)}>
+              <ListItemIcon ><PersonIcon /> </ListItemIcon>
               <ListItemText primary={"Account Overview"} />
             </ListItem>
-            <ListItem button key={"wrkoutHist"}>
+            <ListItem button key={"wrkoutHist"} onClick={() => setTabNumber(1)}>
               <ListItemIcon><FitnessCenterIcon /> </ListItemIcon>
               <ListItemText primary={"Workout History"} />
             </ListItem>
-            <ListItem button key={"edtwrkout"}>
+            <ListItem button key={"edtwrkout"} onClick={() => setTabNumber(2)}>
               <ListItemIcon><EditIcon /> </ListItemIcon>
               <ListItemText primary={"Edit Your Workouts"} />
             </ListItem>
@@ -142,16 +195,7 @@ export default function Profile() {
       </Drawer>
       <main className={classes.content}>
         <Toolbar />
-        {popupChanger()}
-        <Typography>
-          Email: {email} <Link onClick={() => changeProfileDetails(0)} style={{ fontSize: '10px' }}>change email</Link>
-        </Typography>
-        <Typography>
-          Username: {username} <Link onClick={() => changeProfileDetails(1)} style={{ fontSize: '10px' }}>change username</Link>
-        </Typography>
-        <Typography>
-          Password: <Link onClick={() => changeProfileDetails(2)} style={{ fontSize: '10px' }}>change password</Link>
-        </Typography>
+        {mainContents()}
       </main>
     </div>
   );
