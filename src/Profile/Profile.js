@@ -43,23 +43,11 @@ export default function Profile() {
   const handleClickOpen = () => { setOpen(true) };
   const handleClose = () => { setOpen(false) };
   const classes = useStyles(); const [selectedWorkout, setSelectedWorkout] = useState(0);
-  const [workoutList, setWorkoutList] = useState([]);
 
   const changeProfileDetails = async (option) => {
     handleClickOpen();
     setOption(option);
   }
-  // initialize workouts and userId
-  useEffect(() => {
-    const initWorkouts = async () => {
-      if (!isLoggedIn) return setWorkoutList([]);
-      const res = await requests.getUserWorkouts();
-      if (!res.ok) return setWorkoutList([]);
-      setWorkoutList(res.body);
-      handleSetWorkout(res.body[0]);
-    }
-    initWorkouts();
-  }, [isLoggedIn, handleSetWorkout]);
 
   const handleRequest = async () => {
     let res;
@@ -152,13 +140,7 @@ export default function Profile() {
       case (2):
         return (
           <React.Fragment>
-            <WorkoutTable
-              workoutList={workoutList}
-              selectedWorkout={selectedWorkout}
-              setSelectedWorkout={setSelectedWorkout}
-              setWorkoutList={setWorkoutList}
-              data-test="workoutTableComponent"
-            />
+            <WorkoutTable />
             <IconButton onClick={() => { history.push(RoutesEnum.CreateWorkout) }} ><Add /></IconButton>
           </React.Fragment >)
       default:

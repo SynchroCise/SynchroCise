@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useAppContext } from "../../AppContext";
 import { fancyTimeFormat } from "../../utils/utils";
@@ -9,9 +9,23 @@ import * as requests from "../../utils/requests"
 import { RoutesEnum } from '../../App'
 import { useHistory } from 'react-router-dom'
 
-const WorkoutTable = ({ workoutList, setWorkoutList, selectedWorkout, setSelectedWorkout }) => {
-  const { handleSetWorkout } = useAppContext()
-  const history = useHistory()
+const WorkoutTable = () => {
+  const { handleSetWorkout, isLoggedIn } = useAppContext();
+  const history = useHistory();
+  const [selectedWorkout, setSelectedWorkout] = useState(0);
+  const [workoutList, setWorkoutList] = useState([]);
+
+  useEffect(() => {
+    const initWorkouts = async () => {
+      if (!isLoggedIn) return setWorkoutList([]);
+      const res = await requests.getUserWorkouts();
+      if (!res.ok) return setWorkoutList([]);
+      setWorkoutList(res.body);
+      handleSetWorkout(res.body[0]);
+    }
+    initWorkouts();
+  }, [isLoggedIn, handleSetWorkout]);
+
   const handleSelect = value => () => {
     setSelectedWorkout(value)
     handleSetWorkout(workoutList[value])

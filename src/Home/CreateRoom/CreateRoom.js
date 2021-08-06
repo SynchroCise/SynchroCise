@@ -13,24 +13,11 @@ import * as requests from "../../utils/requests"
 const CreateRoom = () => {
   const { userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
   const history = useHistory()
-  const [selectedWorkout, setSelectedWorkout] = useState(0);
-  const [workoutList, setWorkoutList] = useState([]);
 
   // intialize custom room code
   useEffect(() => {
     makeCustomRoom();
   }, [makeCustomRoom]);
-  // initialize workouts and userId
-  useEffect(() => {
-    const initWorkouts = async () => {
-      if (!isLoggedIn) return setWorkoutList([]);
-      const res = await requests.getUserWorkouts();
-      if (!res.ok) return setWorkoutList([]);
-      setWorkoutList(res.body);
-      handleSetWorkout(res.body[0]);
-    }
-    initWorkouts();
-  }, [isLoggedIn, handleSetWorkout]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -146,13 +133,7 @@ const CreateRoom = () => {
               {
                 (isLoggedIn) ?
                   (<Box width="100%">
-                    <WorkoutTable
-                      workoutList={workoutList}
-                      selectedWorkout={selectedWorkout}
-                      setSelectedWorkout={setSelectedWorkout}
-                      setWorkoutList={setWorkoutList}
-                      data-test="workoutTableComponent"
-                    />
+                    <WorkoutTable />
                   </Box>) : null
               }
             </Grid>
