@@ -161,6 +161,8 @@ export default function Profile() {
             />
             <IconButton onClick={() => { history.push(RoutesEnum.CreateWorkout) }} ><Add /></IconButton>
           </React.Fragment >)
+      default:
+        break;
     }
   }
 
