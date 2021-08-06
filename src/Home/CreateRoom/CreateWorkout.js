@@ -4,7 +4,7 @@ import { useAppContext } from "../../AppContext"
 import { RoutesEnum } from '../../App'
 import { makeStyles } from "@material-ui/core/styles";
 import { IconButton, Box, Typography, TextField, InputAdornment, Grid, Button } from '@material-ui/core';
-import { Table, TableBody, TableCell, TableRow } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableRow, Toolbar } from '@material-ui/core';
 import { ArrowForward, Close, CreateOutlined, Add } from '@material-ui/icons';
 import * as requests from "../../utils/requests"
 
@@ -120,116 +120,119 @@ const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => 
   }, [history]);
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="center" mx={12} my={6} data-test="createWorkoutComponent">
-      <form onSubmit={handleSubmit} data-test="createWorkoutForm">
-        <Grid container justify="center" spacing={4} wrap="nowrap">
-          <Grid item xs={1}>
-            <IconButton
-              className={classes.blackButton}
-              onClick={() => { history.push(RoutesEnum.CreateRoom) }}
-              data-test="backButton">
-              <Close />
-            </IconButton>
-          </Grid>
-          <Grid item container xs spacing={2}>
-            <Grid item xs={12}>
-              <Box mb={4}><Typography variant="h4" data-test="workoutTitle">{window.location.href.split("/")[3] === 'edit-workout' ? "Edit Workout" : "Create Workout"}</Typography></Box>
-            </Grid>
-            <Grid item xs={5}>
-              <TextField
-                placeholder="Workout Name"
-                variant="outlined"
-                fullWidth
-                value={workoutName}
-                onChange={handleWorkoutName}
-                readOnly={connecting}
-                required
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <CreateOutlined />
-                    </InputAdornment>
-                  ),
-                }}
-                data-test="workoutNameField"
-              />
-            </Grid>
-            <Grid item xs={7} />
-            <Grid item xs={12}>
-              <Table>
-                <TableBody>
-                  {exercises.map((exerciseRow, index) => (
-                    <TableRow key={index} hover selected={selectedExercise === index}
-                      className={(badExerciseIndices.includes(index) ? classes.errorRow : '')} data-test="inputRow">
-                      {
-                        selectedExercise === index ? (
-                          <React.Fragment>
-                            <TableCell>
-                              <TextField
-                                margin='none'
-                                label="Excercise Name"
-                                value={exerciseRow.exercise}
-                                onChange={handleExcerciseName}
-                                required
-                                data-test="exerciseNameField">
-                              </TextField>
-                            </TableCell>
-                            <TableCell align="right">
-                              <TextField
-                                margin='none'
-                                label="Seconds"
-                                value={exerciseRow.time}
-                                onChange={handleTime}
-                                required
-                                data-test="timeField">
-                              </TextField>
-                            </TableCell>
-                          </React.Fragment>
-                        ) : (
-                          <React.Fragment>
-                            <TableCell onClick={() => handleSelected(index)} data-test="exerciseCell">
-                              <Typography variant="body1">{exerciseRow.exercise}</Typography>
-                            </TableCell>
-                            <TableCell align="right" onClick={() => handleSelected(index)} data-test="timeCell">
-                              <Typography variant="body1">{exerciseRow.time}</Typography>
-                            </TableCell>
-                          </React.Fragment>
-                        )
-                      }
-                      <TableCell padding="checkbox">
-                        <IconButton onClick={() => handleRemoveRow(index)} data-test="removeButton"><Close /></IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                fullWidth
-                className={classes.addWorkout}
-                variant="outlined"
-                size="large"
-                onClick={handleAddExercise}
-                startIcon={<Add />}
-                data-test="addWorkoutButton">
-                Add New Workout
-              </Button>
-            </Grid>
-          </Grid>
-          <Grid item xs={1}>
-            <Box height="100%" display="flex" alignItems="flex-end">
+    <React.Fragment>
+      <Toolbar />
+      <Box display="flex" alignItems="center" justifyContent="center" mx={12} my={6} data-test="createWorkoutComponent">
+        <form onSubmit={handleSubmit} data-test="createWorkoutForm">
+          <Grid container justify="center" spacing={4} wrap="nowrap">
+            <Grid item xs={1}>
               <IconButton
-                color="primary"
-                className={classes.containedButton}
-                type="submit">
-                <ArrowForward />
+                className={classes.blackButton}
+                onClick={() => { history.goBack() }}
+                data-test="backButton">
+                <Close />
               </IconButton>
-            </Box>
+            </Grid>
+            <Grid item container xs spacing={2}>
+              <Grid item xs={12}>
+                <Box mb={4}><Typography variant="h4" data-test="workoutTitle">{window.location.href.split("/")[3] === 'edit-workout' ? "Edit Workout" : "Create Workout"}</Typography></Box>
+              </Grid>
+              <Grid item xs={5}>
+                <TextField
+                  placeholder="Workout Name"
+                  variant="outlined"
+                  fullWidth
+                  value={workoutName}
+                  onChange={handleWorkoutName}
+                  readOnly={connecting}
+                  required
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <CreateOutlined />
+                      </InputAdornment>
+                    ),
+                  }}
+                  data-test="workoutNameField"
+                />
+              </Grid>
+              <Grid item xs={7} />
+              <Grid item xs={12}>
+                <Table>
+                  <TableBody>
+                    {exercises.map((exerciseRow, index) => (
+                      <TableRow key={index} hover selected={selectedExercise === index}
+                        className={(badExerciseIndices.includes(index) ? classes.errorRow : '')} data-test="inputRow">
+                        {
+                          selectedExercise === index ? (
+                            <React.Fragment>
+                              <TableCell>
+                                <TextField
+                                  margin='none'
+                                  label="Excercise Name"
+                                  value={exerciseRow.exercise}
+                                  onChange={handleExcerciseName}
+                                  required
+                                  data-test="exerciseNameField">
+                                </TextField>
+                              </TableCell>
+                              <TableCell align="right">
+                                <TextField
+                                  margin='none'
+                                  label="Seconds"
+                                  value={exerciseRow.time}
+                                  onChange={handleTime}
+                                  required
+                                  data-test="timeField">
+                                </TextField>
+                              </TableCell>
+                            </React.Fragment>
+                          ) : (
+                            <React.Fragment>
+                              <TableCell onClick={() => handleSelected(index)} data-test="exerciseCell">
+                                <Typography variant="body1">{exerciseRow.exercise}</Typography>
+                              </TableCell>
+                              <TableCell align="right" onClick={() => handleSelected(index)} data-test="timeCell">
+                                <Typography variant="body1">{exerciseRow.time}</Typography>
+                              </TableCell>
+                            </React.Fragment>
+                          )
+                        }
+                        <TableCell padding="checkbox">
+                          <IconButton onClick={() => handleRemoveRow(index)} data-test="removeButton"><Close /></IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  fullWidth
+                  className={classes.addWorkout}
+                  variant="outlined"
+                  size="large"
+                  onClick={handleAddExercise}
+                  startIcon={<Add />}
+                  data-test="addWorkoutButton">
+                  Add New Workout
+                </Button>
+              </Grid>
+            </Grid>
+            <Grid item xs={1}>
+              <Box height="100%" display="flex" alignItems="flex-end">
+                <IconButton
+                  color="primary"
+                  className={classes.containedButton}
+                  type="submit">
+                  <ArrowForward />
+                </IconButton>
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
-      </form>
-    </Box>
+        </form>
+      </Box>
+    </React.Fragment>
   )
 };
 

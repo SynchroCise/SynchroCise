@@ -76,8 +76,8 @@ export const createTempUser = async (name) => {
   return formatResults(res);
 };
 
-export const getUserProfile = async () => {
-  const res = await fetch("/user/profile", {
+export const checkLoggedIn = async () => {
+  const res = await fetch("/user/checkLoggedIn", {
     method: "GET",
   });
   return formatResults(res);
@@ -85,6 +85,39 @@ export const getUserProfile = async () => {
 
 export const userLogout = async () => {
   const res = await fetch("/user/logout", { method: "POST" });
+  return formatResults(res);
+};
+
+export const changeEmail = async (email) => {
+  const res = await fetch(`/user/changeEmail`, {
+    method: "PUT",
+    body: JSON.stringify({ email }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return formatResults(res);
+};
+
+export const changePassword = async (password) => {
+  const res = await fetch(`/user/changePassword`, {
+    method: "PUT",
+    body: JSON.stringify({ password }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return formatResults(res);
+};
+
+export const changeUsername = async (username) => {
+  const res = await fetch(`/user/changeUsername`, {
+    method: "PUT",
+    body: JSON.stringify({ username }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
   return formatResults(res);
 };
 
