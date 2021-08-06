@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { ListItemIcon, ListItemText, ListItem, Divider, IconButton, Typography, List, Link, Toolbar, CssBaseline, Drawer, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, Button, DialogActions } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit';
@@ -36,13 +36,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Profile() {
   const history = useHistory()
-  const { email, username, checkLoggedIn, isLoggedIn, handleSetWorkout } = useAppContext();
+  const { email, username, checkLoggedIn } = useAppContext();
   const [open, setOpen] = useState(false);
   const [changeOption, setOption] = useState(3);
   const [tabNumber, setTabNumber] = useState(0);
   const handleClickOpen = () => { setOpen(true) };
   const handleClose = () => { setOpen(false) };
-  const classes = useStyles(); const [selectedWorkout, setSelectedWorkout] = useState(0);
+  const classes = useStyles();
 
   const changeProfileDetails = async (option) => {
     handleClickOpen();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useHistory } from 'react-router-dom'
 import { useAppContext } from "../../AppContext"
 import { RoutesEnum } from '../../App'
@@ -11,7 +11,7 @@ import * as requests from "../../utils/requests"
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const { userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
+  const { userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
   const history = useHistory()
 
   // intialize custom room code
