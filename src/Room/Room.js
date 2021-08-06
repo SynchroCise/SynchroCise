@@ -7,6 +7,7 @@ import BottomControl from "./BottomControl/BottomControl"
 import { useAppContext } from "../AppContext";
 import { Typography, Box, IconButton } from '@material-ui/core';
 import Youtube from './Youtube/Youtube';
+import WorkoutDisplay from './WorkoutDisplay/WorkoutDisplay'
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
@@ -19,7 +20,7 @@ const Room = (props) => {
   const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
   const history = useHistory();
-  const { username, room, userId, openSideBar, roomProps, updateRoomProps, workoutType, videoProps, updateVideoProps, setNameArray, pinnedParticipantId, JitsiMeetJS } = useAppContext();
+  const { username, room, userId, openSideBar, roomProps, updateRoomProps, workoutType, videoProps, updateVideoProps, setNameArray, pinnedParticipantId } = useAppContext();
 
   // Initializing Room Stuff
   const modifyVideoState = useCallback((paramsToChange) => {
@@ -295,7 +296,8 @@ const Room = (props) => {
           width="100%"
           className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`}
         >
-          <Box height={participants.length > 0 ? "70%" : "100%"}>
+          <WorkoutDisplay></WorkoutDisplay>
+          {/* <Box height={participants.length > 0 ? "70%" : "100%"}>
             {room && (workoutType === 'vid') ? leaderParticipant() : <Youtube playerRef={playerRef} data-test="youtubeComponent" />}
           </Box>
 
@@ -311,7 +313,7 @@ const Room = (props) => {
                 <ArrowForward style={{ fill: "white" }} />
               </IconButton>
             </Box>
-          }
+          } */}
         </Box>
         <Box style={{ position: "fixed", width: "100vw", bottom: 0 }}>
           <BottomControl
