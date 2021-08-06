@@ -105,7 +105,6 @@ const AppContextProvider = ({ children }) => {
 
   const checkLoggedIn = useCallback(async () => {
     const res = await requests.checkLoggedIn();
-    console.log(res.body)
     if (!res.ok) {
       setUserId('');
       setIsLoggedIn(false);
