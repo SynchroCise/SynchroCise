@@ -10,9 +10,11 @@ const setUp = (props = {}) => {
 }
 
 const mockPush = jest.fn();
+const mockGoBack = jest.fn();
 jest.mock('react-router-dom', () => ({
     useHistory: () => ({
         push: mockPush,
+        goBack: mockGoBack
     }),
 }));
 jest.mock("../../utils/requests");
@@ -109,7 +111,7 @@ describe('<CreateWorkout />', () => {
         const button = findByTestAttr(component, 'backButton');
         expect(button.length).toBe(1);
         button.simulate('click');
-        expect(mockPush).toHaveBeenCalledTimes(1);
+        expect(mockGoBack).toHaveBeenCalledTimes(1);
     });
 
     it('Should update workoutNameField on change', () => {
