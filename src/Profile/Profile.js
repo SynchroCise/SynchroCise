@@ -125,13 +125,13 @@ export default function Profile() {
           <React.Fragment>
             {popupChanger()}
             <Typography>
-              Email: {email} <Link onClick={() => changeProfileDetails(0)} style={{ fontSize: '10px' }}>change email</Link>
+              Email: {email} <Link component="button" onClick={() => changeProfileDetails(0)} style={{ fontSize: '10px' }}>change email</Link>
             </Typography>
             <Typography>
-              Username: {username} <Link onClick={() => changeProfileDetails(1)} style={{ fontSize: '10px' }}>change username</Link>
+              Username: {username} <Link component="button" onClick={() => changeProfileDetails(1)} style={{ fontSize: '10px' }}>change username</Link>
             </Typography>
             <Typography>
-              Password: <Link onClick={() => changeProfileDetails(2)} style={{ fontSize: '10px' }}>change password</Link>
+              Password: <Link component="button" onClick={() => changeProfileDetails(2)} style={{ fontSize: '10px' }}>change password</Link>
             </Typography>
           </React.Fragment>
         )
