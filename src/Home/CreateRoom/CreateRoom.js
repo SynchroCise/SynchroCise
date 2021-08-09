@@ -1,36 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useHistory } from 'react-router-dom'
 import { useAppContext } from "../../AppContext"
 import { RoutesEnum } from '../../App'
 import WorkoutTable from "./WorkoutTable"
 import { makeStyles } from "@material-ui/core/styles";
-import { FormControlLabel, Switch, IconButton, Box, Typography, TextField, InputAdornment, Grid } from '@material-ui/core';
+import { FormControlLabel, Switch, Toolbar, IconButton, Box, Typography, TextField, InputAdornment, Grid } from '@material-ui/core';
 import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward } from '@material-ui/icons';
 import * as requests from "../../utils/requests"
 
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const { userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
+  const { userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
   const history = useHistory()
-  const [selectedWorkout, setSelectedWorkout] = useState(0);
-  const [workoutList, setWorkoutList] = useState([]);
 
   // intialize custom room code
   useEffect(() => {
     makeCustomRoom();
   }, [makeCustomRoom]);
-  // initialize workouts and userId
-  useEffect(() => {
-    const initWorkouts = async () => {
-      if (!isLoggedIn) return setWorkoutList([]);
-      const res = await requests.getUserWorkouts();
-      if (!res.ok) return setWorkoutList([]);
-      setWorkoutList(res.body);
-      handleSetWorkout(res.body[0]);
-    }
-    initWorkouts();
-  }, [isLoggedIn, handleSetWorkout]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -72,6 +59,7 @@ const CreateRoom = () => {
   return (
     <Box display="flex" alignItems="center" justifyContent="center" mx={12} my={6} data-test="createRoomComponent">
       <form onSubmit={handleSubmit} data-test="createRoomForm">
+        <Toolbar />
         <Grid container justify="center" spacing={4} wrap="nowrap">
           <Grid item xs={1}>
             <IconButton className={classes.blackButton} onClick={() => { history.push(RoutesEnum.Home) }} data-test="backButton">
@@ -145,13 +133,7 @@ const CreateRoom = () => {
               {
                 (isLoggedIn) ?
                   (<Box width="100%">
-                    <WorkoutTable
-                      workoutList={workoutList}
-                      selectedWorkout={selectedWorkout}
-                      setSelectedWorkout={setSelectedWorkout}
-                      setWorkoutList={setWorkoutList}
-                      data-test="workoutTableComponent"
-                    />
+                    <WorkoutTable />
                   </Box>) : null
               }
             </Grid>

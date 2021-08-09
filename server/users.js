@@ -153,6 +153,37 @@ const getUsersById = async (ids) => {
     return users
 };
 
+const changeEmail = async (newEmail, id) => {
+    const user = db.collection('users').doc(id);
+    if (user) {
+        await user.update({ email: newEmail });
+        return [200, "Success"];
+    } else {
+        return [400, "Failed"];
+    }
+}
+
+const changeUsername = async (newUsername, id) => {
+    const user = db.collection('users').doc(id);
+    if (user) {
+        await user.update({ displayName: newUsername });
+        return [200, "Success"];
+    } else {
+        return [400, "Failed"];
+    }
+}
+
+const changePassword = async (newPassword, id) => {
+    const hash = await bcrypt.hash(newPassword, 10);
+    const user = db.collection('users').doc(id);
+    if (user) {
+        await user.update({ password: hash });
+        return [200, "Success"];
+    } else {
+        return [400, "Failed"];
+    }
+}
+
 module.exports = {
     checkUser,
     addUser,
@@ -167,5 +198,8 @@ module.exports = {
     getUserByEmail,
     isValidPassword,
     getUsersById,
-    createTempUser
+    createTempUser,
+    changeEmail,
+    changeUsername,
+    changePassword
 };

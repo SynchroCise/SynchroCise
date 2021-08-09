@@ -38,10 +38,10 @@ describe('<WorkoutTable />', () => {
         const wrapper = findByTestAttr(component, 'workoutTableComponent')
         expect(wrapper.length).toBe(1);
     });
-    it('Should render two rows', () => {
-        const wrapper = findByTestAttr(component, 'rowComponent')
-        expect(wrapper.length).toBe(2);
-    });
+    // it('Should render two rows', () => {
+    //     const wrapper = findByTestAttr(component, 'rowComponent')
+    //     expect(wrapper.length).toBe(2);
+    // });
 });
 
 describe('<Row />', () => {

@@ -1,18 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const { addWorkout, getUserWorkouts, setDeleteWorkout, getWorkoutById } = require('./workouts.js');
-const { getUsersById } = require('./users.js');
+const { getUserById, getUsersById, changeEmail, changeUsername, changePassword } = require('./users.js');
 
 
-router.get(
-  '/profile',
-  (req, res, next) => {
-    res.json({
-      message: 'You made it to the secure route',
-      user: req.user,
-      token: req.cookies['jwt']
-    })
-  }
+router.get('/checkLoggedIn', async (req, res, next) => {
+  res.json({
+    message: 'You made it to the secure route',
+    user: await getUserById(req.user.id),
+    token: req.cookies['jwt']
+  })
+}
 );
 
 router.post(
@@ -49,7 +47,7 @@ router.post('/deleteWorkout', async (req, res) => {
   const workout = await getWorkoutById(req.body.workoutId);
   if (workout.userId !== req.user.id) return res.status(401);
   if (req.body.workoutId) setDeleteWorkout(req.body.workoutId);
-  return res.status(200);
+  res.status(200);
 });
 
 router.put('/editWorkout', async (req, res, next) => {
@@ -57,6 +55,21 @@ router.put('/editWorkout', async (req, res, next) => {
   if (workoutId) setDeleteWorkout(workoutId);
   const workout = req.body.newWorkout;
   const [code, msg] = await addWorkout(workout.workoutName, workout.exercises, req.user.id);
+  res.status(code).send(JSON.stringify({ message: msg }));
+});
+
+router.put('/changeEmail', async (req, res, next) => {
+  const [code, msg] = await changeEmail(req.body.email, req.user.id);
+  res.status(code).send(JSON.stringify({ message: msg }));
+});
+
+router.put('/changeUsername', async (req, res, next) => {
+  const [code, msg] = await changeUsername(req.body.username, req.user.id);
+  res.status(code).send(JSON.stringify({ message: msg }));
+});
+
+router.put('/changePassword', async (req, res, next) => {
+  const [code, msg] = await changePassword(req.body.password, req.user.id);
   res.status(code).send(JSON.stringify({ message: msg }));
 });
 

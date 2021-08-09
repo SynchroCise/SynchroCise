@@ -79,7 +79,7 @@ const removeRoom = async (roomId) => {
     let roomToRemove = (await getRoomsBySID(roomId));
     if (!roomToRemove || roomToRemove.length == 0) return roomToRemove
     roomToRemove = roomToRemove[0]
-    const roomref = await db.collection('rooms').doc(roomToRemove.id).delete();
+    await db.collection('rooms').doc(roomToRemove.id).delete();
     return roomToRemove
 }
 
