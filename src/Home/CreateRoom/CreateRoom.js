@@ -7,14 +7,16 @@ import { makeStyles } from "@material-ui/core/styles";
 import { FormControlLabel, Switch, Toolbar, IconButton, Box, Typography, TextField, InputAdornment, Grid } from '@material-ui/core';
 import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward } from '@material-ui/icons';
 import * as requests from "../../utils/requests"
+import { createConnections } from "../../utils/jitsi"
 
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const { userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
+  const { JitsiMeetJS, userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
   const history = useHistory()
   const [selectedWorkout, setSelectedWorkout] = useState(0);
   const [workoutList, setWorkoutList] = useState([]);
+  const [connection, setConnection] = useState(null);
 
   // intialize custom room code
   useEffect(() => {
@@ -32,21 +34,61 @@ const CreateRoom = () => {
     initWorkouts();
   }, [isLoggedIn, handleSetWorkout]);
 
+  useEffect(() => {
+    const lowerRoomName = roomName.toLowerCase()
+    const options = buildOptions(lowerRoomName);
+    const onConnectionSuccess = async () => {
+      setConnection(connection);
+      handleSetRoom(connection.initJitsiConference(lowerRoomName, options.conference));
+      // Creates a room in the server
+      const room_res = await requests.createRoom(room, workout.id, 'vid');
+      if (!room_res.ok) { handleSetConnecting(false); return; }
+      handleSetConnecting(false);
+      history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`)
+    }
+    const onConnectionFailed = () => {
+      handleSetConnecting(false);
+      console.log('jitsi failed');
+    }
+    const disconnect = () => {
+      handleSetConnecting(false);
+      console.log('jitsi disconnect');
+    }
+    const onLocalTracks = (tracks) => {
+      console.log('setLocalTracks');
+      setLocalTracks(tracks)
+      if (isJoined) {
+        localTracks.forEach((track) => room.addTrack(track));
+      }
+    }
+    const startJitsi = async () => {
+      connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
+      connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
+      connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
+      connection.connect()
+      JitsiMeetJS.createLocalTracks({ devices: [ 'audio', 'video' ] })
+        .then(onLocalTracks)
+        .catch(error => {
+            throw error;
+      });
+    }
+    if (JitsiMeetJS && connection) {
+      startJitsi()
+      return () => {
+        connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
+        connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
+        connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
+      }
+    }
+  }, [connection]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     handleSetConnecting(true);
     const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
-    const tok_res = await requests.twilioToken(tempUserId, roomName);
-    if (!tok_res.ok) { handleSetConnecting(false); return; }
-    const token = tok_res.body.token;
+    setConnection(await createConnections(roomName.substring(0, 6).toLowerCase()));
     const room = await requests.createTwilioRoom(token, roomName);
     if (!room) { handleSetConnecting(false); return; }
-    // Creates a room in the server
-    const room_res = await requests.createRoom(room, workout.id, 'vid');
-    if (!room_res.ok) { handleSetConnecting(false); return; }
-    handleSetRoom(room);
-    handleSetConnecting(false);
-    history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`)
   }
 
   const useStyles = makeStyles(theme => ({

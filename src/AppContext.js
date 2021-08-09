@@ -24,6 +24,7 @@ const AppContextProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [sideBarType, setSideBarType] = useState(0);
   const [nameArray, setNameArray] = useState([]);
+  const [participantIds, setParticipantIds] = useState([]);
   const [pinnedParticipantId, setPinnedParticipantId] = useState("");
   const [roomProps, setRoomProps] = useState({
     workoutType: 'vid', // 'yt', 'custom',
@@ -210,6 +211,8 @@ const AppContextProvider = ({ children }) => {
       setNameArray,
       pinnedParticipantId,
       setPinnedParticipantId,
+      participantIds,
+      setParticipantIds,
       JitsiMeetJS
     }}>
       {children}

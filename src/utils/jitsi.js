@@ -25,7 +25,7 @@ export const useJitsi = () => {
   return lib
 };
 
-export const buildOptions = (roomName, tenant) => {
+export const buildOptions = (roomName) => {
   return {
       connection: {
         hosts: {
@@ -42,7 +42,7 @@ export const buildOptions = (roomName, tenant) => {
           useStunTurn: true,
         }, 
         useStunTurn: true, 
-        bosh: `https://meet.jit.si/http-bind?room=liveroom`, 
+        bosh: `https://meet.jit.si/http-bind?room=${roomName}`, 
         websocket: 'wss://meet.jit.si/xmpp-websocket', 
         clientNode: 'http://jitsi.org/jitsimeet', 
       },
@@ -54,3 +54,10 @@ export const buildOptions = (roomName, tenant) => {
       }
   };
 }
+
+export const createConnection = async (JitsiMeetJS, roomName) => {
+  const options = buildOptions(roomName)
+  await JitsiMeetJS.init()
+  const connection = new JitsiMeetJS.JitsiConnection(null, null, options.connection)
+  return connection
+};
