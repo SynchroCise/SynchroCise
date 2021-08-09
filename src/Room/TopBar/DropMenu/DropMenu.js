@@ -1,11 +1,7 @@
 import React from "react";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import {
-  FitnessCenter,
-  YouTube,
-  ArrowDropDown,
-} from "@material-ui/icons";
+import { FitnessCenter, YouTube, ArrowDropDown } from "@material-ui/icons";
 import { useAppContext } from "../../../AppContext";
 import {
   makeStyles,
@@ -15,37 +11,38 @@ import {
   List,
   ListItem,
   ListItemText,
+  Button,
 } from "@material-ui/core";
 
-const useStyles = makeStyles((theme)=>({
+const useStyles = makeStyles((theme) => ({
   dpMenu: {
     color: "white",
-    borderRadius:"0"
+    borderRadius: "0",
   },
   dpList: {
-    secondary:{
-      color:"white"
-    }
+    secondary: {
+      color: "white",
+    },
   },
   iconGap: {
-    position: "relative", 
+    position: "relative",
     left: "5px",
   },
   dropArrow: {
-    color: "white", 
-    position:"absolute", 
-    left:"125px", 
-    top:"20px",
-  }
+    color: "white",
+    position: "absolute",
+    left: "125px",
+    top: "20px",
+  },
 }));
 
 const StyledMenu = withStyles({
   paper: {
     border: "1px solid #d3d4d5",
-    backgroundColor:"rgba(0, 0, 0, 0.87)",
+    backgroundColor: "rgba(0, 0, 0, 0.87)",
     borderRadius: "5px",
-    width:"166px",
-    color:"white",
+    width: "166px",
+    color: "white",
   },
 })((props) => (
   <Menu
@@ -65,8 +62,8 @@ const StyledMenu = withStyles({
 
 export default function SimpleMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const {sendRoomState, setWorkoutType, workoutType} = useAppContext();
-  
+  const { sendRoomState, setWorkoutType, workoutType } = useAppContext();
+
   const classes = useStyles();
 
   const handleClick = (event) => {
@@ -91,13 +88,8 @@ export default function SimpleMenu() {
   };
 
   return (
-    <Grid style={{ width: "auto", height: "5vh" }} container>
-      <List
-        component="nav"
-        aria-label="Device settings"
-        style={{ height: "5vh"}}
-      >
-        <ArrowDropDown className={classes.dropArrow} />
+    <>
+      <List component="nav" aria-label="Device settings" style={{ padding: 0}}>
         <ListItem
           button
           aria-controls="simple-menu"
@@ -106,97 +98,108 @@ export default function SimpleMenu() {
           color="primary"
           disableElevation
           onClick={handleClick}
-          style={{
-            height: "5vh",
-            position: "relative",
-            top: "-8px",
-            width:"8vw"
-          }}
+          style={{ width: "130px", padding: 0 }}
           className={classes.dpList}
         >
           <ListItemText
             disableTypography
+            style={{borderBottom: 5 , marginLeft:"5px"}}
             primary={
-              <Grid>
-                <Typography style={{ fontSize: "10px"}}>
-                  Choose Workout
-                </Typography>
+              <Grid container>
+                <Grid item xs={12}>
+                  <Typography style={{ fontSize: "16px" }}>
+                    Choose Workout
+                  </Typography>
+                </Grid>
               </Grid>
             }
             secondary={
               <>
                 {workoutType === "yt" && (
                   <Grid container alignItems="center">
-                    <YouTube />
-                    <Typography
-                      variant="h6"
-                      className={classes.iconGap}
-                    >
-                      YouTube
-                    </Typography>
+                    <Grid item xs={9}>
+                      <Button
+                        startIcon={<YouTube />}
+                        size="small"
+                        disabled
+                        style={{
+                          color: "white",
+                          textTransform: "none",
+                          fontSize: "16px",
+                          padding: 0,
+                        }}
+                      >
+                        YouTube
+                      </Button>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Grid container justify="center">
+                        <ArrowDropDown />
+                      </Grid>
+                    </Grid>
                   </Grid>
                 )}
                 {workoutType === "vid" && (
                   <Grid container alignItems="center">
-                    <FitnessCenter />
-                    <Typography
-                      variant="h6"
-                      className={classes.iconGap}
-                    >
-                      Custom
-                    </Typography>
+                    <Grid item xs={9}>
+                      <Button
+                        startIcon={<FitnessCenter />}
+                        size="small"
+                        disabled
+                        style={{
+                          color: "white",
+                          textTransform: "none",
+                          fontSize: "16px",
+                          padding: 0,
+                        }}
+                      >
+                        {" "}
+                        Custom{" "}
+                      </Button>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Grid container justify="center">
+                        <ArrowDropDown />
+                      </Grid>
+                    </Grid>
                   </Grid>
                 )}
               </>
             }
           />
-          
         </ListItem>
       </List>
-      
-      <Grid
-        container
-        style={{ backgroundColor: "rgba(0, 0, 0, 0.87)"}}
+
+      <StyledMenu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
       >
-        <StyledMenu
-          id="simple-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          <Grid container justify="center" alignItems="center">
-            <MenuItem
-              onClick={() => {
-                handleChangeWorkoutType(0);
-                handleClose();
-              }}
-            >
-              <FitnessCenter/>
-              <Typography
-                className={classes.iconGap}
-              >
-                Custom
-              </Typography>
-            </MenuItem>
-          </Grid>
-          <Grid container justify="center" alignItems="center">
-            <MenuItem
-              onClick={() => {
-                handleChangeWorkoutType(1);
-                handleClose();
-              }}
-            >
-              <YouTube />
-              <Typography
-                className={classes.iconGap}
-              >
-                YouTube
-              </Typography>
-            </MenuItem>
-          </Grid>
-        </StyledMenu>
-      </Grid>
-    </Grid>
+        <Grid container justify="center" alignItems="center">
+          <MenuItem
+            onClick={() => {
+              handleChangeWorkoutType(0);
+              handleClose();
+            }}
+          >
+            <FitnessCenter />
+            <Typography className={classes.iconGap}>Custom</Typography>
+          </MenuItem>
+        </Grid>
+        <Grid container justify="center" alignItems="center">
+          <MenuItem
+            onClick={() => {
+              handleChangeWorkoutType(1);
+              handleClose();
+            }}
+          >
+            <YouTube />
+            <Typography className={classes.iconGap}>YouTube</Typography>
+          </MenuItem>
+        </Grid>
+      </StyledMenu>
+    </>
   );
 }

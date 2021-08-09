@@ -3,7 +3,7 @@ import ExerciseList from "./ExerciseList/ExerciseList.js"
 import { sckt } from '../.././Socket';
 import { useAppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
-import {Box, Grid, Tab, Tabs, Slide, Card, Typography, IconButton } from '@material-ui/core';
+import {Box, Slide, Card, Typography, IconButton } from '@material-ui/core';
 import People from './People/People';
 import { Close } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
@@ -58,7 +58,7 @@ const SideBar = ({
             right: 0,
             bottom: 80,
             marginRight: 16,
-            marginTop: 16,
+            marginTop: 0,
         },
         fullWidth: {
             width: "100%"

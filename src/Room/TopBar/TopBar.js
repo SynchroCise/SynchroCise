@@ -18,19 +18,30 @@ const TopBar = () => {
         alignItems="flex-end"
       >
         <Grid container justify="space-between" direction="row">
-          <Grid container style={{ width: "auto" }} alignItems="center">
-            <Link>
-              <LinkIcon
-                onClick={() => navigator.clipboard.writeText(roomCode)}
-              />
-            </Link>
-            <Typography variant="body1" style={{ position:"relative", left:"5px" }}>
-              Room: {roomName.substring(0, 6).toUpperCase()}
-            </Typography>
+          <Grid item>
+            <Grid container alignContent="center" style={{ height: "100%" }}>
+              <Link>
+                <LinkIcon
+                  onClick={() => navigator.clipboard.writeText(roomCode)}
+                />
+              </Link>
+              <Typography
+                variant="body1"
+                style={{ position: "relative", left: "5px" }}
+              >
+                Room: {roomName.substring(0, 6).toUpperCase()}
+              </Typography>
+            </Grid>
           </Grid>
-          <DropMenu />
-          <Grid style={{ width: "auto" }} container alignContent="center">
-            <Timer />
+          <Grid item>
+            <Grid container>
+              <DropMenu />
+            </Grid>
+          </Grid>
+          <Grid item>
+            <Grid alignContent="center" style={{ height: "100%" }} container>
+              <Timer />
+            </Grid>
           </Grid>
         </Grid>
       </Grid>

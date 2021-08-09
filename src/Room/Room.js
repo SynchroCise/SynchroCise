@@ -335,9 +335,6 @@ const Room = (props) => {
           />
         </Box>
         <SideBar
-          currUser={room.localParticipant}
-          users={participants}
-          isYoutube={workoutType === "yt" ? 1 : 0}
           drawerWidth={drawerWidth}
         />
       </Box>
