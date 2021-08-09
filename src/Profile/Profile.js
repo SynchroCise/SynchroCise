@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { ListItemIcon, ListItemText, ListItem, Divider, IconButton, Typography, List, Link, Toolbar, CssBaseline, Drawer, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, Button, DialogActions } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit';
@@ -36,30 +36,18 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Profile() {
   const history = useHistory()
-  const { email, username, checkLoggedIn, isLoggedIn, handleSetWorkout } = useAppContext();
+  const { email, username, checkLoggedIn } = useAppContext();
   const [open, setOpen] = useState(false);
   const [changeOption, setOption] = useState(3);
   const [tabNumber, setTabNumber] = useState(0);
   const handleClickOpen = () => { setOpen(true) };
   const handleClose = () => { setOpen(false) };
-  const classes = useStyles(); const [selectedWorkout, setSelectedWorkout] = useState(0);
-  const [workoutList, setWorkoutList] = useState([]);
+  const classes = useStyles();
 
   const changeProfileDetails = async (option) => {
     handleClickOpen();
     setOption(option);
   }
-  // initialize workouts and userId
-  useEffect(() => {
-    const initWorkouts = async () => {
-      if (!isLoggedIn) return setWorkoutList([]);
-      const res = await requests.getUserWorkouts();
-      if (!res.ok) return setWorkoutList([]);
-      setWorkoutList(res.body);
-      handleSetWorkout(res.body[0]);
-    }
-    initWorkouts();
-  }, [isLoggedIn, handleSetWorkout]);
 
   const handleRequest = async () => {
     let res;
@@ -137,13 +125,13 @@ export default function Profile() {
           <React.Fragment>
             {popupChanger()}
             <Typography>
-              Email: {email} <Link onClick={() => changeProfileDetails(0)} style={{ fontSize: '10px' }}>change email</Link>
+              Email: {email} <Link component="button" onClick={() => changeProfileDetails(0)} style={{ fontSize: '10px' }}>change email</Link>
             </Typography>
             <Typography>
-              Username: {username} <Link onClick={() => changeProfileDetails(1)} style={{ fontSize: '10px' }}>change username</Link>
+              Username: {username} <Link component="button" onClick={() => changeProfileDetails(1)} style={{ fontSize: '10px' }}>change username</Link>
             </Typography>
             <Typography>
-              Password: <Link onClick={() => changeProfileDetails(2)} style={{ fontSize: '10px' }}>change password</Link>
+              Password: <Link component="button" onClick={() => changeProfileDetails(2)} style={{ fontSize: '10px' }}>change password</Link>
             </Typography>
           </React.Fragment>
         )
@@ -152,13 +140,7 @@ export default function Profile() {
       case (2):
         return (
           <React.Fragment>
-            <WorkoutTable
-              workoutList={workoutList}
-              selectedWorkout={selectedWorkout}
-              setSelectedWorkout={setSelectedWorkout}
-              setWorkoutList={setWorkoutList}
-              data-test="workoutTableComponent"
-            />
+            <WorkoutTable />
             <IconButton onClick={() => { history.push(RoutesEnum.CreateWorkout) }} ><Add /></IconButton>
           </React.Fragment >)
       default:

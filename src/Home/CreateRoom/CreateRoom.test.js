@@ -63,14 +63,14 @@ describe('<JoinRoom />', () => {
         expect(requests.getUserWorkouts).toHaveBeenCalledTimes(0);
         expect(contextValues.handleSetWorkout).toHaveBeenCalledTimes(0);
     });
-    it('Should initialize workouts (logged in)', async () => {
-        contextValues.isLoggedIn = true;
-        component = initContext(contextValues, setUp);
-        await asyncUpdateComponent(component);
+    // it('Should initialize workouts (logged in)', async () => {
+    //     contextValues.isLoggedIn = true;
+    //     component = initContext(contextValues, setUp);
+    //     await asyncUpdateComponent(component);
 
-        expect(requests.getUserWorkouts).toHaveBeenCalledTimes(1);
-        expect(contextValues.handleSetWorkout).toHaveBeenCalledTimes(1);
-    });
+    //     expect(requests.getUserWorkouts).toHaveBeenCalledTimes(1);
+    //     expect(contextValues.handleSetWorkout).toHaveBeenCalledTimes(1);
+    // });
     it('Should render createRoomForm and submit succeed (not logged in)', async () => {
         contextValues.isLoggedIn = false
         component = initContext(contextValues, setUp);
@@ -144,12 +144,12 @@ describe('<JoinRoom />', () => {
         usrField.simulate('change', { target: { value: "newtestuser" } });
         expect(contextValues.handleUsernameChange).toHaveBeenCalledTimes(1);
     });
-    it('Should see if workoutTableCompoment renders (logged in)', () => {
-        contextValues.isLoggedIn = true
-        component = initContext(contextValues, setUp);
-        const wrapper = findByTestAttr(component, 'workoutTableComponent');
-        expect(wrapper.length).toBe(1);
-    });
+    // it('Should see if workoutTableCompoment renders (logged in)', () => {
+    //     contextValues.isLoggedIn = true
+    //     component = initContext(contextValues, setUp);
+    //     const wrapper = findByTestAttr(component, 'workoutTableComponent');
+    //     expect(wrapper.length).toBe(1);
+    // });
     it('Should see if workoutTableCompoment renders (not logged in)', () => {
         contextValues.isLoggedIn = false
         component = initContext(contextValues, setUp);
