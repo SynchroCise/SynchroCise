@@ -7,12 +7,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import { FormControlLabel, Switch, Toolbar, IconButton, Box, Typography, TextField, InputAdornment, Grid } from '@material-ui/core';
 import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward } from '@material-ui/icons';
 import * as requests from "../../utils/requests"
-import { createConnections } from "../../utils/jitsi"
+import { createConnection, buildOptions } from "../../utils/jitsi"
 
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const { JitsiMeetJS, userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
+  const { JitsiMeetJS, userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn, setLocalTracks } = useAppContext()
   const history = useHistory()
   const [selectedWorkout, setSelectedWorkout] = useState(0);
   const [workoutList, setWorkoutList] = useState([]);
@@ -35,14 +35,20 @@ const CreateRoom = () => {
   }, [isLoggedIn, handleSetWorkout]);
 
   useEffect(() => {
-    const lowerRoomName = roomName.toLowerCase()
-    const options = buildOptions(lowerRoomName);
+    const options = buildOptions(roomName.toLowerCase());
     const onConnectionSuccess = async () => {
-      setConnection(connection);
-      handleSetRoom(connection.initJitsiConference(lowerRoomName, options.conference));
+      const room = connection.initJitsiConference(roomName.toLowerCase(), options.conference)
+      handleSetRoom(room);
+
+      // Sets Local Participants' property
+      const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
+      room.setLocalParticipantProperty('displayName', username);
+      room.setLocalParticipantProperty('userId', tempUserId)
+
       // Creates a room in the server
-      const room_res = await requests.createRoom(room, workout.id, 'vid');
+      const room_res = await requests.createRoom({ name: roomName.toLowerCase(), sid: '' }, workout.id, 'vid');
       if (!room_res.ok) { handleSetConnecting(false); return; }
+
       handleSetConnecting(false);
       history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`)
     }
@@ -56,12 +62,10 @@ const CreateRoom = () => {
     }
     const onLocalTracks = (tracks) => {
       console.log('setLocalTracks');
-      setLocalTracks(tracks)
-      if (isJoined) {
-        localTracks.forEach((track) => room.addTrack(track));
-      }
+      setLocalTracks(tracks);
     }
-    const startJitsi = async () => {
+
+    if (JitsiMeetJS && connection) {
       connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
       connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
       connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
@@ -71,9 +75,6 @@ const CreateRoom = () => {
         .catch(error => {
             throw error;
       });
-    }
-    if (JitsiMeetJS && connection) {
-      startJitsi()
       return () => {
         connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
         connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
@@ -82,13 +83,10 @@ const CreateRoom = () => {
     }
   }, [connection]);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     handleSetConnecting(true);
-    const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
-    setConnection(await createConnections(roomName.substring(0, 6).toLowerCase()));
-    const room = await requests.createTwilioRoom(token, roomName);
-    if (!room) { handleSetConnecting(false); return; }
+    setConnection(createConnection(JitsiMeetJS, roomName.toLowerCase()));
   }
 
   const useStyles = makeStyles(theme => ({

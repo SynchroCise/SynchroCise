@@ -26,6 +26,7 @@ const AppContextProvider = ({ children }) => {
   const [nameArray, setNameArray] = useState([]);
   const [participantIds, setParticipantIds] = useState([]);
   const [pinnedParticipantId, setPinnedParticipantId] = useState("");
+  const [localTracks, setLocalTracks] = useState([]);
   const [roomProps, setRoomProps] = useState({
     workoutType: 'vid', // 'yt', 'custom',
     workout: { "workoutName": "", "exercises": [{ "time": 1, "exercise": "" }], "id": "" },
@@ -213,7 +214,9 @@ const AppContextProvider = ({ children }) => {
       setPinnedParticipantId,
       participantIds,
       setParticipantIds,
-      JitsiMeetJS
+      JitsiMeetJS,
+      localTracks,
+      setLocalTracks
     }}>
       {children}
     </AppContext.Provider>

@@ -8,7 +8,6 @@ const Participant = ({id, tracks}) => {
 
   // attach video track to DOM
   useEffect(() => {
-    console.log(tracks)
     tracks.forEach((track) => {
       if (track.getType() === 'video') {
         track.attach(videoRef.current);

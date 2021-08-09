@@ -55,9 +55,9 @@ export const buildOptions = (roomName) => {
   };
 }
 
-export const createConnection = async (JitsiMeetJS, roomName) => {
+export const createConnection = (JitsiMeetJS, roomName) => {
   const options = buildOptions(roomName)
-  await JitsiMeetJS.init()
+  JitsiMeetJS.init()
   const connection = new JitsiMeetJS.JitsiConnection(null, null, options.connection)
   return connection
 };

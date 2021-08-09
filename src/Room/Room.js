@@ -119,46 +119,46 @@ const Room = (props) => {
   const drawerWidth = 360;
 
   // once room is rendered do below
-  useEffect(() => {
-    if (!room) return;
-    // if participant connects or disconnects update room properties
-    const participantConnected = (participant) => {
-      setParticipants((prevParticipants) =>
-        [...prevParticipants, participant].filter(
-          (v, i, a) => a.indexOf(v) === i
-        ))
-    };
+  // useEffect(() => {
+  //   if (!room) return;
+  //   // if participant connects or disconnects update room properties
+  //   const participantConnected = (participant) => {
+  //     setParticipants((prevParticipants) =>
+  //       [...prevParticipants, participant].filter(
+  //         (v, i, a) => a.indexOf(v) === i
+  //       ))
+  //   };
 
-    room.on("participantConnected", participantConnected);
-    room.on("participantDisconnected", participantDisconnected);
-    room.participants.forEach(participantConnected);
+  //   room.on("participantConnected", participantConnected);
+  //   room.on("participantDisconnected", participantDisconnected);
+  //   room.participants.forEach(participantConnected);
 
-    return () => {
-      room.off("participantConnected", participantConnected);
-      room.off("participantDisconnected", participantDisconnected);
-    };
-  }, [room, participantDisconnected]);
+  //   return () => {
+  //     room.off("participantConnected", participantConnected);
+  //     room.off("participantDisconnected", participantDisconnected);
+  //   };
+  // }, [room, participantDisconnected]);
 
-  useEffect(() => {
-    if (!room) return;
-    const gettingNames = async () => {
-      const res = await requests.getDisplayNamesInRoom(room.sid);
-      if (res.ok) {
-        const names = res.body;
-        setNameArray((oldArray) => oldArray.concat(names));
-      }
-    }
-    gettingNames();
-  }, [room, setNameArray]);
+  // useEffect(() => {
+  //   if (!room) return;
+  //   const gettingNames = async () => {
+  //     const res = await requests.getDisplayNamesInRoom(room.sid);
+  //     if (res.ok) {
+  //       const names = res.body;
+  //       setNameArray((oldArray) => oldArray.concat(names));
+  //     }
+  //   }
+  //   gettingNames();
+  // }, [room, setNameArray]);
 
   // joins the room through sockets
-  useEffect(() => {
-    if (!room) return;
-    const sid = room.localParticipant.sid;
-    const name = username;
-    setNameArray((oldArray) => [...oldArray, { name, sid }]);
-    sckt.socket.emit('join', { name, room: room.sid, sid, userId }, ({ id, leaderList }) => { });
-  }, [room, userId, username, setNameArray]);
+  // useEffect(() => {
+  //   if (!room) return;
+  //   const sid = room.localParticipant.sid;
+  //   const name = username;
+  //   setNameArray((oldArray) => [...oldArray, { name, sid }]);
+  //   sckt.socket.emit('join', { name, room: room.sid, sid, userId }, ({ id, leaderList }) => { });
+  // }, [room, userId, username, setNameArray]);
 
   // handels leader leaves server
   useEffect(() => {
@@ -193,14 +193,14 @@ const Room = (props) => {
   }, [participants, pinnedParticipantId, workoutType, getFirstParticipantId, room]);
 
   // resets participant page if there are no remote participants
-  useEffect(() => {
-    if (!room) return;
-    let all_participants = getAllRemoteParticipants();
-    const viewer_len = all_participants.slice(participantPage * ppp, participantPage * ppp + ppp).length
-    if (viewer_len === 0 && participantPage !== 0) {
-      setParticipantPage(0)
-    }
-  }, [participants, participantPage, room, workoutType, pinnedParticipantId, getAllRemoteParticipants]);
+  // useEffect(() => {
+  //   if (!room) return;
+  //   let all_participants = getAllRemoteParticipants();
+  //   const viewer_len = all_participants.slice(participantPage * ppp, participantPage * ppp + ppp).length
+  //   if (viewer_len === 0 && participantPage !== 0) {
+  //     setParticipantPage(0)
+  //   }
+  // }, [participants, participantPage, room, workoutType, pinnedParticipantId, getAllRemoteParticipants]);
 
   // show all the particpants in the room
   const remoteParticipants = () => {

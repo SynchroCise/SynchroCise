@@ -4,9 +4,8 @@ import { useAppContext } from "../../AppContext";
 import Participant from "./Participant/Participant";
 
 const WorkoutDisplay = () => {
-  const { JitsiMeetJS, pinnedParticipantId, participantIds, setParticipantIds, room } = useAppContext();
+  const { JitsiMeetJS, pinnedParticipantId, participantIds, setParticipantIds, room, localTracks } = useAppContext();
   const [isJoined, setIsJoined] = useState(false);
-  const [localTracks, setLocalTracks] = useState([]);
   const [remoteTracks, setRemoteTracks] = useState({});
 
   // once room has been initialized
