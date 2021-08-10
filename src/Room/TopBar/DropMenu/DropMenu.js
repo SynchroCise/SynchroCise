@@ -107,7 +107,7 @@ export default function SimpleMenu() {
             primary={
               <Grid container>
                 <Grid item xs={12}>
-                  <Typography style={{ fontSize: "16px" }}>
+                  <Typography style={{ fontSize: "12px" }}>
                     Choose Workout
                   </Typography>
                 </Grid>
