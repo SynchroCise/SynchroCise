@@ -14,6 +14,7 @@ const {
     getUsersInRoom,
     getUsersBySid,
     getUserByName,
+    updateWorkoutHistory
 } = require('./users.js');
 const { getActiveRooms, updateRoomData, removeRoom } = require('./rooms.js');
 const { getWorkoutById } = require('./workouts.js');
@@ -38,10 +39,12 @@ io.on('connection', (socket) => {
             io.to(user.room).emit('leaver', user);
         }
     }
+
     /** JOINING/LEAVING ROOMS */
     socket.on('getRoomData', ({ room }, callback) => {
         io.to(socket.id).emit('roomData', { room: room, users: getUsersInRoom(room) });
     });
+
     socket.on('checkUser', ({ name, room }, callback) => {
         const { error } = checkUser({ name, room });
         if (error) return callback(error);
@@ -71,11 +74,19 @@ io.on('connection', (socket) => {
         callback({ id: user.id, leaderList: leaderList });
     });
 
+    //ONCE WILL RELY ON NEW METHOD OF VIDEO SHARING COMPLETION BEFORE THIS CAN BE FULLY IMPLEMENTED 
     socket.on('disconnect', () => {
+        let time = new Date();
+        updateWorkoutHistory(socket.id, time);
         leaveRoom();
     });
 
-    socket.on('handleLeaveRoom', () => { leaveRoom() });
+    socket.on('handleLeaveRoom', () => {
+        let time = new Date();
+        updateWorkoutHistory(socket.id, time);
+        leaveRoom()
+    }
+    );
 
     /** ROOM DATA */
 
@@ -87,6 +98,7 @@ io.on('connection', (socket) => {
             io.to(user.room).emit('message', { user: { name: 'admin' }, text: `${oldName} changed their name to ${newName}` });
         }
     });
+
     socket.on('checkRoomExists', ({ room }, callback) => {
         let rooms = getActiveRooms(io);
         return callback(rooms.includes(room));
@@ -118,6 +130,7 @@ io.on('connection', (socket) => {
         io.to(id).emit('startVideoSync', videoProps);
         callback();
     });
+
     socket.on('sendVideoState', (params, callback) => {
         const { name, room, eventName, eventParams } = params;
         socket.to(room).emit('receiveVideoState', params);

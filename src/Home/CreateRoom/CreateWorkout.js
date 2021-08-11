@@ -75,7 +75,7 @@ const CreateWorkout = ({ initExercises = [{ 'exercise': '', 'time': '' }] }) => 
       return;
     }
     handleSetConnecting(false);
-    history.push(RoutesEnum.CreateRoom);
+    history.goBack();
   }
 
   const handleSelected = (index) => {

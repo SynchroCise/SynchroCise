@@ -8,6 +8,7 @@ import Add from '@material-ui/icons/Add';
 import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
 import * as requests from './../utils/requests'
 import WorkoutTable from "../Home/CreateRoom/WorkoutTable"
+import WorkoutHistoryTable from "./WorkoutHistoryTable"
 import { RoutesEnum } from '../App'
 import { useHistory } from 'react-router-dom'
 
@@ -136,7 +137,8 @@ export default function Profile() {
           </React.Fragment>
         )
       case (1):
-        break;
+        return (
+          <WorkoutHistoryTable />)
       case (2):
         return (
           <React.Fragment>
