@@ -19,9 +19,8 @@ const TopBar = () => {
         <Grid container justify="space-between" direction="row">
           <Grid item>
             <Grid container alignContent="center" style={{ height: "100%" }}>
-              <IconButton>
+              <IconButton onClick={() => navigator.clipboard.writeText(roomCode)}>
                 <LinkIcon
-                  onClick={() => navigator.clipboard.writeText(roomCode)}
                   color="primary"
                 />
               </IconButton>

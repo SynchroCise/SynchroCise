@@ -96,7 +96,6 @@ export default function SimpleMenu() {
           aria-haspopup="true"
           variant="contained"
           color="primary"
-          disableElevation
           onClick={handleClick}
           style={{ width: "130px", padding: 0 }}
           className={classes.dpList}
