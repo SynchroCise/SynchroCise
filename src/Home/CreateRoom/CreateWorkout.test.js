@@ -85,7 +85,7 @@ describe('<CreateWorkout />', () => {
         expect(contextValues.handleSetConnecting).toHaveBeenCalledTimes(2);
         expect(requests.addWorkout).toHaveBeenCalledTimes(1);
         expect(requests.editWorkout).toHaveBeenCalledTimes(0);
-        expect(mockPush).toHaveBeenCalledTimes(1);
+        expect(mockGoBack).toHaveBeenCalledTimes(1);
     });
 
     it('Should handleSubmit with exercises & edit-workout', async () => {
