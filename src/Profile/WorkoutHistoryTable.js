@@ -1,10 +1,8 @@
 
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Table, TableBody, TableCell, TableHead, TableRow, Collapse, IconButton, Typography } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import * as requests from './../utils/requests'
-import { useAppContext } from "../AppContext";
-import { useHistory } from 'react-router-dom'
 
 const WorkoutHistoryTable = () => {
     const [workoutHistory, setWorkoutHistory] = useState([]);
@@ -20,7 +18,7 @@ const WorkoutHistoryTable = () => {
             console.log(workoutHistory)
         }
         getWorkoutHistory();
-    }, []);
+    }, [workoutHistory]);
 
     return (
         <Table >
@@ -41,7 +39,6 @@ const WorkoutHistoryTable = () => {
 }
 
 export const Row = ({ row, index }) => {
-    const [open, setOpen] = useState(false);
     // https://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds
     const useStyles = makeStyles(theme => ({
         tableRow: {
