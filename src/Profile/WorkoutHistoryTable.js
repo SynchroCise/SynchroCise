@@ -6,20 +6,19 @@ import * as requests from './../utils/requests'
 
 const WorkoutHistoryTable = () => {
     const [workoutHistory, setWorkoutHistory] = useState([]);
-
     useEffect(() => {
         const getWorkoutHistory = async () => {
             let dates = [];
             const res = await requests.getWorkoutHistory();
-            res.body.forEach((item, index) => {
-                dates.push(Date(item))
-            })
+            if (Array.isArray(res.body)) {
+                res.body.forEach((item) => {
+                    dates.push(Date(item))
+                })
+            }
             setWorkoutHistory(dates);
-            console.log(workoutHistory)
         }
         getWorkoutHistory();
-    }, [workoutHistory]);
-
+    }, [setWorkoutHistory]);
     return (
         <Table >
             < TableHead >
@@ -39,7 +38,6 @@ const WorkoutHistoryTable = () => {
 }
 
 export const Row = ({ row, index }) => {
-    // https://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds
     const useStyles = makeStyles(theme => ({
         tableRow: {
             "&$selected, &$selected:hover": {

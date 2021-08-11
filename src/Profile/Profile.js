@@ -138,10 +138,7 @@ export default function Profile() {
         )
       case (1):
         return (
-          <WorkoutHistoryTable>
-
-          </WorkoutHistoryTable>)
-
+          <WorkoutHistoryTable />)
       case (2):
         return (
           <React.Fragment>
