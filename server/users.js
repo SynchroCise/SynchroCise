@@ -1,6 +1,7 @@
 const { UserBindingInstance } = require('twilio/lib/rest/chat/v2/service/user/userBinding');
 const { db, timestamp } = require('./firebase.js');
 const bcrypt = require('bcrypt');
+const admin = require('firebase-admin');
 
 const isValidPassword = async (user, password) => {
     return await bcrypt.compare(password, user.password);
@@ -15,7 +16,8 @@ const userFromDoc = (doc) => ((doc.data()) ? {
     sid: doc.data().twilioUserSid,
     isLeader: doc.data().isLeader,
     socketId: doc.data().socketId,
-    isTemp: doc.data().isTemp
+    isTemp: doc.data().isTemp,
+    workoutHistory: doc.data().workoutHistory
 } : null);
 
 const checkUser = ({ name, room }) => {
@@ -184,6 +186,16 @@ const changePassword = async (newPassword, id) => {
     }
 }
 
+const updateWorkoutHistory = async (id, time) => {
+    await db.collection('users').where("socketId", "==", id).get().then(querySnapshot => {
+        if (!querySnapshot.empty) {
+            querySnapshot.forEach(function (document) {
+                document.ref.update({ workoutHistory: admin.firestore.FieldValue.arrayUnion(time) });
+            });
+        }
+    });
+}
+
 module.exports = {
     checkUser,
     addUser,
@@ -201,5 +213,6 @@ module.exports = {
     createTempUser,
     changeEmail,
     changeUsername,
-    changePassword
+    changePassword,
+    updateWorkoutHistory
 };
