@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import { ListItemIcon, ListItemText, ListItem, Divider, IconButton, Typography, List, Link, Toolbar, CssBaseline, Drawer, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, Button, DialogActions } from '@material-ui/core'
+import { ListItemIcon, ListItemText, ListItem, Divider, IconButton, Typography, List, Link, Toolbar, CssBaseline, Drawer, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, Button, DialogActions, Table, TableHead, TableBody } from '@material-ui/core'
 import EditIcon from '@material-ui/icons/Edit';
 import { useAppContext } from "../AppContext";
 import PersonIcon from '@material-ui/icons/Person';
@@ -8,6 +8,7 @@ import Add from '@material-ui/icons/Add';
 import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
 import * as requests from './../utils/requests'
 import WorkoutTable from "../Home/CreateRoom/WorkoutTable"
+import WorkoutHistoryTable from "./WorkoutHistoryTable"
 import { RoutesEnum } from '../App'
 import { useHistory } from 'react-router-dom'
 
@@ -136,7 +137,11 @@ export default function Profile() {
           </React.Fragment>
         )
       case (1):
-        break;
+        return (
+          <WorkoutHistoryTable>
+
+          </WorkoutHistoryTable>)
+
       case (2):
         return (
           <React.Fragment>

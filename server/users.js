@@ -196,6 +196,10 @@ const updateWorkoutHistory = async (id, time) => {
     });
 }
 
+const getWorkoutHistory = async (id) => {
+    return ((await getUserById(id)).workoutHistory);
+}
+
 module.exports = {
     checkUser,
     addUser,
@@ -214,5 +218,6 @@ module.exports = {
     changeEmail,
     changeUsername,
     changePassword,
-    updateWorkoutHistory
+    updateWorkoutHistory,
+    getWorkoutHistory
 };

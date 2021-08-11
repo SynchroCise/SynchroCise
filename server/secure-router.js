@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { addWorkout, getUserWorkouts, setDeleteWorkout, getWorkoutById } = require('./workouts.js');
-const { getUserById, getUsersById, changeEmail, changeUsername, changePassword } = require('./users.js');
+const { getUserById, getUsersById, changeEmail, changeUsername, changePassword, getWorkoutHistory } = require('./users.js');
 
 
 router.get('/checkLoggedIn', async (req, res, next) => {
@@ -33,6 +33,12 @@ router.get('/getWorkouts', async (req, res) => {
 router.get('/getWorkout', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   const workout = await getWorkoutById(req.query.workoutId);
+  res.send(JSON.stringify(workout));
+});
+
+router.get('/getWorkoutHistory', async (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  const workout = await getWorkoutHistory(req.user.id);
   res.send(JSON.stringify(workout));
 });
 
