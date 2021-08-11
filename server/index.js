@@ -84,7 +84,6 @@ io.on('connection', (socket) => {
     socket.on('handleLeaveRoom', () => {
         let time = new Date();
         updateWorkoutHistory(socket.id, time);
-        updateWorkoutHistory(socket.id);
         leaveRoom()
     }
     );
