@@ -256,14 +256,14 @@ const Room = (props) => {
 
   const useStyles = makeStyles(theme => ({
     content: {
-      position: "absolute",
+      position: "fixed",
       transition: theme.transitions.create("padding", {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
       }),
       paddingRight: drawerWidth + 16,
-      top: 0,
-      bottom: 80,
+      top: "64px",
+      bottom: "80px",
       overflow: "hidden",
     },
     contentShift: {
@@ -300,7 +300,7 @@ const Room = (props) => {
       <Box
         bgcolor="text.primary"
         data-test="roomComponent"
-        style={{ position: "fixed", minHeight: "95vh", width: "100%" }}
+        style={{ position: "fixed", minHeight: "100%", width: "100%" }}
       >
         <Box
           width="100%"

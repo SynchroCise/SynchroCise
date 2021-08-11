@@ -3,10 +3,6 @@ html {
   height: 100%;
 }
 
-button:focus{
-  outline:none
-}
-
 body {
   font-family: Helvetica, Arial, sans-serif;
   color: #333e5a;

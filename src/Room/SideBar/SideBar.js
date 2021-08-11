@@ -52,12 +52,12 @@ const SideBar = ({
             width: drawerWidth,
         },
         drawer: {
-            position: "absolute",
+            position: "fixed",
             width: drawerWidth,
-            top: 0,
+            top: "64px",
             right: 0,
-            bottom: 80,
-            marginRight: 16,
+            bottom: "80px",
+            marginRight: "16px",
             marginTop: 0,
         },
         fullWidth: {

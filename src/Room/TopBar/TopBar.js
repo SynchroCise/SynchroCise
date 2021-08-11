@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppContext } from "../../AppContext";
-import { Link, Typography, Toolbar, Grid, IconButton  } from "@material-ui/core";
+import { Typography, Toolbar, Grid, IconButton } from "@material-ui/core";
 import DropMenu from "./DropMenu/DropMenu";
 import Timer from "./DropMenu/Timer";
 import LinkIcon from "@material-ui/icons/Link";
