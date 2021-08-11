@@ -5,12 +5,13 @@ import { useHistory } from 'react-router-dom'
 import SideBar from "./SideBar/SideBar";
 import BottomControl from "./BottomControl/BottomControl"
 import { useAppContext } from "../AppContext";
-import { Typography, Box, IconButton } from '@material-ui/core';
+import { Typography, Box, AppBar, IconButton } from '@material-ui/core';
 import Video from './Video/Video';
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
 import * as requests from "../utils/requests"
+import TopBar from "./TopBar/TopBar";
 import { ArrowForward, ArrowBack } from '@material-ui/icons';
 
 // using roomName and token, we will create a room
@@ -255,22 +256,26 @@ const Room = (props) => {
 
   const useStyles = makeStyles(theme => ({
     content: {
-      position: "absolute",
-      transition: theme.transitions.create('padding', {
+      position: "fixed",
+      transition: theme.transitions.create("padding", {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
       }),
       paddingRight: drawerWidth + 16,
-      top: 0,
-      bottom: 80,
-      overflow: "hidden"
+      top: "64px",
+      bottom: "80px",
+      overflow: "hidden",
     },
     contentShift: {
-      transition: theme.transitions.create('padding', {
+      transition: theme.transitions.create("padding", {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
       }),
       paddingRight: 0,
+    },
+    abRoot: {
+      backgroundColor: "rgba(0, 0, 0, 0.87)",
+      boxShadow: "none",
     },
   }));
   const classes = useStyles();
@@ -282,10 +287,16 @@ const Room = (props) => {
       <Redirect to={`/join-room/${props.match.params.roomCode}`} data-test="redirectComponent" />
     );
   }
-  //height go from 70 to 90 and remove grid item container if only one person
-
+  
   return (
     <React.Fragment>
+      <AppBar
+        position="sticky"
+        bgcolor="text.primary"
+        classes={{ root: classes.abRoot }}
+      >
+        <TopBar />
+      </AppBar>
       <Box
         bgcolor="text.primary"
         data-test="roomComponent"
@@ -293,7 +304,9 @@ const Room = (props) => {
       >
         <Box
           width="100%"
-          className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`}
+          className={`${classes.content} ${
+            openSideBar ? "" : classes.contentShift
+          }`}
         >
           <Box height={participants.length > 0 ? "70%" : "100%"}>
             {room && (workoutType === 'vid') ? leaderParticipant() : <Video playerRef={playerRef} data-test="youtubeComponent" />}
@@ -322,8 +335,6 @@ const Room = (props) => {
           />
         </Box>
         <SideBar
-          currUser={room.localParticipant}
-          users={participants}
           drawerWidth={drawerWidth}
         />
       </Box>
