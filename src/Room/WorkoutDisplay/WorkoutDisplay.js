@@ -1,12 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
-import { buildOptions } from "../../utils/jitsi";
+import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../AppContext";
 import Participant from "./Participant/Participant";
+import { Box } from '@material-ui/core';
+
 
 const WorkoutDisplay = () => {
-  const { JitsiMeetJS, pinnedParticipantId, participantIds, setParticipantIds, room, localTracks } = useAppContext();
+  const { JitsiMeetJS, pinnedParticipantId, participantIds, setParticipantIds, room, localTracks, workoutType } = useAppContext();
   const [isJoined, setIsJoined] = useState(false);
   const [remoteTracks, setRemoteTracks] = useState({});
+
+  const getDisplayParticipantId = () => {
+    const remoteParticipants = room.getParticipants();
+    if (remoteParticipants.length === 0) return room.myUserId();
+    if (pinnedParticipantId !== "") return pinnedParticipantId;
+    return remoteParticipants[0].getId();
+  }
 
   // once room has been initialized
   useEffect(() => {
@@ -50,19 +58,39 @@ const WorkoutDisplay = () => {
         room.off(JitsiMeetJS.events.conference.USER_LEFT, onUserLeft);
       }
     }
-  }, [room]);
+  }, [room, JitsiMeetJS.events.conference.CONFERENCE_JOINED, JitsiMeetJS.events.conference.TRACK_ADDED, JitsiMeetJS.events.conference.USER_JOINED, JitsiMeetJS.events.conference.USER_LEFT, localTracks, remoteTracks, setParticipantIds]);
       
   return (
-    <div>
-      {[...participantIds].map((participantId) => {
-        if (participantId === room.myUserId()) {
-          return (<Participant key={participantId} id={participantId} tracks={localTracks}/>)
-        } else if (remoteTracks[participantId]) {
-          console.log('remotetracks', remoteTracks[participantId])
-          return (<Participant key={participantId} id={participantId} tracks={remoteTracks[participantId]}/>)
-        }
-      })}
-    </div>
+    <React.Fragment>
+      <Box height={room.getParticipants().length > 0 ? "70%" : "100%"}>
+        {(workoutType === 'vid') ? (
+          <Participant
+            id={getDisplayParticipantId()}
+            tracks={(getDisplayParticipantId() === room.myUserId()) ? localTracks : remoteTracks[getDisplayParticipantId()]}
+          />
+        ) : (
+          // TODO: insert Youtube here
+          null
+        )} 
+      </Box>
+      {room.getParticipants().length > 0 && 
+       <Box height="30%" flexDirection="row" display="flex" justifyContent="space-around">
+          {
+            [...participantIds]
+            .filter((participantId) => participantId !== getDisplayParticipantId())
+            .map((participantId) => {
+              if (participantId === room.myUserId()) {
+                return (<Participant key={participantId} id={participantId} tracks={localTracks}/>)
+              } else if (remoteTracks[participantId]) {
+                console.log('remotetracks', remoteTracks[participantId])
+                return (<Participant key={participantId} id={participantId} tracks={remoteTracks[participantId]}/>)
+              }
+              return null
+            })
+          }
+        </Box>
+      }
+    </React.Fragment>
   );
 };
 

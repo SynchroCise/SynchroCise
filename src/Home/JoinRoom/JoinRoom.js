@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useHistory } from 'react-router-dom'
 import { useAppContext } from "../../AppContext"
-import Video from "twilio-video";
 import { RoutesEnum } from '../../App'
 import { IconButton, TextField, Box, Typography, Grid } from '@material-ui/core';
 import { ArrowBack, ArrowForward, Videocam, VideocamOff, Mic, MicOff } from '@material-ui/icons';
@@ -21,40 +20,6 @@ const JoinRoom = (props) => {
   const videoRef = useRef();
   const videoContainerRef = useRef();
   const history = useHistory()
-
-  // create local video track
-  // useEffect(() => {
-  //   if (!roomName) return;
-  //   let isMounted = true;
-  //   const vidParam = {
-  //     width: {max: 640},
-  //     height: {max: 480},
-  //     aspectRatio: 16/9,
-  //     resizeMode: "crop-and-scale",
-  //     frameRate: 24
-  //   };
-  //   async function getLocalVideoTrack() {
-  //     const videoTrack = await Video.createLocalVideoTrack(vidParam);
-  //     if (isMounted) { setVideoTracks((prevVideoTrack) => [...prevVideoTrack, videoTrack]); }
-  //   }
-  //   async function getLocalAudioTrack() {
-  //     const audioTrack = await Video.createLocalAudioTrack();
-  //     if (isMounted) { setAudioTracks((prevAudioTrack) => [...prevAudioTrack, audioTrack]); }
-  //   }
-  //   getLocalVideoTrack()
-  //   getLocalAudioTrack()
-  //   return () => { isMounted = false }
-  // }, [roomName])
-
-  // useEffect(() => {
-  //   const videoTrack = videoTracks[0];
-  //   if (videoTrack) {
-  //     videoTrack.attach(videoRef.current);
-  //     return () => {
-  //       videoTrack.detach();
-  //     };
-  //   }
-  // }, [videoTracks]);
 
   // initializes roomcode and userId
   useEffect(() => {
@@ -81,7 +46,7 @@ const JoinRoom = (props) => {
     const options = buildOptions(roomName.toLowerCase());
     const onConnectionSuccess = async () => {
       handleSetConnecting(false);
-      const room = connection.initJitsiConference(roomName.toLowerCase(), options.conference)
+      const room = connection.initJitsiConference(roomName.toLowerCase(), options.conference);
       handleSetRoom(room);
     }
     const onConnectionFailed = () => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 export const useJitsi = () => {
-  const [lib, setLib] = useState({})
+  const [lib, setLib] = useState({});
 
   useEffect(() => {
     const script = document.createElement('script');
