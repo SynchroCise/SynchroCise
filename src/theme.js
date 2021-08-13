@@ -26,7 +26,28 @@ const theme = createMuiTheme({
         marginTop: 6,
         marginLeft: 8
       }
-    }
+    },
+    MuiIconButton: {
+      root: {
+        "&:focus": {
+          outline: "none",
+        },
+      },
+    },
+    MuiButton: {
+      root: {
+        "&:focus": {
+          outline: "none",
+        },
+      },
+    },
+    MuiBottomNavigationAction: {
+      root: {
+        "&:focus": {
+          outline: "none",
+        },
+      },
+    },
   }
 })
 export default theme
