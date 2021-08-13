@@ -11,7 +11,7 @@ import * as requests from "../../utils/requests"
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const { userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
+  const { userId, connecting,setSideBarType, setWorkoutType, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
   const history = useHistory()
 
   // intialize custom room code
@@ -23,6 +23,8 @@ const CreateRoom = () => {
     event.preventDefault();
     handleSetConnecting(true);
     const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
+    setSideBarType( isLoggedIn ? 0 : 1);
+    setWorkoutType( isLoggedIn ? 'vid' : 'yt')
     const tok_res = await requests.twilioToken(tempUserId, roomName);
     if (!tok_res.ok) { handleSetConnecting(false); return; }
     const token = tok_res.body.token;

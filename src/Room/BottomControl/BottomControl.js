@@ -7,7 +7,7 @@ import { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAc
 import { CallEnd, Videocam, VideocamOff, Mic, MicOff, FitnessCenter, ChatOutlined, GroupOutlined } from '@material-ui/icons';
 
 const BottomControl = ({ participantPage, setParticipantPage }) => {
-    const { room, handleLeaveRoom, openSideBar, handleOpenSideBar, sideBarType, setSideBarType } = useAppContext();
+    const { room, handleLeaveRoom, openSideBar, handleOpenSideBar, sideBarType, setSideBarType, isLoggedIn, workoutType } = useAppContext();
     const [vid, setVid] = useState(true);
     const [mic, setMic] = useState(true);
     const history = useHistory()
@@ -95,7 +95,7 @@ const BottomControl = ({ participantPage, setParticipantPage }) => {
                         color="secondary"
                         data-test="changeWorkoutNavigation"
                     >
-                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<FitnessCenter />} />
+                        { isLoggedIn && workoutType==='vid' && <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<FitnessCenter />} />}
                         <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<Badge badgeContent={room.participants.size + 1} color="primary"><GroupOutlined /></Badge>} />
                         <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<ChatOutlined />} />
                     </BottomNavigation>

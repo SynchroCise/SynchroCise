@@ -1,0 +1,76 @@
+[1mdiff --git a/src/Home/CreateRoom/CreateRoom.js b/src/Home/CreateRoom/CreateRoom.js[m
+[1mindex 8469366..6341a56 100644[m
+[1m--- a/src/Home/CreateRoom/CreateRoom.js[m
+[1m+++ b/src/Home/CreateRoom/CreateRoom.js[m
+[36m@@ -11,7 +11,7 @@[m [mimport * as requests from "../../utils/requests"[m
+ [m
+ // this component renders form to be passed to VideoChat.js[m
+ const CreateRoom = () => {[m
+[31m-  const { userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()[m
+[32m+[m[32m  const { userId, connecting,setSideBarType, setWorkoutType, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()[m
+   const history = useHistory()[m
+ [m
+   // intialize custom room code[m
+[36m@@ -23,6 +23,8 @@[m [mconst CreateRoom = () => {[m
+     event.preventDefault();[m
+     handleSetConnecting(true);[m
+     const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));[m
+[32m+[m[32m    setSideBarType( isLoggedIn ? 0 : 1);[m
+[32m+[m[32m    setWorkoutType( isLoggedIn ? 'vid' : 'yt')[m
+     const tok_res = await requests.twilioToken(tempUserId, roomName);[m
+     if (!tok_res.ok) { handleSetConnecting(false); return; }[m
+     const token = tok_res.body.token;[m
+[1mdiff --git a/src/Room/BottomControl/BottomControl.js b/src/Room/BottomControl/BottomControl.js[m
+[1mindex 4331053..1ff5873 100644[m
+[1m--- a/src/Room/BottomControl/BottomControl.js[m
+[1m+++ b/src/Room/BottomControl/BottomControl.js[m
+[36m@@ -7,7 +7,7 @@[m [mimport { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAc[m
+ import { CallEnd, Videocam, VideocamOff, Mic, MicOff, FitnessCenter, ChatOutlined, GroupOutlined } from '@material-ui/icons';[m
+ [m
+ const BottomControl = ({ participantPage, setParticipantPage }) => {[m
+[31m-    const { room, handleLeaveRoom, openSideBar, handleOpenSideBar, sideBarType, setSideBarType } = useAppContext();[m
+[32m+[m[32m    const { room, handleLeaveRoom, openSideBar, handleOpenSideBar, sideBarType, setSideBarType, isLoggedIn, workoutType } = useAppContext();[m
+     const [vid, setVid] = useState(true);[m
+     const [mic, setMic] = useState(true);[m
+     const history = useHistory()[m
+[36m@@ -95,7 +95,7 @@[m [mconst BottomControl = ({ participantPage, setParticipantPage }) => {[m
+                         color="secondary"[m
+                         data-test="changeWorkoutNavigation"[m
+                     >[m
+[31m-                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<FitnessCenter />} />[m
+[32m+[m[32m                        { isLoggedIn && workoutType==='vid' && <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<FitnessCenter />} />}[m
+                         <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<Badge badgeContent={room.participants.size + 1} color="primary"><GroupOutlined /></Badge>} />[m
+                         <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<ChatOutlined />} />[m
+                     </BottomNavigation>[m
+[1mdiff --git a/src/Room/TopBar/DropMenu/DropMenu.js b/src/Room/TopBar/DropMenu/DropMenu.js[m
+[1mindex 1816c86..36e1784 100644[m
+[1m--- a/src/Room/TopBar/DropMenu/DropMenu.js[m
+[1m+++ b/src/Room/TopBar/DropMenu/DropMenu.js[m
+[36m@@ -62,7 +62,7 @@[m [mconst StyledMenu = withStyles({[m
+ [m
+ export default function SimpleMenu() {[m
+   const [anchorEl, setAnchorEl] = React.useState(null);[m
+[31m-  const { sendRoomState, setWorkoutType, workoutType } = useAppContext();[m
+[32m+[m[32m  const { sendRoomState, setWorkoutType, workoutType, isLoggedIn } = useAppContext();[m
+ [m
+   const classes = useStyles();[m
+ [m
+[36m@@ -176,7 +176,8 @@[m [mexport default function SimpleMenu() {[m
+         open={Boolean(anchorEl)}[m
+         onClose={handleClose}[m
+       >[m
+[31m-        <Grid container justify="center" alignItems="center">[m
+[32m+[m[41m        [m
+[32m+[m[32m        { isLoggedIn &&<Grid container justify="center" alignItems="center">[m
+           <MenuItem[m
+             onClick={() => {[m
+               handleChangeWorkoutType(0);[m
+[36m@@ -186,7 +187,7 @@[m [mexport default function SimpleMenu() {[m
+             <FitnessCenter />[m
+             <Typography className={classes.iconGap}>Custom</Typography>[m
+           </MenuItem>[m
+[31m-        </Grid>[m
+[32m+[m[32m        </Grid>}[m
+         <Grid container justify="center" alignItems="center">[m
+           <MenuItem[m
+             onClick={() => {[m
