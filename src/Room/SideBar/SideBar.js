@@ -3,8 +3,8 @@ import ExerciseList from "./ExerciseList/ExerciseList.js"
 import { sckt } from '../.././Socket';
 import { useAppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
+import {Box, Slide, Card, Typography, IconButton } from '@material-ui/core';
 import People from './People/People';
-import { Typography, IconButton, Box, Slide, Card } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -52,13 +52,13 @@ const SideBar = ({
             width: drawerWidth,
         },
         drawer: {
-            position: "absolute",
+            position: "fixed",
             width: drawerWidth,
-            top: 0,
+            top: "64px",
             right: 0,
-            bottom: 80,
-            marginRight: 16,
-            marginTop: 16,
+            bottom: "80px",
+            marginRight: "16px",
+            marginTop: 0,
         },
         fullWidth: {
             width: "100%"

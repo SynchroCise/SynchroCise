@@ -158,6 +158,16 @@ export const getUserWorkout = async (workoutId) => {
   return formatResults(res);
 };
 
+export const getWorkoutHistory = async () => {
+  const res = await fetch(`/user/getWorkoutHistory`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return formatResults(res);
+};
+
 export const addWorkout = async (newWorkout) => {
   const res = await fetch("/user/addWorkout", {
     method: "POST",
@@ -207,9 +217,9 @@ export const twilioToken = async (tempUserId, roomName) => {
 
 export const createTwilioRoom = async (token, roomName) => {
   let vidParam = {
-    width: {max: 640},
-    height: {max: 480},
-    aspectRatio: 16/9,
+    width: { max: 640 },
+    height: { max: 480 },
+    aspectRatio: 16 / 9,
     resizeMode: "crop-and-scale",
     frameRate: 24
   };

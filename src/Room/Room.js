@@ -133,22 +133,26 @@ const Room = (props) => {
 
   const useStyles = makeStyles(theme => ({
     content: {
-      position: "absolute",
-      transition: theme.transitions.create('padding', {
+      position: "fixed",
+      transition: theme.transitions.create("padding", {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
       }),
       paddingRight: drawerWidth + 16,
-      top: 0,
-      bottom: 80,
-      overflow: "hidden"
+      top: "64px",
+      bottom: "80px",
+      overflow: "hidden",
     },
     contentShift: {
-      transition: theme.transitions.create('padding', {
+      transition: theme.transitions.create("padding", {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
       }),
       paddingRight: 0,
+    },
+    abRoot: {
+      backgroundColor: "rgba(0, 0, 0, 0.87)",
+      boxShadow: "none",
     },
   }));
   const classes = useStyles();
@@ -160,9 +164,15 @@ const Room = (props) => {
       <Redirect to={`/join-room/${props.match.params.roomCode}`} data-test="redirectComponent" />
     );
   }
-
   return (
     <React.Fragment>
+      <AppBar
+        position="sticky"
+        bgcolor="text.primary"
+        classes={{ root: classes.abRoot }}
+      >
+        <TopBar />
+      </AppBar>
       <Box
         bgcolor="text.primary"
         data-test="roomComponent"
@@ -170,7 +180,9 @@ const Room = (props) => {
       >
         <Box
           width="100%"
-          className={`${classes.content} ${openSideBar ? '' : (classes.contentShift)}`}
+          className={`${classes.content} ${
+            openSideBar ? "" : classes.contentShift
+          }`}
         >
           <WorkoutDisplay></WorkoutDisplay>
         </Box>
@@ -183,8 +195,6 @@ const Room = (props) => {
           />
         </Box>
         <SideBar
-          currUser={room.localParticipant}
-          users={participants}
           drawerWidth={drawerWidth}
         />
       </Box>

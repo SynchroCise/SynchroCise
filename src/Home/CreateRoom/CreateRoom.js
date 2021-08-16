@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useHistory } from 'react-router-dom'
 import { useAppContext } from "../../AppContext"
 import { RoutesEnum } from '../../App'
@@ -22,17 +22,6 @@ const CreateRoom = () => {
   useEffect(() => {
     makeCustomRoom();
   }, [makeCustomRoom]);
-  // initialize workouts and userId
-  useEffect(() => {
-    const initWorkouts = async () => {
-      if (!isLoggedIn) return setWorkoutList([]);
-      const res = await requests.getUserWorkouts();
-      if (!res.ok) return setWorkoutList([]);
-      setWorkoutList(res.body);
-      handleSetWorkout(res.body[0]);
-    }
-    initWorkouts();
-  }, [isLoggedIn, handleSetWorkout]);
 
   useEffect(() => {
     const options = buildOptions(roomName.toLowerCase());
@@ -186,13 +175,7 @@ const CreateRoom = () => {
               {
                 (isLoggedIn) ?
                   (<Box width="100%">
-                    <WorkoutTable
-                      workoutList={workoutList}
-                      selectedWorkout={selectedWorkout}
-                      setSelectedWorkout={setSelectedWorkout}
-                      setWorkoutList={setWorkoutList}
-                      data-test="workoutTableComponent"
-                    />
+                    <WorkoutTable />
                   </Box>) : null
               }
             </Grid>

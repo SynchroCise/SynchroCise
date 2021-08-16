@@ -14,10 +14,9 @@ const {
     getUsersInRoom,
     getUsersBySid,
     getUserByName,
-    getLeadersInRoom,
-    getUsersBySocketId
+    updateWorkoutHistory
 } = require('./users.js');
-const { getActiveRooms, getRoomsBySID, updateRoomData, removeRoom } = require('./rooms.js');
+const { getActiveRooms, updateRoomData, removeRoom } = require('./rooms.js');
 const { getWorkoutById } = require('./workouts.js');
 
 
@@ -40,10 +39,12 @@ io.on('connection', (socket) => {
             io.to(user.room).emit('leaver', user);
         }
     }
+
     /** JOINING/LEAVING ROOMS */
     socket.on('getRoomData', ({ room }, callback) => {
         io.to(socket.id).emit('roomData', { room: room, users: getUsersInRoom(room) });
     });
+
     socket.on('checkUser', ({ name, room }, callback) => {
         const { error } = checkUser({ name, room });
         if (error) return callback(error);
@@ -57,7 +58,6 @@ io.on('connection', (socket) => {
 
         let roomUsers = await getUsersInRoom(user.room)
         let leaderList = roomUsers.filter(user => user.isLeader === true).map((obj) => obj.sid);
-        // socket.emit('message', { user: { name: 'admin' }, text: `${process.env.CLIENT}/room/${user.room}` });
 
         socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has joined` });
         // gets video sync data from other user
@@ -71,14 +71,22 @@ io.on('connection', (socket) => {
 
         io.to(user.room).emit('newUser', { name: name, sid: sid });
         socket.join(user.room);
-        // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
-
         callback({ id: user.id, leaderList: leaderList });
     });
 
-    socket.on('disconnect', () => { leaveRoom() });
+    //ONCE WILL RELY ON NEW METHOD OF VIDEO SHARING COMPLETION BEFORE THIS CAN BE FULLY IMPLEMENTED 
+    socket.on('disconnect', () => {
+        let time = new Date();
+        updateWorkoutHistory(socket.id, time);
+        leaveRoom();
+    });
 
-    socket.on('handleLeaveRoom', () => { leaveRoom() });
+    socket.on('handleLeaveRoom', () => {
+        let time = new Date();
+        updateWorkoutHistory(socket.id, time);
+        leaveRoom()
+    }
+    );
 
     /** ROOM DATA */
 
@@ -88,18 +96,17 @@ io.on('connection', (socket) => {
         user.name = newName;
         if (user) {
             io.to(user.room).emit('message', { user: { name: 'admin' }, text: `${oldName} changed their name to ${newName}` });
-            // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
         }
     });
+
     socket.on('checkRoomExists', ({ room }, callback) => {
         let rooms = getActiveRooms(io);
         return callback(rooms.includes(room));
     });
-    socket.on('updateRoomData', async ({ name, sid, workoutID, workoutType }) => {
+
+    socket.on('updateRoomData', async ({ name, workoutID, workoutType }) => {
         // update room data here
-        // const oldRoom = await getRoomsBySID(sid)
         const room = await updateRoomData(name, workoutID, workoutType);
-        // console.log(oldRoom)
         if (room) {
             room['workout'] = await getWorkoutById(room.workoutId);
             socket.broadcast.to(room.twilioRoomSid).emit('roomData', room);
@@ -123,6 +130,7 @@ io.on('connection', (socket) => {
         io.to(id).emit('startVideoSync', videoProps);
         callback();
     });
+
     socket.on('sendVideoState', (params, callback) => {
         const { name, room, eventName, eventParams } = params;
         socket.to(room).emit('receiveVideoState', params);
@@ -191,7 +199,6 @@ app.use('/user', passport.authenticate('jwt', { session: false }), secureRoute);
 app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname, '../server/build/index.html'));
 });
-
 
 server.listen(3001, () =>
     console.log('Express server is running on localhost:3001')
