@@ -26,9 +26,9 @@ const Home = () => {
     AOS.init({ once: true });
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     handleSetRoomName("");
-  })
+  }, [])
 
   const handleCreateRoom = () => {
     history.push(RoutesEnum.CreateRoom)
