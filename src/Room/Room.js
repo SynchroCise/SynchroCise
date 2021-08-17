@@ -4,11 +4,12 @@ import { useHistory } from 'react-router-dom'
 import SideBar from "./SideBar/SideBar";
 import BottomControl from "./BottomControl/BottomControl"
 import { useAppContext } from "../AppContext";
-import { Box } from '@material-ui/core';
+import { Box, AppBar } from '@material-ui/core';
 import WorkoutDisplay from './WorkoutDisplay/WorkoutDisplay'
 import { sckt } from '../Socket';
 import { makeStyles } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
+import TopBar from "./TopBar/TopBar"
 
 // using roomName and token, we will create a room
 const Room = (props) => {
