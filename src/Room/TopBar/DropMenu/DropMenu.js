@@ -62,7 +62,7 @@ const StyledMenu = withStyles({
 
 export default function SimpleMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { sendRoomState, setWorkoutType, workoutType } = useAppContext();
+  const { sendRoomState, setWorkoutType, workoutType, isLoggedIn } = useAppContext();
 
   const classes = useStyles();
 
@@ -176,7 +176,8 @@ export default function SimpleMenu() {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <Grid container justify="center" alignItems="center">
+        
+        { isLoggedIn &&<Grid container justify="center" alignItems="center">
           <MenuItem
             onClick={() => {
               handleChangeWorkoutType(0);
@@ -186,7 +187,7 @@ export default function SimpleMenu() {
             <FitnessCenter />
             <Typography className={classes.iconGap}>Custom</Typography>
           </MenuItem>
-        </Grid>
+        </Grid>}
         <Grid container justify="center" alignItems="center">
           <MenuItem
             onClick={() => {
