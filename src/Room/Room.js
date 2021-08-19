@@ -21,13 +21,13 @@ const Room = (props) => {
 
   // Initializing Room Stuff (TODO: move to WorkoutDisplay)
   const modifyVideoState = useCallback((paramsToChange) => {
-    if (playerRef.current !== null) return;
+    if (youtubeRef.current !== null) return;
     const { playing, seekTime } = paramsToChange;
     if (playing !== undefined) {
       updateVideoProps({ playing });
     }
     if (seekTime !== undefined) {
-      playerRef.current.seekTo(seekTime);
+      youtubeRef.current.seekTo(seekTime);
     }
   }, [updateVideoProps]);
 
@@ -41,11 +41,11 @@ const Room = (props) => {
     };
     // give data to new user joining
     const getVideoSyncHandler = ({ id }) => {
-      if (playerRef.current !== null) {
+      if (youtubeRef.current !== null) {
         let params = {
           id: id,
           ...videoProps,
-          seekTime: playerRef.current.getCurrentTime(),
+          seekTime: youtubeRef.current.getCurrentTime(),
           receiving: true
         }
         sckt.socket.emit('sendVideoSync', params, (error) => { });
@@ -103,7 +103,7 @@ const Room = (props) => {
 
 
   // sending sync video
-  const playerRef = useRef(null);
+  const youtubeRef = useRef(null);
   const drawerWidth = 360;
 
   // handels leader leaves server
@@ -185,7 +185,7 @@ const Room = (props) => {
             openSideBar ? "" : classes.contentShift
           }`}
         >
-          <WorkoutDisplay></WorkoutDisplay>
+          <WorkoutDisplay ppp={ppp} youtubeRef={youtubeRef}></WorkoutDisplay>
         </Box>
         <Box style={{ position: "fixed", width: "100vw", bottom: 0 }}>
           <BottomControl

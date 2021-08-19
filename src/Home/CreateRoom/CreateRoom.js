@@ -28,11 +28,12 @@ const CreateRoom = () => {
     const onConnectionSuccess = async () => {
       const room = connection.initJitsiConference(roomName.toLowerCase(), options.conference)
       handleSetRoom(room);
+      room.setSenderVideoConstraint(720);
 
       // Sets Local Participants' property
       const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
       room.setLocalParticipantProperty('displayName', username);
-      room.setLocalParticipantProperty('userId', tempUserId)
+      room.setLocalParticipantProperty('userId', tempUserId);
 
       // Creates a room in the server
       const room_res = await requests.createRoom({ name: roomName.toLowerCase(), sid: '' }, workout.id, 'vid');
@@ -59,7 +60,12 @@ const CreateRoom = () => {
       connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
       connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
       connection.connect()
-      JitsiMeetJS.createLocalTracks({ devices: [ 'audio', 'video' ] })
+      JitsiMeetJS.createLocalTracks({
+        devices: [ 'audio', 'video' ],
+        maxFps: 24,
+        resolution: 720,
+        facingMode: 'user'
+      })
         .then(onLocalTracks)
         .catch(error => {
             throw error;

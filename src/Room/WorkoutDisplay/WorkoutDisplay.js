@@ -1,20 +1,43 @@
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../AppContext";
 import Participant from "./Participant/Participant";
+import Youtube from "../Youtube/Youtube"
 import { Box } from '@material-ui/core';
 
 
-const WorkoutDisplay = () => {
+const WorkoutDisplay = ({ ppp, youtubeRef }) => {
+  // TODO: move `ppp` out of props
   const { JitsiMeetJS, pinnedParticipantId, participantIds, setParticipantIds, room, localTracks, workoutType } = useAppContext();
   const [isJoined, setIsJoined] = useState(false);
   const [remoteTracks, setRemoteTracks] = useState({});
+  const [displayParticipantId, setDisplayParticipantId] = useState("");
+  const [bottomDisplayParticipantIds, setBottomDisplayParticipantIds] = useState([]);
 
-  const getDisplayParticipantId = () => {
+  // sets display participant id
+  useEffect(() => {
+    if (!room) return;
     const remoteParticipants = room.getParticipants();
-    if (remoteParticipants.length === 0) return room.myUserId();
-    if (pinnedParticipantId !== "") return pinnedParticipantId;
-    return remoteParticipants[0].getId();
-  }
+    if (remoteParticipants.length === 0) return setDisplayParticipantId(room.myUserId());
+    if (pinnedParticipantId !== "") return setDisplayParticipantId(pinnedParticipantId);
+    return setDisplayParticipantId(remoteParticipants[0].getId());
+  }, [pinnedParticipantId, room, participantIds]);
+
+  // sets bottom display participant ids
+  useEffect(() => {
+    if (!room || room.getParticipants().length === 0) return setBottomDisplayParticipantIds([]);
+    let tempBottomParticipantIds = room
+      .getParticipants()
+      .map((p) => p.getId())
+      .filter((id) => id !== displayParticipantId);
+    if (displayParticipantId === room.myUserId() && workoutType === 'vid') {
+      tempBottomParticipantIds = tempBottomParticipantIds.slice(0, ppp);
+      setBottomDisplayParticipantIds(tempBottomParticipantIds);
+    }
+    else {
+      tempBottomParticipantIds = tempBottomParticipantIds.slice(0, ppp - 1);
+      setBottomDisplayParticipantIds([room.myUserId(), ...tempBottomParticipantIds]);
+    }
+  }, [displayParticipantId, room, participantIds, workoutType, ppp]);
 
   // once room has been initialized
   useEffect(() => {
@@ -31,7 +54,6 @@ const WorkoutDisplay = () => {
       setRemoteTracks((prev) => ({...prev, [participantId]: [...prevTracks, track] }));      
     }
     const onConferenceJoined = () => {
-      room.setLocalParticipantProperty("favouriteColour", "yess");
       setParticipantIds((prev) => [...prev, room.myUserId()]);
       localTracks.forEach((track) => room.addTrack(track));
       setIsJoined(true);
@@ -43,6 +65,7 @@ const WorkoutDisplay = () => {
     const onUserLeft = (id) => {
       console.log('onUserLeft');
       setParticipantIds(prev => [...prev].filter(p => (p !== id)));
+      if (remoteTracks[id]) remoteTracks[id].forEach((track) => track.detach())
     }
     if (room) {
       room.join()
@@ -62,27 +85,25 @@ const WorkoutDisplay = () => {
       
   return (
     <React.Fragment>
-      <Box height={room.getParticipants().length > 0 ? "70%" : "100%"}>
+      <Box height={bottomDisplayParticipantIds.length > 0 ? "70%" : "100%"}>
         {(workoutType === 'vid') ? (
           <Participant
-            id={getDisplayParticipantId()}
-            tracks={(getDisplayParticipantId() === room.myUserId()) ? localTracks : remoteTracks[getDisplayParticipantId()]}
+            id={displayParticipantId}
+            tracks={(displayParticipantId === room.myUserId()) ? localTracks : remoteTracks[displayParticipantId]}
           />
         ) : (
           // TODO: insert Youtube here
-          null
+          <Youtube playerRef={youtubeRef}></Youtube>
         )} 
       </Box>
-      {room.getParticipants().length > 0 && 
+      {bottomDisplayParticipantIds.length > 0 && 
        <Box height="30%" flexDirection="row" display="flex" justifyContent="space-around">
           {
-            [...participantIds]
-            .filter((participantId) => participantId !== getDisplayParticipantId())
+            [...bottomDisplayParticipantIds]
             .map((participantId) => {
               if (participantId === room.myUserId()) {
                 return (<Participant key={participantId} id={participantId} tracks={localTracks}/>)
               } else if (remoteTracks[participantId]) {
-                console.log('remotetracks', remoteTracks[participantId])
                 return (<Participant key={participantId} id={participantId} tracks={remoteTracks[participantId]}/>)
               }
               return null
