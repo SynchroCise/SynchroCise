@@ -37,10 +37,11 @@ const People = () => {
     }
 
     const participantsListMarkup = () => {
-        let all_participants = [username];
+        let all_participants = [{ name: username, id: room.myUserId() }];
         room.getParticipants().forEach((p) => {
-            all_participants.push(p.getProperty("displayName"));
+            all_participants.push({ name: p.getProperty("displayName"), id: p.getId() });
         });
+        console.log(all_participants);
         return (all_participants.map((participant, index) => (
             <ListItem key={index}>
                 <ListItemAvatar>
@@ -49,13 +50,13 @@ const People = () => {
                     </Avatar>
                 </ListItemAvatar>
                 <ListItemText
-                    primary={participant}
+                    primary={participant.name}
                 />
-                {/* <ListItemSecondaryAction>
-                    <IconButton edge="end" onClick={() => setPinnedParticipantId(participant.sid)}>
-                        <PushPin className={(pinnedParticipantId === participant.sid) ? classes.pinnedIcon : null} />
+                <ListItemSecondaryAction>
+                    <IconButton edge="end" onClick={() => setPinnedParticipantId(participant.id)}>
+                        <PushPin className={(pinnedParticipantId === participant.id) ? classes.pinnedIcon : null} />
                     </IconButton>
-                </ListItemSecondaryAction> */}
+                </ListItemSecondaryAction>
             </ListItem>
         )));
     }
