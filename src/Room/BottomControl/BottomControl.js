@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from 'react-router-dom'
 import { RoutesEnum } from '../../App'
@@ -7,9 +7,9 @@ import { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAc
 import { CallEnd, Videocam, VideocamOff, Mic, MicOff, FitnessCenter, ChatOutlined, GroupOutlined } from '@material-ui/icons';
 
 const BottomControl = ({ participantPage, setParticipantPage }) => {
-    const { room, handleLeaveRoom, openSideBar, handleOpenSideBar, sideBarType, setSideBarType } = useAppContext();
-    const [vid, setVid] = useState(true);
-    const [mic, setMic] = useState(true);
+    const { participantIds, localTracks, handleLeaveRoom, openSideBar, handleOpenSideBar, sideBarType, setSideBarType } = useAppContext();
+    const [isVidMute, setIsVidMute] = useState(true);
+    const [isMicMute, setIsMicMute] = useState(true);
     const history = useHistory()
 
     const handleSidebarNav = (value) => {
@@ -21,20 +21,44 @@ const BottomControl = ({ participantPage, setParticipantPage }) => {
         setSideBarType(value);
     }
 
+    // initialize video muted state
+    useEffect(() => {
+        const initVid = () => {
+            localTracks.forEach(track => {
+                if (track.getType() === 'video') {
+                    return setIsVidMute(track.isMuted());
+                }
+            });
+        }
+        const initMic = () => {
+            localTracks.forEach(track => {
+                if (track.getType() === 'audio') {
+                    return setIsMicMute(track.isMuted());
+                }
+            });
+        }
+        initVid();
+        initMic();
+    }, [localTracks]);
+
     const handleMic = () => {
-        if (!room) return;
-        room.localParticipant.audioTracks.forEach(track => {
-            (mic) ? track.track.disable() : track.track.enable()
+        if (!localTracks) return;
+        localTracks.forEach(track => {
+            if (track.getType() === 'audio') {
+                (isMicMute) ? track.unmute() : track.mute()
+            }
         });
-        setMic(!mic);
+        setIsMicMute(!isMicMute);
     };
 
     const handleVid = () => {
-        if (!room) return;
-        room.localParticipant.videoTracks.forEach(track => {
-            (vid) ? track.track.disable() : track.track.enable()
+        if (!localTracks) return;
+        localTracks.forEach(track => {
+            if (track.getType() === 'video') {
+                (isVidMute) ? track.unmute() : track.mute()
+            }
         });
-        setVid(!vid);
+        setIsVidMute(!isVidMute);
     };
 
     const endCall = () => {
@@ -69,10 +93,10 @@ const BottomControl = ({ participantPage, setParticipantPage }) => {
             <Grid item xs={4}>
                 <Box display="flex" justifyContent="flex-start" alignItems="center">
                     <IconButton color="secondary" onClick={handleVid} data-test="videoButton">
-                        {vid ? <Videocam data-test="vidOn" /> : <VideocamOff data-test="vidOff" />}
+                        {!isVidMute ? <Videocam data-test="vidOn" /> : <VideocamOff data-test="vidOff" />}
                     </IconButton>
                     <IconButton color="secondary" onClick={handleMic} data-test="micButton">
-                        {mic ? <Mic data-test="micOn" /> : <MicOff data-test="micOff" />}
+                        {!isMicMute ? <Mic data-test="micOn" /> : <MicOff data-test="micOff" />}
                     </IconButton>
                     <IconButton color="secondary" className={classes.endCall} onClick={endCall}>
                         <CallEnd />
@@ -96,7 +120,7 @@ const BottomControl = ({ participantPage, setParticipantPage }) => {
                         data-test="changeWorkoutNavigation"
                     >
                         <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<FitnessCenter />} />
-                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<Badge badgeContent={room.participants.size + 1} color="primary"><GroupOutlined /></Badge>} />
+                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<Badge badgeContent={participantIds.length} color="primary"><GroupOutlined /></Badge>} />
                         <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<ChatOutlined />} />
                     </BottomNavigation>
                 </Box>
