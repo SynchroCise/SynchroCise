@@ -5,20 +5,20 @@ import { useAppContext } from "../../../AppContext"
 import { makeStyles } from "@material-ui/core/styles";
 
 const People = () => {
-    const { room, nameArray, setPinnedParticipantId, pinnedParticipantId } = useAppContext();
+    const { room, nameArray, setPinnedParticipantId, pinnedParticipantId, username } = useAppContext();
     const useStyles = makeStyles(theme => ({
         buttonWide: {
             width: "100%",
             textALign: 'left',
             justifyContent: 'left',
             '&:hover': {
-              backgroundColor: '#ECECEC',
+                backgroundColor: '#ECECEC',
             }
         },
         callHeader: {
             marginTop: "12px",
             marginBottom: "4px",
-            padding: "0 24px" 
+            padding: "0 24px"
         },
         pinnedIcon: {
             color: theme.palette.primary.main
@@ -37,9 +37,10 @@ const People = () => {
     }
 
     const participantsListMarkup = () => {
-        const all_participants =  [room.localParticipant, ...room.participants.values()];
-        // console.log(room.participants);
-        // console.log(room.localParticipant);
+        let all_participants = [username];
+        room.getParticipants().forEach((p) => {
+            all_participants.push(p.getProperty("displayName"));
+        });
         return (all_participants.map((participant, index) => (
             <ListItem key={index}>
                 <ListItemAvatar>
@@ -48,13 +49,13 @@ const People = () => {
                     </Avatar>
                 </ListItemAvatar>
                 <ListItemText
-                    primary={getNameFromSid(participant.sid)}
+                    primary={participant}
                 />
-                <ListItemSecondaryAction>
+                {/* <ListItemSecondaryAction>
                     <IconButton edge="end" onClick={() => setPinnedParticipantId(participant.sid)}>
-                        <PushPin className={(pinnedParticipantId === participant.sid) ? classes.pinnedIcon : null}/>
+                        <PushPin className={(pinnedParticipantId === participant.sid) ? classes.pinnedIcon : null} />
                     </IconButton>
-                </ListItemSecondaryAction>
+                </ListItemSecondaryAction> */}
             </ListItem>
         )));
     }
@@ -64,7 +65,7 @@ const People = () => {
             <ButtonBase className={classes.buttonWide}>
                 <Box display="flex" alignItems="center" pl={2}>
                     <PersonAddOutlined></PersonAddOutlined>
-                    <Typography style={{padding: "10px"}}>Add people</Typography>
+                    <Typography style={{ padding: "10px" }}>Add people</Typography>
                 </Box>
             </ButtonBase>
             <Box display='flex' flexDirection="column" flexGrow={1} className={classes.scrollContainer}>
@@ -75,7 +76,7 @@ const People = () => {
             </Box>
         </Box>
 
-        
+
     );
 }
 
