@@ -57,7 +57,7 @@ const BottomControl = ({ participantPage, setParticipantPage }) => {
             "&:hover, &.Mui-focusVisible": { backgroundColor: "#ea4335" }
         },
         notSelected: {
-            '&.Mui-selected' : {
+            '&.Mui-selected': {
                 color: 'white'
             }
         }
@@ -95,9 +95,9 @@ const BottomControl = ({ participantPage, setParticipantPage }) => {
                         color="secondary"
                         data-test="changeWorkoutNavigation"
                     >
-                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<FitnessCenter />} />
-                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<Badge badgeContent={room.participants.size + 1} color="primary"><GroupOutlined /></Badge>} />
-                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<ChatOutlined />} />
+                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected : null} icon={<FitnessCenter />} />
+                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected : null} icon={<Badge badgeContent={room.getParticipants().length + 1} color="primary"><GroupOutlined /></Badge>} />
+                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected : null} icon={<ChatOutlined />} />
                     </BottomNavigation>
                 </Box>
             </Grid>
