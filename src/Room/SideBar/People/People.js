@@ -41,7 +41,6 @@ const People = () => {
         room.getParticipants().forEach((p) => {
             all_participants.push({ name: p.getProperty("displayName"), id: p.getId() });
         });
-        console.log(all_participants);
         return (all_participants.map((participant, index) => (
             <ListItem key={index}>
                 <ListItemAvatar>
@@ -76,8 +75,6 @@ const People = () => {
                 </List>
             </Box>
         </Box>
-
-
     );
 }
 
