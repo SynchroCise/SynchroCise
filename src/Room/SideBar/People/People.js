@@ -5,7 +5,7 @@ import { useAppContext } from "../../../AppContext"
 import { makeStyles } from "@material-ui/core/styles";
 
 const People = () => {
-    const { room, nameArray, setPinnedParticipantId, pinnedParticipantId, username } = useAppContext();
+    const { room, setPinnedParticipantId, pinnedParticipantId, username } = useAppContext();
     const useStyles = makeStyles(theme => ({
         buttonWide: {
             width: "100%",
@@ -29,12 +29,6 @@ const People = () => {
         }
     }));
     const classes = useStyles();
-
-    const getNameFromSid = (sid) => {
-        const participantMapping = nameArray.find(x => x.sid === sid);
-        if (!participantMapping) return ''
-        return participantMapping.name
-    }
 
     const participantsListMarkup = () => {
         let all_participants = [{ name: username, id: room.myUserId() }];

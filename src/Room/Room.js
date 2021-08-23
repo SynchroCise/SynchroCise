@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { RoutesEnum } from '../App'
 import { useHistory } from 'react-router-dom'
 import SideBar from "./SideBar/SideBar";
@@ -13,11 +13,9 @@ import TopBar from "./TopBar/TopBar"
 
 // using roomName and token, we will create a room
 const Room = (props) => {
-  const [participants, setParticipants] = useState([]);
-  const [participantPage, setParticipantPage] = useState(0);
   const ppp = 4; // participants per page
   const history = useHistory();
-  const { room, openSideBar, roomProps, updateRoomProps, workoutType, videoProps, updateVideoProps, setNameArray, pinnedParticipantId } = useAppContext();
+  const { room, openSideBar, roomProps, updateRoomProps, videoProps, updateVideoProps, setNameArray } = useAppContext();
 
   // Initializing Room Stuff (TODO: move to WorkoutDisplay)
   const modifyVideoState = useCallback((paramsToChange) => {
@@ -116,22 +114,6 @@ const Room = (props) => {
     return () => sckt.socket.off('killroom', handler);
   }, [history]);
 
-  // gets first joined participant (TODO: Remove)
-  const getFirstParticipantId = useCallback(() => {
-    if (participants.length === 0) return ""
-    const sortedParticipants = participants.sort((a, b) => a.startDate - b.startDate);
-    return sortedParticipants[0].sid
-  }, [participants]);
-
-  // get all participants (TODO: Remove)
-  const getAllRemoteParticipants = useCallback(() => {
-    if (!room) return [];
-    let all_participants = [...participants, room.localParticipant];
-    const newPinnedParticipantId = (pinnedParticipantId === "") ? getFirstParticipantId() : pinnedParticipantId
-    all_participants = (workoutType === 'yt') ? all_participants : all_participants.filter((participant) => participant.sid !== newPinnedParticipantId)
-    return all_participants
-  }, [participants, pinnedParticipantId, workoutType, getFirstParticipantId, room]);
-
   const useStyles = makeStyles(theme => ({
     content: {
       position: "fixed",
@@ -188,12 +170,7 @@ const Room = (props) => {
           <WorkoutDisplay ppp={ppp} youtubeRef={youtubeRef}></WorkoutDisplay>
         </Box>
         <Box style={{ position: "fixed", width: "100vw", bottom: 0 }}>
-          <BottomControl
-            participantPage={participantPage}
-            setParticipantPage={setParticipantPage}
-            getAllRemoteParticipants={getAllRemoteParticipants}
-            ppp={ppp}
-          />
+          <BottomControl/>
         </Box>
         <SideBar
           drawerWidth={drawerWidth}

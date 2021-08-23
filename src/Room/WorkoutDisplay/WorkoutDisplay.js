@@ -8,7 +8,6 @@ import { Box } from '@material-ui/core';
 const WorkoutDisplay = ({ ppp, youtubeRef }) => {
   // TODO: move `ppp` out of props
   const { JitsiMeetJS, pinnedParticipantId, participantIds, setParticipantIds, room, localTracks, workoutType } = useAppContext();
-  const [isJoined, setIsJoined] = useState(false);
   const [remoteTracks, setRemoteTracks] = useState({});
   const [displayParticipantId, setDisplayParticipantId] = useState("");
   const [bottomDisplayParticipantIds, setBottomDisplayParticipantIds] = useState([]);
@@ -56,7 +55,6 @@ const WorkoutDisplay = ({ ppp, youtubeRef }) => {
     const onConferenceJoined = () => {
       setParticipantIds((prev) => [...prev, room.myUserId()]);
       localTracks.forEach((track) => room.addTrack(track));
-      setIsJoined(true);
     };
     const onUserJoined = (id) => {
       console.log('onUserJoined', id);

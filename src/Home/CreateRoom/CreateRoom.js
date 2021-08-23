@@ -12,10 +12,8 @@ import { createConnection, buildOptions } from "../../utils/jitsi"
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const { JitsiMeetJS, userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetWorkout, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn, setLocalTracks } = useAppContext()
+  const { JitsiMeetJS, userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn, setLocalTracks } = useAppContext()
   const history = useHistory()
-  const [selectedWorkout, setSelectedWorkout] = useState(0);
-  const [workoutList, setWorkoutList] = useState([]);
   const [connection, setConnection] = useState(null);
 
   // intialize custom room code

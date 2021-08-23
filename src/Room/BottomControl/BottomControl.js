@@ -3,10 +3,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from 'react-router-dom'
 import { RoutesEnum } from '../../App'
 import { useAppContext } from "../../AppContext";
-import { Grid, Typography, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles, Badge } from '@material-ui/core';
+import { Grid, Box, IconButton, BottomNavigation, BottomNavigationAction, withStyles, Badge } from '@material-ui/core';
 import { CallEnd, Videocam, VideocamOff, Mic, MicOff, FitnessCenter, ChatOutlined, GroupOutlined } from '@material-ui/icons';
 
-const BottomControl = ({ participantPage, setParticipantPage }) => {
+const BottomControl = () => {
     const { participantIds, localTracks, handleLeaveRoom, openSideBar, handleOpenSideBar, sideBarType, setSideBarType } = useAppContext();
     const [isVidMute, setIsVidMute] = useState(true);
     const [isMicMute, setIsMicMute] = useState(true);
@@ -105,7 +105,7 @@ const BottomControl = ({ participantPage, setParticipantPage }) => {
             </Grid>
             <Grid item xs={4}>
                 <Box display="flex" justifyContent="center" alignItems="center" l={3} r={3}>
-                    <Typography color="secondary"> Page {participantPage} </Typography>
+                    {/* <Typography color="secondary"> Page {participantPage} </Typography> */}
                 </Box>
             </Grid>
             <Grid item xs={4}>
