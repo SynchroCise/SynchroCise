@@ -81,7 +81,7 @@ const BottomControl = ({ participantPage, setParticipantPage }) => {
             "&:hover, &.Mui-focusVisible": { backgroundColor: "#ea4335" }
         },
         notSelected: {
-            '&.Mui-selected' : {
+            '&.Mui-selected': {
                 color: 'white'
             }
         }
