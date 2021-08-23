@@ -101,10 +101,9 @@ const WorkoutDisplay = ({ ppp, youtubeRef }) => {
             .map((participantId) => {
               if (participantId === room.myUserId()) {
                 return (<Participant key={participantId} id={participantId} tracks={localTracks}/>)
-              } else if (remoteTracks[participantId]) {
-                return (<Participant key={participantId} id={participantId} tracks={remoteTracks[participantId]}/>)
+              } else {
+                return (<Participant key={participantId} id={participantId} tracks={(remoteTracks[participantId]) ? remoteTracks[participantId] : []}/>)
               }
-              return null
             })
           }
         </Box>

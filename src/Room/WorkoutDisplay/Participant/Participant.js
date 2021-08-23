@@ -16,7 +16,6 @@ const Participant = ({id, tracks}) => {
   useEffect(() => {
     if(!room) return;
     const muteChanged = (track) => {
-      console.log(track.getType(), track.isMuted(), track.getParticipantId(), id);
       if (track.getParticipantId() !== id) return;
       if (track.getType() === 'video') {
         setVideoMute(track.isMuted());
