@@ -105,7 +105,6 @@ const BottomControl = () => {
             </Grid>
             <Grid item xs={4}>
                 <Box display="flex" justifyContent="center" alignItems="center" l={3} r={3}>
-                    {/* <Typography color="secondary"> Page {participantPage} </Typography> */}
                 </Box>
             </Grid>
             <Grid item xs={4}>

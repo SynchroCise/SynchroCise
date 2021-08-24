@@ -29,9 +29,8 @@ const CreateRoom = () => {
       room.setSenderVideoConstraint(720);
 
       // Sets Local Participants' property
-      const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
       room.setLocalParticipantProperty('displayName', username);
-      room.setLocalParticipantProperty('userId', tempUserId);
+      room.setLocalParticipantProperty('userId', (isLoggedIn) ? userId : (await createTempUser(username)));
 
       // Creates a room in the server
       const room_res = await requests.createRoom({ name: roomName.toLowerCase(), sid: '' }, workout.id, 'vid');

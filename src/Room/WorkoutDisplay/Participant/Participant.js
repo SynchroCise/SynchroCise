@@ -39,13 +39,13 @@ const Participant = ({id, tracks}) => {
         track.attach(videoRef.current);
         setVideoMute(track.isMuted());
         vidCount += 1;
-      } else if (track.getType() === 'audio' && audCount === 0) {
+      } else if (track.getType() === 'audio' && id !== room.myUserId() && audCount === 0) {
         track.attach(audioRef.current);
         setAudioMute(track.isMuted());
         audCount += 1;
       }
     });
-  }, [tracks]);
+  }, [tracks, id, room]);
 
   useEffect(() => {
     if (!room) return;
