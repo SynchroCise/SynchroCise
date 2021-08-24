@@ -11,7 +11,7 @@ export const useJitsi = () => {
     script.src = 'https://meet.jit.si/libs/lib-jitsi-meet.min.js'
     script.async = true;
     script.onload = () => setLib({ [name]: window[name] });
-
+ 
     jQscript.src = 'https://code.jquery.com/jquery-3.5.1.min.js';
     jQscript.async = true;
 
@@ -44,7 +44,11 @@ export const buildOptions = (roomName) => {
         useStunTurn: true, 
         bosh: `https://meet.jit.si/http-bind?room=${roomName}`, 
         websocket: 'wss://meet.jit.si/xmpp-websocket', 
-        clientNode: 'http://jitsi.org/jitsimeet', 
+        clientNode: 'http://jitsi.org/jitsimeet',
+        deploymentInfo: {
+          shard: 'shard1',
+          region: 'NA'
+        }
       },
       conference: {
           enableLayerSuspension: true,

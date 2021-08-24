@@ -48,6 +48,7 @@ const JoinRoom = (props) => {
       handleSetConnecting(false);
       const room = connection.initJitsiConference(roomName.toLowerCase(), options.conference);
       handleSetRoom(room);
+      room.setSenderVideoConstraint(180);
     }
     const onConnectionFailed = () => {
       handleSetConnecting(false);
@@ -69,12 +70,18 @@ const JoinRoom = (props) => {
     handleSetConnecting(true);
     if (!roomName) return;
     if (JitsiMeetJS) {
+      console.log('starting connection')
       connection = createConnection(JitsiMeetJS, roomName.toLowerCase());
       connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
       connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
       connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
       connection.connect()
-      JitsiMeetJS.createLocalTracks({ devices: [ 'audio', 'video' ] })
+      JitsiMeetJS.createLocalTracks({
+        devices: [ 'audio', 'video' ],
+        maxFps: 24,
+        resolution: 180,
+        facingMode: 'user'
+      })
         .then(onLocalTracks)
         .catch(error => {
             throw error;
