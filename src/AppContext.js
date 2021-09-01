@@ -45,7 +45,7 @@ const AppContextProvider = ({ children }) => {
   const sendRoomState = ({ eventName, eventParams }, callback) => {
     let params = {
       name: username,
-      room: room.sid,
+      room: roomName,
       eventName: eventName,
       eventParams: eventParams
     };
