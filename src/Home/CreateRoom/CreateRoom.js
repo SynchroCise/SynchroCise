@@ -5,14 +5,15 @@ import { RoutesEnum } from '../../App'
 import WorkoutTable from "./WorkoutTable"
 import { makeStyles } from "@material-ui/core/styles";
 import { FormControlLabel, Switch, Toolbar, IconButton, Box, Typography, TextField, InputAdornment, Grid } from '@material-ui/core';
-import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward } from '@material-ui/icons';
+import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward, ConstructionOutlined } from '@material-ui/icons';
 import * as requests from "../../utils/requests"
 import { createConnection, buildOptions } from "../../utils/jitsi"
 
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const { JitsiMeetJS, userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn, setLocalTracks } = useAppContext()
+  const { JitsiMeetJS, workoutType, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetOpenAuthDialog, makeCustomRoom, isLoggedIn, setLocalTracks } = useAppContext()
+
   const history = useHistory()
   const [connection, setConnection] = useState(null);
 
@@ -30,10 +31,9 @@ const CreateRoom = () => {
 
       // Sets Local Participants' property
       room.setLocalParticipantProperty('displayName', username);
-      room.setLocalParticipantProperty('userId', (isLoggedIn) ? userId : (await createTempUser(username)));
 
       // Creates a room in the server
-      const room_res = await requests.createRoom({ name: roomName.toLowerCase(), sid: '' }, workout.id, 'vid');
+      const room_res = await requests.createRoom({ name: roomName.toLowerCase(), sid: '' }, workout.id, workoutType);
       if (!room_res.ok) { handleSetConnecting(false); return; }
 
       handleSetConnecting(false);
@@ -58,22 +58,22 @@ const CreateRoom = () => {
       connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
       connection.connect()
       JitsiMeetJS.createLocalTracks({
-        devices: [ 'audio', 'video' ],
+        devices: ['audio', 'video'],
         maxFps: 24,
         resolution: 720,
         facingMode: 'user'
       })
         .then(onLocalTracks)
         .catch(error => {
-            throw error;
-      });
+          throw error;
+        });
       return () => {
         connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
         connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
         connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
       }
     }
-  }, [connection, JitsiMeetJS]);
+  }, [connection, JitsiMeetJS, workout]);
 
   const handleSubmit = (event) => {
     event.preventDefault();

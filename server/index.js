@@ -9,15 +9,14 @@ const path = require('path');
 
 const {
     checkUser,
-    addUser,
-    removeUser,
-    getUsersInRoom,
-    getUsersBySid,
-    getUserByName,
     updateWorkoutHistory
 } = require('./users.js');
-const { getActiveRooms, updateRoomData, removeRoom } = require('./rooms.js');
-const { getWorkoutById } = require('./workouts.js');
+const { removeRoom } = require('./rooms.js');
+const getTime = () => {
+    let time = new Date();
+    let mins = (time.getMinutes() < 10 ? '0' : '') + time.getMinutes();
+    return time.getHours() + ":" + mins
+}
 
 
 const router = require('./router')
@@ -28,100 +27,49 @@ const io = socketio(server);
 const cors = require('cors');
 
 io.on('connection', (socket) => {
-    const leaveRoom = async () => {
-        const user = await removeUser(socket.id);
-        if (user.isLeader) {
+    //refactor
+    const leaveRoom = async (room, leader = false) => {
+        if (leader) {
             const room = await removeRoom(user.room);
-            io.to(user.room).emit('killroom');
+            io.to(room).emit('killroom');
         }
         if (user) {
-            socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has left` });
-            io.to(user.room).emit('leaver', user);
+            socket.broadcast.to(room).emit('message', { user: { name: 'admin' }, text: `user has left` });
+            io.to(room).emit('leaver', user);
         }
     }
 
     /** JOINING/LEAVING ROOMS */
-    socket.on('getRoomData', ({ room }, callback) => {
-        io.to(socket.id).emit('roomData', { room: room, users: getUsersInRoom(room) });
-    });
-
     socket.on('checkUser', ({ name, room }, callback) => {
         const { error } = checkUser({ name, room });
         if (error) return callback(error);
         return callback();
     });
-    socket.on('join', async ({ name, room, sid, userId }, callback) => {
-        const { user, error } = await addUser({ socketId: socket.id, name, room, sid, userId });
-        if (error) return callback('Firebase connection failed');
 
-        io.to(user.room).emit('message', { user: { name: 'admin' }, text: `Hi ${user.name}! Welcome to your new room! You can invite your friends to watch with you by sending them the link to this page.` });
-
-        let roomUsers = await getUsersInRoom(user.room)
-        let leaderList = roomUsers.filter(user => user.isLeader === true).map((obj) => obj.sid);
-
-        socket.broadcast.to(user.room).emit('message', { user: { name: 'admin' }, text: `${user.name} has joined` });
-        // gets video sync data from other user
-        if (roomUsers.length > 1) {
-            const otherUser = roomUsers.filter((roomUser) => user.id !== roomUser.id)[0]
-            if (otherUser) {
-                io.to(otherUser.socketId).emit('getRoomSync', { id: user.socketId });
-                io.to(otherUser.socketId).emit('getVideoSync', { id: user.socketId });
-            }
-        }
-
-        io.to(user.room).emit('newUser', { name: name, sid: sid });
-        socket.join(user.room);
-        callback({ id: user.id, leaderList: leaderList });
+    socket.on('join', async ({ room, uid, displayName }, callback) => {
+        io.to(room).emit('getRoomSync', { id: uid });
+        io.to(room).emit('getVideoSync', { id: uid });
+        socket.broadcast.to(room).emit('message', { user: 'admin', text: `${displayName} has joined`, time: getTime() });
+        socket.join(room);
     });
 
     //ONCE WILL RELY ON NEW METHOD OF VIDEO SHARING COMPLETION BEFORE THIS CAN BE FULLY IMPLEMENTED 
+    //TODO: Make it not based on socketid if possible
     socket.on('disconnect', () => {
         let time = new Date();
         updateWorkoutHistory(socket.id, time);
-        leaveRoom();
+        //leaveRoom();
     });
 
     socket.on('handleLeaveRoom', () => {
         let time = new Date();
         updateWorkoutHistory(socket.id, time);
         leaveRoom()
-    }
-    );
-
-    /** ROOM DATA */
-
-    // TODO: Fix this for actual functionality
-    socket.on('changeUsername', ({ oldName, newName }) => {
-        const user = getUserByName(oldName);
-        user.name = newName;
-        if (user) {
-            io.to(user.room).emit('message', { user: { name: 'admin' }, text: `${oldName} changed their name to ${newName}` });
-        }
     });
-
-    socket.on('checkRoomExists', ({ room }, callback) => {
-        let rooms = getActiveRooms(io);
-        return callback(rooms.includes(room));
-    });
-
-    socket.on('updateRoomData', async ({ name, workoutID, workoutType }) => {
-        // update room data here
-        const room = await updateRoomData(name, workoutID, workoutType);
-        if (room) {
-            room['workout'] = await getWorkoutById(room.workoutId);
-            socket.broadcast.to(room.twilioRoomSid).emit('roomData', room);
-        }
-    })
 
     /** SENDING MESSAGES */
-    socket.on('sendMessage', async ({ message, userSid }, callback) => {
-        const user = (await getUsersBySid(userSid))[0];
-        let time = new Date();
-        let mins = (time.getMinutes() < 10 ? '0' : '') + time.getMinutes();
-        if (user) {
-            io.to(user.room).emit('message', { user: user, text: message, time: time.getHours() + ":" + mins });
-            // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)});
-        }
+    socket.on('sendMessage', async ({ message, username, room }, callback) => {
+        io.to(room).emit('message', { user: username, text: message, time: getTime() });
         callback();
     });
 
@@ -161,7 +109,7 @@ io.on('connection', (socket) => {
             default:
                 admin_msg = ''; break;
         }
-        // console.log(admin_msg);
+
         io.in(room).emit('message', { user: { name: 'admin' }, text: admin_msg });
         callback();
     });

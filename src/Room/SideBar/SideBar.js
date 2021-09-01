@@ -3,7 +3,7 @@ import ExerciseList from "./ExerciseList/ExerciseList.js"
 import { sckt } from '../.././Socket';
 import { useAppContext } from "../../AppContext";
 import Chat from './Chat/Chat';
-import {Box, Slide, Card, Typography, IconButton } from '@material-ui/core';
+import { Box, Slide, Card, Typography, IconButton } from '@material-ui/core';
 import People from './People/People';
 import { Close } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
@@ -18,15 +18,18 @@ const SideBar = ({
     const [sideBarTitle, setSideBarTitle] = useState('');
     const [sideBarContent, setSideBarContent] = useState(null);
 
-    //Also does scrolliung
+    //Handle messages and message scrolling
     useEffect(() => {
         const handler = (message) => {
             setMessages(messages => [...messages, message]);
-            let cht = document.getElementById("chat");
-            if (cht) cht.scrollTop = cht.scrollHeight;
         }
         sckt.socket.on('message', handler);
         return () => sckt.socket.off('message', handler);
+    }, []);
+
+    useEffect(() => {
+        let cht = document.getElementById("chat");
+        if (cht) cht.scrollTop = cht.scrollHeight;
     }, []);
 
     // initialize workout
@@ -39,7 +42,7 @@ const SideBar = ({
     // countdown workout counter
     useEffect(() => {
         if (!playWorkoutState) return;
-        const timer = workoutCounter > 0 && setTimeout(() => setWorkoutCounter((Math.floor((workoutCounter - 0.1)*10)/10).toFixed(1)), 100);
+        const timer = workoutCounter > 0 && setTimeout(() => setWorkoutCounter((Math.floor((workoutCounter - 0.1) * 10) / 10).toFixed(1)), 100);
         if (!(workoutCounter <= 0 && workoutNumber < workout.exercises.length - 1)) return;
         setWorkoutTime(workout.exercises[workoutNumber + 1].time);
         setWorkoutCounter(workout.exercises[workoutNumber + 1].time);

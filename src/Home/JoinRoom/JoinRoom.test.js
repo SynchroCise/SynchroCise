@@ -43,7 +43,6 @@ describe('<JoinRoom />', () => {
             isLoggedIn: false,
             handleSetConnecting: jest.fn(),
             handleSetRoomName: jest.fn(),
-            createTempUser: jest.fn(),
             userId: 'testId'
         }
         props = { match: { params: { roomCode: "ROOMCODE" } } }

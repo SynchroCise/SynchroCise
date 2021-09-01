@@ -15,7 +15,7 @@ import TopBar from "./TopBar/TopBar"
 const Room = (props) => {
   const ppp = 4; // participants per page
   const history = useHistory();
-  const { room, openSideBar, roomProps, updateRoomProps, videoProps, updateVideoProps, setNameArray } = useAppContext();
+  const { room, openSideBar, roomProps, updateRoomProps, videoProps, updateVideoProps, roomName, userId, username } = useAppContext();
 
   // Initializing Room Stuff (TODO: move to WorkoutDisplay)
   const modifyVideoState = useCallback((paramsToChange) => {
@@ -92,12 +92,8 @@ const Room = (props) => {
 
 
   useEffect(() => {
-    const handler = ({ name, sid }) => {
-      setNameArray((oldArray) => [...oldArray, { name, sid }]);
-    }
-    sckt.socket.on("newUser", handler);
-    return () => sckt.socket.off('newUser', handler);
-  }, [setNameArray]);
+    sckt.socket.emit('join', { room: roomName, uid: userId, displayName: username });
+  }, [roomName, userId, username]);
 
 
   // sending sync video
@@ -163,14 +159,13 @@ const Room = (props) => {
       >
         <Box
           width="100%"
-          className={`${classes.content} ${
-            openSideBar ? "" : classes.contentShift
-          }`}
+          className={`${classes.content} ${openSideBar ? "" : classes.contentShift
+            }`}
         >
           <WorkoutDisplay ppp={ppp} youtubeRef={youtubeRef}></WorkoutDisplay>
         </Box>
         <Box style={{ position: "fixed", width: "100vw", bottom: 0 }}>
-          <BottomControl/>
+          <BottomControl />
         </Box>
         <SideBar
           drawerWidth={drawerWidth}

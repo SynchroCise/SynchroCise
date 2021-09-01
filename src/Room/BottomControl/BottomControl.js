@@ -118,9 +118,9 @@ const BottomControl = () => {
                         color="secondary"
                         data-test="changeWorkoutNavigation"
                     >
-                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<FitnessCenter />} />
-                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<Badge badgeContent={participantIds.length} color="primary"><GroupOutlined /></Badge>} />
-                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: null} icon={<ChatOutlined />} />
+                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: ""} icon={<FitnessCenter />} />
+                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: ""} icon={<Badge badgeContent={participantIds.length} color="primary"><GroupOutlined /></Badge>} />
+                        <CustomBottomNavigationAction className={!openSideBar ? classes.notSelected: ""} icon={<ChatOutlined />} />
                     </BottomNavigation>
                 </Box>
             </Grid>

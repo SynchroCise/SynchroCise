@@ -10,7 +10,7 @@ import { RoutesEnum } from '../../App'
 import { useHistory } from 'react-router-dom'
 
 const WorkoutTable = () => {
-  const { handleSetWorkout, isLoggedIn } = useAppContext();
+  const { handleSetWorkout, isLoggedIn, setWorkoutType } = useAppContext();
   const history = useHistory();
   const [selectedWorkout, setSelectedWorkout] = useState(0);
   const [workoutList, setWorkoutList] = useState([]);
@@ -21,7 +21,10 @@ const WorkoutTable = () => {
       const res = await requests.getUserWorkouts();
       if (!res.ok) return setWorkoutList([]);
       setWorkoutList(res.body);
-      handleSetWorkout(res.body[0]);
+      if (res.body.length > 0) {
+        setWorkoutType('vid')
+        handleSetWorkout(res.body[0]);
+      }
     }
     initWorkouts();
   }, [isLoggedIn, handleSetWorkout]);

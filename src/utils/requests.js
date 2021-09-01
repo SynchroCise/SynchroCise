@@ -65,17 +65,6 @@ export const getDisplayNamesInRoom = async (roomSid) => {
 };
 
 // User related requests
-export const createTempUser = async (name) => {
-  const res = await fetch(`/api/createTempUser`, {
-    method: "POST",
-    body: JSON.stringify({ name }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  return formatResults(res);
-};
-
 export const checkLoggedIn = async () => {
   const res = await fetch("/user/checkLoggedIn", {
     method: "GET",
