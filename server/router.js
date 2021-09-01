@@ -1,24 +1,12 @@
 const express = require('express');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
-const { videoToken } = require('./tokens');
-const config = require('./config');
 const router = express.Router();
 require('./auth');
 
-const { getUsersInRoom, getUserById, createTempUser } = require('./users.js');
+const { getUsersInRoom } = require('./users.js');
 const { getWorkouts, getWorkoutByName } = require('./workouts.js');
 const { addRoom, getRoomCode, getRoomsByCode } = require('./rooms.js');
-const { reservationsUrl } = require('twilio/lib/jwt/taskrouter/util');
-
-const sendTokenResponse = (token, res) => {
-  res.set('Content-Type', 'application/json');
-  res.send(
-    JSON.stringify({
-      token: token.toJwt()
-    })
-  );
-};
 
 router.get('/api/greeting', (req, res) => {
   const name = req.query.name || 'World';
@@ -26,20 +14,6 @@ router.get('/api/greeting', (req, res) => {
   res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
 });
 
-// TWILIO
-router.get('/video/token', (req, res) => {
-  const identity = req.query.identity;
-  const room = req.query.room;
-  const token = videoToken(identity, room, config);
-  sendTokenResponse(token, res);
-
-});
-router.post('/video/token', (req, res) => {
-  const identity = req.body.identity;
-  const room = req.body.room;
-  const token = videoToken(identity, room, config);
-  sendTokenResponse(token, res);
-});
 
 // WORKOUTS
 router.get('/api/workouts', async (req, res) => {
@@ -77,45 +51,8 @@ router.get('/api/roomCode', (req, res) => {
 router.post('/api/rooms', async (req, res) => {
   res.setHeader('Content-Type', 'text/plain');
   const room = req.body;
-  const [code, roomCode] = await addRoom(room.name, room.sid, room.workoutID, room.workoutType);
+  const [code, roomCode] = await addRoom(room.id, room.workoutID, room.workoutType);
   res.status(code).send(JSON.stringify({ roomCode }));
-});
-
-router.post('/api/createTempUser', async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  const name = req.body.name;
-  if (!name) return res.status(400).send(JSON.stringify({ message: 'Invalid name' }));
-  const userCode = await createTempUser(name)
-  if (!userCode) return res.status(400).send(JSON.stringify({ message: 'Invalid userCode' }));
-  res.send(JSON.stringify({ userCode }));
-});
-
-//OLD V
-router.get('/api/displayName', async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  const id = req.query.id;
-  if (!id) return res.status(400).send(JSON.stringify({ message: 'Invalid id' }))
-  const user = await getUserById(id);
-  if (user) {
-    res.send(JSON.stringify({ name: user.name }));
-  } else {
-    res.status(400).send(JSON.stringify({ message: 'Unable to obtain display name' }));
-  }
-});
-
-//GETS ALL DISPLAY NAMES IN ROOM
-router.get('/api/displayNameInRoom', async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  const id = req.query.rid;
-  let userArr = []
-  if (!id) return res.status(400).send(JSON.stringify({ message: 'Invalid id' }))
-  const users = await getUsersInRoom(id);
-  users.map((user) => userArr.push({ name: user.name, sid: user.sid }))
-  if (users) {
-    res.send(JSON.stringify(userArr));
-  } else {
-    res.status(400).send(JSON.stringify({ message: 'Unable to obtain display name' }));
-  }
 });
 
 // AUTHENTICATION

@@ -11,7 +11,7 @@ import { createConnection, buildOptions } from "../../utils/jitsi"
 
 // this component renders form to be passed to VideoChat.js
 const JoinRoom = (props) => {
-  const { JitsiMeetJS, connecting, username, roomName, handleUsernameChange, handleSetRoom, isLoggedIn, handleSetConnecting, handleSetRoomName, createTempUser, userId, room, setLocalTracks, localTracks } = useAppContext()
+  const { JitsiMeetJS, connecting, username, roomName, handleUsernameChange, handleSetRoom, handleSetConnecting, handleSetRoomName, room, setLocalTracks, localTracks } = useAppContext()
   // const [videoTracks, setVideoTracks] = useState([]);
   // const [audioTracks, setAudioTracks] = useState([]);
   const [vid, setVid] = useState(true);
@@ -34,7 +34,7 @@ const JoinRoom = (props) => {
         alert('Room Code does not exist!');
         history.push(RoutesEnum.Home);
       } else {
-        handleSetRoomName(roomCode)
+        handleSetRoomName(roomCode);
       }
     };
     checkRoom();
@@ -77,15 +77,15 @@ const JoinRoom = (props) => {
       connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
       connection.connect()
       JitsiMeetJS.createLocalTracks({
-        devices: [ 'audio', 'video' ],
+        devices: ['audio', 'video'],
         maxFps: 24,
         resolution: 180,
         facingMode: 'user'
       })
         .then(onLocalTracks)
         .catch(error => {
-            throw error;
-      });
+          throw error;
+        });
       return () => {
         connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
         connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
@@ -122,9 +122,7 @@ const JoinRoom = (props) => {
       return;
     }
     if (!room) { handleSetConnecting(false); return; }
-    const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
     room.setLocalParticipantProperty('displayName', username);
-    room.setLocalParticipantProperty('userId', tempUserId)
     handleSetConnecting(false);
     history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`);
   }

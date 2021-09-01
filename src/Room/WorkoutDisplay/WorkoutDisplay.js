@@ -23,19 +23,16 @@ const WorkoutDisplay = ({ ppp, youtubeRef }) => {
 
   // sets bottom display participant ids
   useEffect(() => {
-    if (!room || room.getParticipants().length === 0) return setBottomDisplayParticipantIds([]);
-    let tempBottomParticipantIds = room
-      .getParticipants()
-      .map((p) => p.getId())
-      .filter((id) => id !== displayParticipantId);
-    if (displayParticipantId === room.myUserId() && workoutType === 'vid') {
+    if (!room) return setBottomDisplayParticipantIds([]);
+    let tempBottomParticipantIds = [room.myUserId(), ...room.getParticipants().map(p => p.getId())];
+
+    if (workoutType === 'vid') {
+      tempBottomParticipantIds = tempBottomParticipantIds.filter((id) => id !== displayParticipantId).slice(0, ppp);
+    } else {
       tempBottomParticipantIds = tempBottomParticipantIds.slice(0, ppp);
-      setBottomDisplayParticipantIds(tempBottomParticipantIds);
     }
-    else {
-      tempBottomParticipantIds = tempBottomParticipantIds.slice(0, ppp - 1);
-      setBottomDisplayParticipantIds([room.myUserId(), ...tempBottomParticipantIds]);
-    }
+    setBottomDisplayParticipantIds(tempBottomParticipantIds);
+    
   }, [displayParticipantId, room, participantIds, workoutType, ppp]);
 
   // once room has been initialized
@@ -83,14 +80,13 @@ const WorkoutDisplay = ({ ppp, youtubeRef }) => {
       
   return (
     <React.Fragment>
-      <Box height={bottomDisplayParticipantIds.length > 0 ? "70%" : "100%"}>
+      <Box height={bottomDisplayParticipantIds.length > 0  ? "70%" : "100%"}>
         {(workoutType === 'vid') ? (
           <Participant
             id={displayParticipantId}
             tracks={(displayParticipantId === room.myUserId()) ? localTracks : remoteTracks[displayParticipantId]}
           />
         ) : (
-          // TODO: insert Youtube here
           <Youtube playerRef={youtubeRef}></Youtube>
         )} 
       </Box>

@@ -38,12 +38,11 @@ export const getRoomCode = async () => {
 };
 
 
-export const createRoom = async (room, workoutId, workoutType = "vid") => {
+export const createRoom = async (id, workoutId, workoutType = "vid") => {
   const res = await fetch("/api/rooms", {
     method: "POST",
     body: JSON.stringify({
-      name: room.name,
-      sid: room.sid,
+      id,
       workoutID: workoutId,
       workoutType: workoutType,
     }),
@@ -54,28 +53,7 @@ export const createRoom = async (room, workoutId, workoutType = "vid") => {
   return formatResults(res);
 };
 
-export const getDisplayNamesInRoom = async (roomSid) => {
-  const res = await fetch(`/api/displayNameInRoom?rid=${roomSid}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  return formatResults(res);
-};
-
 // User related requests
-export const createTempUser = async (name) => {
-  const res = await fetch(`/api/createTempUser`, {
-    method: "POST",
-    body: JSON.stringify({ name }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  return formatResults(res);
-};
-
 export const checkLoggedIn = async () => {
   const res = await fetch("/user/checkLoggedIn", {
     method: "GET",

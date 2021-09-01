@@ -41,7 +41,6 @@ describe('<JoinRoom />', () => {
             handleSetWorkout: jest.fn(),
             handleSetOpenAuthDialog: jest.fn(),
             makeCustomRoom: jest.fn(),
-            createTempUser: jest.fn(),
             isLoggedIn: false
         }
         requests.getUserWorkouts.mockResolvedValue({ ok: true, body: ['workout!'] });
@@ -83,7 +82,6 @@ describe('<JoinRoom />', () => {
         // find and submit form
         const form = findByTestAttr(component, 'createRoomForm');
         await submitFormAndUpdate(form);
-        expect(contextValues.createTempUser).toHaveBeenCalledTimes(1);
         expect(requests.twilioToken).toHaveBeenCalledTimes(1);
         expect(requests.createRoom).toHaveBeenCalledTimes(1);
         expect(contextValues.handleSetRoom).toHaveBeenCalledTimes(1);
@@ -103,7 +101,6 @@ describe('<JoinRoom />', () => {
         // find and submit form
         const form = findByTestAttr(component, 'createRoomForm');
         await submitFormAndUpdate(form);
-        expect(contextValues.createTempUser).toHaveBeenCalledTimes(0);
         expect(requests.twilioToken).toHaveBeenCalledTimes(1);
         expect(requests.createRoom).toHaveBeenCalledTimes(1);
         expect(contextValues.handleSetRoom).toHaveBeenCalledTimes(1);
