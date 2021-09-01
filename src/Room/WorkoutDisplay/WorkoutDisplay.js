@@ -24,17 +24,15 @@ const WorkoutDisplay = ({ ppp, youtubeRef }) => {
   // sets bottom display participant ids
   useEffect(() => {
     if (!room) return setBottomDisplayParticipantIds([]);
-    let tempBottomParticipantIds = room
-      .getParticipants()
-      .map((p) => p.getId())
-      .filter((id) => id !== displayParticipantId);
-    if (displayParticipantId === room.myUserId() && workoutType === 'vid') {
-      tempBottomParticipantIds = tempBottomParticipantIds.slice(0, ppp);
-      setBottomDisplayParticipantIds(tempBottomParticipantIds);
+    let tempBottomParticipantIds = [room.myUserId(), ...room.getParticipants().map(p => p.getId())];
+
+    if (workoutType === 'vid') {
+      tempBottomParticipantIds = tempBottomParticipantIds.filter((id) => id !== displayParticipantId).slice(0, ppp);
     } else {
-      tempBottomParticipantIds = tempBottomParticipantIds.slice(0, ppp - 1);
-      setBottomDisplayParticipantIds([room.myUserId(), ...tempBottomParticipantIds]);
+      tempBottomParticipantIds = tempBottomParticipantIds.slice(0, ppp);
     }
+    setBottomDisplayParticipantIds(tempBottomParticipantIds);
+    
   }, [displayParticipantId, room, participantIds, workoutType, ppp]);
 
   // once room has been initialized

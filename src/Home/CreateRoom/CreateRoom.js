@@ -5,7 +5,7 @@ import { RoutesEnum } from '../../App'
 import WorkoutTable from "./WorkoutTable"
 import { makeStyles } from "@material-ui/core/styles";
 import { FormControlLabel, Switch, Toolbar, IconButton, Box, Typography, TextField, InputAdornment, Grid } from '@material-ui/core';
-import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward, ConstructionOutlined } from '@material-ui/icons';
+import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward } from '@material-ui/icons';
 import * as requests from "../../utils/requests"
 import { createConnection, buildOptions } from "../../utils/jitsi"
 

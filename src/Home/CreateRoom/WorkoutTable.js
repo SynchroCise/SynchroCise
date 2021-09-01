@@ -27,7 +27,7 @@ const WorkoutTable = () => {
       }
     }
     initWorkouts();
-  }, [isLoggedIn, handleSetWorkout]);
+  }, [isLoggedIn, handleSetWorkout, setWorkoutType]);
 
   const handleSelect = value => () => {
     setSelectedWorkout(value)
