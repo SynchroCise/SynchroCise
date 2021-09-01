@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
             io.to(room).emit('killroom');
         }
         if (user) {
-            socket.broadcast.to(room).emit('message', { user: { name: 'admin' }, text: `user has left` });
+            socket.broadcast.to(room).emit('message', { user: 'admin', text: `user has left`, time: getTime() } );
             io.to(room).emit('leaver', user);
         }
     }
@@ -110,7 +110,7 @@ io.on('connection', (socket) => {
                 admin_msg = ''; break;
         }
 
-        io.in(room).emit('message', { user: { name: 'admin' }, text: admin_msg });
+        io.in(room).emit('message', { user: 'admin', text: admin_msg, time: getTime() });
         callback();
     });
 
@@ -127,7 +127,7 @@ io.on('connection', (socket) => {
             case 'syncWorkout':
                 admin_msg = `${name} has changed the workout`
         }
-        io.in(room).emit('message', { user: { name: 'admin' }, text: admin_msg });
+        io.in(room).emit('message', { user: 'admin', text: admin_msg, time: getTime() } );
         callback();
     });
     socket.on('sendRoomSync', ({ id, ...roomProps }, callback) => {

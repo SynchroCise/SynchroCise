@@ -8,7 +8,7 @@ const roomFromDoc = (doc) => ({
     workoutType: doc.data().workoutType,
 });
 
-const addRoom = async (roomId, roomSid, workoutId, workoutType) => {
+const addRoom = async (roomId, workoutId, workoutType) => {
     // TODO: Add error handling when adding users
     const docRef = db.collection('rooms').doc(roomId)
     const res = await docRef.set({

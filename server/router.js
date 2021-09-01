@@ -51,36 +51,8 @@ router.get('/api/roomCode', (req, res) => {
 router.post('/api/rooms', async (req, res) => {
   res.setHeader('Content-Type', 'text/plain');
   const room = req.body;
-  const [code, roomCode] = await addRoom(room.name, room.sid, room.workoutID, room.workoutType);
+  const [code, roomCode] = await addRoom(room.id, room.workoutID, room.workoutType);
   res.status(code).send(JSON.stringify({ roomCode }));
-});
-
-//OLD V REMOVE IF STUFF STILL WORKS WITHOUT THIS
-// router.get('/api/displayName', async (req, res) => {
-//   res.setHeader('Content-Type', 'application/json');
-//   const id = req.query.id;
-//   if (!id) return res.status(400).send(JSON.stringify({ message: 'Invalid id' }))
-//   const user = await getUserById(id);
-//   if (user) {
-//     res.send(JSON.stringify({ name: user.name }));
-//   } else {
-//     res.status(400).send(JSON.stringify({ message: 'Unable to obtain display name' }));
-//   }
-// });
-
-//GETS ALL DISPLAY NAMES IN ROOM
-router.get('/api/displayNameInRoom', async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  const id = req.query.rid;
-  let userArr = []
-  if (!id) return res.status(400).send(JSON.stringify({ message: 'Invalid id' }))
-  const users = await getUsersInRoom(id);
-  users.map((user) => userArr.push({ name: user.name, sid: user.sid }))
-  if (users) {
-    res.send(JSON.stringify(userArr));
-  } else {
-    res.status(400).send(JSON.stringify({ message: 'Unable to obtain display name' }));
-  }
 });
 
 // AUTHENTICATION

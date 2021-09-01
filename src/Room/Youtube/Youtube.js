@@ -7,13 +7,13 @@ import VideoSearch from './Search/Search';
 import VideoPlayer from "./Player/Player";
 
 const Youtube = ({ playerRef }) => {
-    const { username, room, videoProps, updateVideoProps, setVideoProps } = useAppContext();
+    const { username, room, videoProps, updateVideoProps, setVideoProps, roomName } = useAppContext();
 
     const sendVideoState = useCallback(({ eventName, eventParams }) => {
         if (!room) return;
         let params = {
             name: username,
-            room: room.sid,
+            room: roomName,
             eventName: eventName,
             eventParams: eventParams
         };

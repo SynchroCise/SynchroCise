@@ -33,7 +33,7 @@ const CreateRoom = () => {
       room.setLocalParticipantProperty('displayName', username);
 
       // Creates a room in the server
-      const room_res = await requests.createRoom({ name: roomName.toLowerCase(), sid: '' }, workout.id, workoutType);
+      const room_res = await requests.createRoom(roomName.toLowerCase(), workout.id, workoutType);
       if (!room_res.ok) { handleSetConnecting(false); return; }
 
       handleSetConnecting(false);
