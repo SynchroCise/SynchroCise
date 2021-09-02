@@ -124,7 +124,6 @@ const AppContextProvider = ({ children }) => {
     setRoom((prevRoom) => {
       if (prevRoom) {
         prevRoom.getLocalTracks().forEach(track => {
-          console.log(track.getType());
           if (track.getType() === 'video') track.dispose();
           if (track.getType() === 'audio') track.dispose();
         });
