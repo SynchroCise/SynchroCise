@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
             io.to(room).emit('killroom');
         }
         if (user) {
-            socket.broadcast.to(room).emit('message', { user: 'admin', text: `user has left`, time: getTime() } );
+            socket.broadcast.to(room).emit('message', { user: 'admin', text: `user has left`, time: getTime() });
             io.to(room).emit('leaver', user);
         }
     }
@@ -53,7 +53,7 @@ io.on('connection', (socket) => {
         socket.join(room);
     });
 
-    //ONCE WILL RELY ON NEW METHOD OF VIDEO SHARING COMPLETION BEFORE THIS CAN BE FULLY IMPLEMENTED 
+    //ONCE WILL RELY ON NEW METHOD OF VIDEO SHARING COMPLETION BEFORE THIS CAN BE FULLY IMPLEMENTED
     //TODO: Make it not based on socketid if possible
     socket.on('disconnect', () => {
         let time = new Date();
@@ -64,7 +64,7 @@ io.on('connection', (socket) => {
     socket.on('handleLeaveRoom', () => {
         let time = new Date();
         updateWorkoutHistory(socket.id, time);
-        leaveRoom()
+        //leaveRoom();
     });
 
     /** SENDING MESSAGES */
@@ -127,7 +127,7 @@ io.on('connection', (socket) => {
             case 'syncWorkout':
                 admin_msg = `${name} has changed the workout`
         }
-        io.in(room).emit('message', { user: 'admin', text: admin_msg, time: getTime() } );
+        io.in(room).emit('message', { user: 'admin', text: admin_msg, time: getTime() });
         callback();
     });
     socket.on('sendRoomSync', ({ id, ...roomProps }, callback) => {
