@@ -123,11 +123,12 @@ const AppContextProvider = ({ children }) => {
   const handleLeaveRoom = useCallback(() => {
     setRoom((prevRoom) => {
       if (prevRoom) {
-        prevRoom.localParticipant.tracks.forEach((trackPub) => {
-          trackPub.track.stop();
+        prevRoom.getLocalTracks().forEach(track => {
+          console.log(track.getType());
+          if (track.getType() === 'video') track.dispose();
+          if (track.getType() === 'audio') track.dispose();
         });
-        prevRoom.disconnect();
-        sckt.socket.emit("handleLeaveRoom")
+        sckt.socket.emit("handleLeaveRoom");
         window.removeEventListener("popstate", handleLeaveRoom);
       }
       return null;
