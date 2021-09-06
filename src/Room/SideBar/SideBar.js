@@ -11,7 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 const SideBar = ({
     drawerWidth
 }) => {
-    const { workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, sideBarType, handleOpenSideBar, workoutType } = useAppContext();
+    const { workout, openSideBar, playWorkoutState, workoutNumber, setWorkoutNumber, workoutCounter, setWorkoutCounter, sideBarType, handleOpenSideBar } = useAppContext();
     const [workoutTime, setWorkoutTime] = useState(workout.exercises[workoutNumber].time);
     const [nextUpExercise, setNextUpExercise] = useState(workout.exercises.map((workout, index) => { return workout.exercise }));
     const [messages, setMessages] = useState([]);

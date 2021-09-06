@@ -18,7 +18,7 @@ const Youtube = ({ playerRef }) => {
             eventParams: eventParams
         };
         sckt.socket.emit('sendVideoState', params, (error) => { });
-    }, [room, username]);
+    }, [room, username, roomName]);
 
     const loadVideo = useCallback((searchItem, sync) => {
         const { playing, seekTime, initVideo } = videoProps;
