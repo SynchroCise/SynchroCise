@@ -73,7 +73,7 @@ const Participant = ({id, tracks}) => {
   const classes = useStyles();
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" height="100%" onDoubleClick={() => setPinnedParticipantId(id)}>
+    <Box display="flex" flexDirection="column" alignItems="center" height="100%" onDoubleClick={() => setPinnedParticipantId(id)} px={1}>
       {videoMute && <img src={placeHolder} alt="" style={{ objectFit: "contain", width: "100%", height: "100%", }} />}
       <video ref={videoRef} autoPlay={true} style={{height: "100%", width: "100%", display: (videoMute) && "none"}} poster={placeHolder}/>
       <div className={classes.displayName}>{displayName}</div>

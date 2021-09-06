@@ -80,7 +80,7 @@ const WorkoutDisplay = ({ ppp, youtubeRef }) => {
       
   return (
     <React.Fragment>
-      <Box height={bottomDisplayParticipantIds.length > 0  ? "70%" : "100%"}>
+      <Box height={bottomDisplayParticipantIds.length > 0  ? "80%" : "100%"} pb={1}>
         {(workoutType === 'vid') ? (
           <Participant
             id={displayParticipantId}
@@ -91,7 +91,7 @@ const WorkoutDisplay = ({ ppp, youtubeRef }) => {
         )} 
       </Box>
       {bottomDisplayParticipantIds.length > 0 && 
-       <Box height="30%" flexDirection="row" display="flex" justifyContent="space-around">
+       <Box height="20%" flexDirection="row" display="flex" justifyContent="flex-start" px={1}>
           {
             [...bottomDisplayParticipantIds]
             .map((participantId) => {
