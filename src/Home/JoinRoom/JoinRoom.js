@@ -92,7 +92,7 @@ const JoinRoom = (props) => {
         connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
       }
     }
-  }, [roomName]);
+  }, [JitsiMeetJS, roomName, handleSetConnecting, handleSetRoom, setLocalTracks]);
 
 
   const handleMic = () => {

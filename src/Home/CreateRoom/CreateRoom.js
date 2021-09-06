@@ -73,7 +73,7 @@ const CreateRoom = () => {
         connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
       }
     }
-  }, [connection, JitsiMeetJS, workout]);
+  }, [connection, JitsiMeetJS, workout, handleSetConnecting, handleSetRoom, history, roomName, setLocalTracks, username, workoutType]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
