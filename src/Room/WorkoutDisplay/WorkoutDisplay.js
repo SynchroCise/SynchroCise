@@ -38,7 +38,6 @@ const WorkoutDisplay = ({ ppp, youtubeRef }) => {
   // once room has been initialized
   useEffect(() => {
     const onRemoteTrack = (track) => {
-      console.log('onRemoteTrack');
       if (track.isLocal()) {
         return;
       }
@@ -54,11 +53,9 @@ const WorkoutDisplay = ({ ppp, youtubeRef }) => {
       localTracks.forEach((track) => room.addTrack(track));
     };
     const onUserJoined = (id) => {
-      console.log('onUserJoined', id);
       setParticipantIds(prev => [...prev, id]);
     }
     const onUserLeft = (id) => {
-      console.log('onUserLeft');
       setParticipantIds(prev => [...prev].filter(p => (p !== id)));
       if (remoteTracks[id]) remoteTracks[id].forEach((track) => track.detach())
     }

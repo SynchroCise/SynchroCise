@@ -12,8 +12,6 @@ import { createConnection, buildOptions } from "../../utils/jitsi"
 // this component renders form to be passed to VideoChat.js
 const JoinRoom = (props) => {
   const { JitsiMeetJS, connecting, username, roomName, handleUsernameChange, handleSetRoom, handleSetConnecting, handleSetRoomName, room, setLocalTracks, localTracks } = useAppContext()
-  // const [videoTracks, setVideoTracks] = useState([]);
-  // const [audioTracks, setAudioTracks] = useState([]);
   const [vid, setVid] = useState(true);
   const [mic, setMic] = useState(true);
 
