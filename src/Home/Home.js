@@ -28,7 +28,7 @@ const Home = () => {
 
   useEffect(() => {
     handleSetRoomName("");
-  }, [])
+  }, [handleSetRoomName]);
 
   const handleCreateRoom = () => {
     history.push(RoutesEnum.CreateRoom)

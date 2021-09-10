@@ -12,11 +12,6 @@ const userFromDoc = (doc) => ((doc.data()) ? {
     name: doc.data().displayName,
     email: doc.data().email,
     password: doc.data().password,
-    room: doc.data().twilioRoomSid,
-    sid: doc.data().twilioUserSid,
-    isLeader: doc.data().isLeader,
-    socketId: doc.data().socketId,
-    isTemp: doc.data().isTemp,
     workoutHistory: doc.data().workoutHistory
 } : null);
 
@@ -40,67 +35,6 @@ const createUserLogin = async ({ email, password, displayName }) => {
     return { user, message: 'success' }
 };
 
-const createTempUser = async (name) => {
-    const docRef = await db.collection('users').add({
-        createdTime: timestamp.now(),
-        displayName: name,
-        isTemp: true
-    }).catch(error => console.log(error));
-    return docRef.id
-}
-
-const addUser = async ({ socketId, name, room, sid, userId }) => {
-    isLeader = ((await getLeadersInRoom(room)).length > 0) ? false : true;
-    const logInUser = (userId) ? (await getUserById(userId)) : false
-    // if user was logged in
-    if (logInUser) {
-        const userRef = db.collection('users').doc(userId);
-        await userRef.set({
-            isLeader: isLeader,
-            displayName: name,
-            twilioRoomSid: room,
-            twilioUserSid: sid,
-            socketId: socketId
-        }, { merge: true }).catch(error => console.log(error));
-        return { user: (await getUserById(userId)) }
-    } else {
-        const docRef = await db.collection('users').add({
-            createdTime: timestamp.now(),
-            displayName: name,
-            twilioRoomSid: room,
-            twilioUserSid: sid,
-            isTemp: true,
-            isLeader: isLeader,
-            socketId: socketId
-        }).catch(error => console.log(error));
-        const user = await getUserById(docRef.id)
-        return { user };
-    }
-};
-
-const removeUser = async (socketId) => {
-    const usersToRemove = (await getUsersBySocketId(socketId));
-    if (!usersToRemove || usersToRemove.length == 0) return usersToRemove
-    const userToRemove = usersToRemove[0]
-    const userRef = db.collection('users').doc(userToRemove.id);
-    if (userToRemove.isTemp) {
-        await userRef.delete();
-    } else {
-        await userRef.set({
-            isLeader: false,
-            twilioRoomSid: "",
-            twilioUserSid: "",
-            socketId: ""
-        }, { merge: true }).catch(error => console.log(error));
-    }
-    const leaders = await getLeadersInRoom(userToRemove.room)
-    const users = await getUsersInRoom(userToRemove.room)
-    if (leaders.length == 0 && users.length > 0) {
-        await setLeaderStatus(users[0].id, true);
-    }
-    return userToRemove;
-};
-
 const getUserById = async (id) => {
     const userRef = db.collection('users').doc(id);
     const doc = await userRef.get()
@@ -111,14 +45,6 @@ const getUserById = async (id) => {
     const user = userFromDoc(doc)
     return user
 };
-
-const setLeaderStatus = async (id, isLeader) => {
-    const userRef = db.collection('users').doc(id);
-    const doc = await userRef.set({
-        isLeader: isLeader
-    }, { merge: true });
-
-}
 
 const getUsersByX = async (key, value) => {
     const usersRef = db.collection('users');
@@ -131,10 +57,6 @@ const getUsersByX = async (key, value) => {
 const getUsersBySocketId = async (id) => await getUsersByX('socketId', id);
 
 const getUsersByName = async (name) => await getUsersByX('displayName', name);
-
-const getUsersBySid = async (sid) => await getUsersByX('twilioUserSid', sid);
-
-const getUsersInRoom = async (room) => await getUsersByX('twilioRoomSid', room);
 
 const getUserByEmail = async (email, isAuth) => await getUsersByX('email', email);
 
@@ -202,19 +124,14 @@ const getWorkoutHistory = async (id) => {
 
 module.exports = {
     checkUser,
-    addUser,
-    removeUser,
     getUserById,
-    getUsersInRoom,
     getUsersBySocketId,
     getUsersByName,
-    getUsersBySid,
     getLeadersInRoom,
     createUserLogin,
     getUserByEmail,
     isValidPassword,
     getUsersById,
-    createTempUser,
     changeEmail,
     changeUsername,
     changePassword,

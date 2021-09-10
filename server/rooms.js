@@ -6,17 +6,14 @@ const roomFromDoc = (doc) => ({
     id: doc.id,
     workoutId: doc.data().workoutId,
     workoutType: doc.data().workoutType,
-    roomCode: doc.data().twilioRoomSid,
-    twilioRoomSid: doc.data().twilioRoomSid,
 });
 
-const addRoom = async (roomId, roomSid, workoutId, workoutType) => {
+const addRoom = async (roomId, workoutId, workoutType) => {
     // TODO: Add error handling when adding users
     const docRef = db.collection('rooms').doc(roomId)
     const res = await docRef.set({
         createdTime: timestamp.now(),
         roomCode: docRef.id.substring(0, 6).toUpperCase(),
-        twilioRoomSid: roomSid,
         workoutId: workoutId,
         workoutType: workoutType,
     }).catch(error => { return [400, 'ERROR'] });
@@ -45,20 +42,15 @@ const getRoomsByX = async (key, value) => {
 const updateRoomData = async (name, workoutID, workoutType) => {
     const rooms = await getRoomsByCode(name);
     const roomObj = rooms[0]
-
     if (roomObj && !(roomObj.workoutType == workoutType && roomObj.workoutId == workoutID)) {
         const docRef = db.collection('rooms').doc(roomObj.id);
         const res = await docRef.set({
-            workoutId: workoutID,
             workoutType: workoutType
         }, { merge: true }).catch(error => { return [400, 'ERROR'] });
-        roomObj['workoutId'] = workoutID;
         roomObj['workoutType'] = workoutType;
     }
     return roomObj
 }
-
-const getRoomsBySID = async (sid) => await getRoomsByX('twilioRoomSid', sid);
 
 const getRoomsByCode = async (roomCode) => await getRoomsByX('roomCode', roomCode.substring(0, 6).toUpperCase());
 
@@ -83,4 +75,4 @@ const removeRoom = async (roomId) => {
     return roomToRemove
 }
 
-module.exports = { getActiveRooms, addRoom, getRoomsBySID, getRoomById, getRoomsByCode, updateRoomData, getRoomCode, removeRoom };
+module.exports = { getActiveRooms, addRoom, getRoomById, getRoomsByCode, updateRoomData, getRoomCode, removeRoom };

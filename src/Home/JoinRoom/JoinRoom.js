@@ -1,58 +1,23 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useHistory } from 'react-router-dom'
 import { useAppContext } from "../../AppContext"
-import Video from "twilio-video";
 import { RoutesEnum } from '../../App'
 import { IconButton, TextField, Box, Typography, Grid } from '@material-ui/core';
 import { ArrowBack, ArrowForward, Videocam, VideocamOff, Mic, MicOff } from '@material-ui/icons';
 import { makeStyles } from "@material-ui/core/styles";
 import * as requests from "../../utils/requests"
+import { createConnection, buildOptions } from "../../utils/jitsi"
+
 
 // this component renders form to be passed to VideoChat.js
 const JoinRoom = (props) => {
-  const { connecting, username, roomName, handleUsernameChange, handleSetRoom, isLoggedIn, handleSetConnecting, handleSetRoomName, createTempUser, userId } = useAppContext()
-  const [videoTracks, setVideoTracks] = useState([]);
-  const [audioTracks, setAudioTracks] = useState([]);
+  const { JitsiMeetJS, connecting, username, roomName, handleUsernameChange, handleSetRoom, handleSetConnecting, handleSetRoomName, room, setLocalTracks, localTracks } = useAppContext()
   const [vid, setVid] = useState(true);
   const [mic, setMic] = useState(true);
 
   const videoRef = useRef();
   const videoContainerRef = useRef();
   const history = useHistory()
-
-  // create local video track
-  useEffect(() => {
-    if (!roomName) return;
-    let isMounted = true;
-    const vidParam = {
-      width: {max: 640},
-      height: {max: 480},
-      aspectRatio: 16/9,
-      resizeMode: "crop-and-scale",
-      frameRate: 24
-    };
-    async function getLocalVideoTrack() {
-      const videoTrack = await Video.createLocalVideoTrack(vidParam);
-      if (isMounted) { setVideoTracks((prevVideoTrack) => [...prevVideoTrack, videoTrack]); }
-    }
-    async function getLocalAudioTrack() {
-      const audioTrack = await Video.createLocalAudioTrack();
-      if (isMounted) { setAudioTracks((prevAudioTrack) => [...prevAudioTrack, audioTrack]); }
-    }
-    getLocalVideoTrack()
-    getLocalAudioTrack()
-    return () => { isMounted = false }
-  }, [roomName])
-
-  useEffect(() => {
-    const videoTrack = videoTracks[0];
-    if (videoTrack) {
-      videoTrack.attach(videoRef.current);
-      return () => {
-        videoTrack.detach();
-      };
-    }
-  }, [videoTracks]);
 
   // initializes roomcode and userId
   useEffect(() => {
@@ -67,23 +32,81 @@ const JoinRoom = (props) => {
         alert('Room Code does not exist!');
         history.push(RoutesEnum.Home);
       } else {
-        handleSetRoomName(roomCode)
+        handleSetRoomName(roomCode);
       }
     };
     checkRoom();
   }, [history, handleSetRoomName, props.match.params.roomCode]);
 
+  // initializes Jitsi Connection
+  useEffect(() => {
+    let connection;
+    const options = buildOptions(roomName.toLowerCase());
+    const onConnectionSuccess = async () => {
+      handleSetConnecting(false);
+      const room = connection.initJitsiConference(roomName.toLowerCase(), options.conference);
+      handleSetRoom(room);
+      room.setSenderVideoConstraint(180);
+    }
+    const onConnectionFailed = () => {
+      handleSetConnecting(false);
+      console.log('jitsi failed');
+    }
+    const disconnect = () => {
+      handleSetConnecting(false);
+      console.log('jitsi disconnect');
+    }
+    const onLocalTracks = (tracks) => {
+      console.log('setLocalTracks');
+      setLocalTracks(tracks);
+      tracks.forEach((track) => {
+        if (track.getType() === 'video') {
+          track.attach(videoRef.current);
+        }
+      });
+    }
+    handleSetConnecting(true);
+    if (!roomName) return;
+    if (JitsiMeetJS) {
+      console.log('starting connection')
+      connection = createConnection(JitsiMeetJS, roomName.toLowerCase());
+      connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
+      connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
+      connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
+      connection.connect()
+      JitsiMeetJS.createLocalTracks({
+        devices: ['audio', 'video'],
+        maxFps: 24,
+        resolution: 180,
+        facingMode: 'user'
+      })
+        .then(onLocalTracks)
+        .catch(error => {
+          throw error;
+        });
+      return () => {
+        connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
+        connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
+        connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
+      }
+    }
+  }, [JitsiMeetJS, roomName, handleSetConnecting, handleSetRoom, setLocalTracks]);
+
 
   const handleMic = () => {
-    audioTracks.forEach(track => {
-      (mic) ? track.disable() : track.enable()
+    localTracks.forEach(track => {
+      if (track.getType() === 'audio') {
+        (mic) ? track.mute() : track.unmute()
+      }
     });
     setMic(!mic);
   };
 
   const handleVid = () => {
-    videoTracks.forEach(track => {
-      (vid) ? track.disable() : track.enable()
+    localTracks.forEach(track => {
+      if (track.getType() === 'video') {
+        (vid) ? track.mute() : track.unmute()
+      }
     });
     setVid(!vid);
   };
@@ -96,15 +119,9 @@ const JoinRoom = (props) => {
       history.push(RoutesEnum.Home)
       return;
     }
-    const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
-    const tok_res = await requests.twilioToken(tempUserId, roomName);
-    if (!tok_res.ok) { handleSetConnecting(false); return; }
-    const token = tok_res.body.token;
-    const tracks = videoTracks.concat(audioTracks);
-    const room = await requests.joinTwilioRoom(token, roomName, tracks);
     if (!room) { handleSetConnecting(false); return; }
+    room.setLocalParticipantProperty('displayName', username);
     handleSetConnecting(false);
-    await handleSetRoom(room);
     history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`);
   }
   const useStyles = makeStyles(theme => ({

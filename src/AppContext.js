@@ -1,17 +1,18 @@
 import React, { useState, createContext, useCallback, useEffect, useContext } from 'react';
 import { sckt } from './Socket';
 import * as requests from './utils/requests'
+import { useJitsi } from './utils/jitsi'
 
 export const useAppContext = () => useContext(AppContext)
 
 const AppContext = createContext([{}, () => { }]);
 
 const AppContextProvider = ({ children }) => {
+  const { JitsiMeetJS } = useJitsi();
   const [room, setRoom] = useState(null);
   const [connecting, setConnecting] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  // const [workout, setWorkout] = useState({"workoutName": "", "exercises": [{"time": 1, "exercise":""}]})
   const [roomName, setRoomName] = useState("");
   const [roomState, setRoomState] = useState(null);
   const [roomTitle, setRoomTitle] = useState("")
@@ -21,10 +22,11 @@ const AppContextProvider = ({ children }) => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [sideBarType, setSideBarType] = useState(0);
-  const [nameArray, setNameArray] = useState([]);
+  const [participantIds, setParticipantIds] = useState([]);
   const [pinnedParticipantId, setPinnedParticipantId] = useState("");
+  const [localTracks, setLocalTracks] = useState([]);
   const [roomProps, setRoomProps] = useState({
-    workoutType: 'vid', // 'yt', 'custom',
+    workoutType: 'yt', // 'yt', 'custom',
     workout: { "workoutName": "", "exercises": [{ "time": 1, "exercise": "" }], "id": "" },
     playWorkoutState: false,
     workoutNumber: 0,
@@ -43,7 +45,7 @@ const AppContextProvider = ({ children }) => {
   const sendRoomState = ({ eventName, eventParams }, callback) => {
     let params = {
       name: username,
-      room: room.sid,
+      room: roomName,
       eventName: eventName,
       eventParams: eventParams
     };
@@ -87,16 +89,8 @@ const AppContextProvider = ({ children }) => {
   const makeCustomRoom = useCallback(async (event) => {
     const res = await requests.getRoomCode()
     if (!res.ok) return
-    setRoomName(res.body.roomCode)
+    setRoomName(res.body.roomCode.toLowerCase())
     setRoomState('make_custom')
-  }, []);
-
-  const createTempUser = useCallback(async (name) => {
-    const res = await requests.createTempUser(name);
-    if (!res.ok) return null
-    const userCode = res.body.userCode;
-    setUserId(userCode)
-    return userCode
   }, []);
 
   const handleRoomNameChange = useCallback((event) => {
@@ -129,11 +123,11 @@ const AppContextProvider = ({ children }) => {
   const handleLeaveRoom = useCallback(() => {
     setRoom((prevRoom) => {
       if (prevRoom) {
-        prevRoom.localParticipant.tracks.forEach((trackPub) => {
-          trackPub.track.stop();
+        prevRoom.getLocalTracks().forEach(track => {
+          if (track.getType() === 'video') track.dispose();
+          if (track.getType() === 'audio') track.dispose();
         });
-        prevRoom.disconnect();
-        sckt.socket.emit("handleLeaveRoom")
+        sckt.socket.emit("handleLeaveRoom");
         window.removeEventListener("popstate", handleLeaveRoom);
       }
       return null;
@@ -201,13 +195,15 @@ const AppContextProvider = ({ children }) => {
       videoProps,
       updateVideoProps,
       sendRoomState,
-      createTempUser,
       sideBarType,
       setSideBarType,
-      nameArray,
-      setNameArray,
       pinnedParticipantId,
-      setPinnedParticipantId
+      setPinnedParticipantId,
+      participantIds,
+      setParticipantIds,
+      JitsiMeetJS,
+      localTracks,
+      setLocalTracks
     }}>
       {children}
     </AppContext.Provider>

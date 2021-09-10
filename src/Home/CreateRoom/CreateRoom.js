@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from 'react-router-dom'
 import { useAppContext } from "../../AppContext"
 import { RoutesEnum } from '../../App'
@@ -7,33 +7,78 @@ import { makeStyles } from "@material-ui/core/styles";
 import { FormControlLabel, Switch, Toolbar, IconButton, Box, Typography, TextField, InputAdornment, Grid } from '@material-ui/core';
 import { PersonOutlined, CreateOutlined, Add, ArrowBack, ArrowForward } from '@material-ui/icons';
 import * as requests from "../../utils/requests"
+import { createConnection, buildOptions } from "../../utils/jitsi"
 
 
 // this component renders form to be passed to VideoChat.js
 const CreateRoom = () => {
-  const { userId, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetOpenAuthDialog, makeCustomRoom, createTempUser, isLoggedIn } = useAppContext()
+  const { JitsiMeetJS, workoutType, connecting, username, roomName, workout, handleSetRoom, handleUsernameChange, handleSetConnecting, handleSetOpenAuthDialog, makeCustomRoom, isLoggedIn, setLocalTracks } = useAppContext()
+
   const history = useHistory()
+  const [connection, setConnection] = useState(null);
 
   // intialize custom room code
   useEffect(() => {
     makeCustomRoom();
   }, [makeCustomRoom]);
 
-  const handleSubmit = async (event) => {
+  useEffect(() => {
+    const options = buildOptions(roomName.toLowerCase());
+    const onConnectionSuccess = async () => {
+      const room = connection.initJitsiConference(roomName.toLowerCase(), options.conference)
+      handleSetRoom(room);
+      room.setSenderVideoConstraint(720);
+
+      // Sets Local Participants' property
+      room.setLocalParticipantProperty('displayName', username);
+
+      // Creates a room in the server
+      const room_res = await requests.createRoom(roomName.toLowerCase(), workout.id, workoutType);
+      if (!room_res.ok) { handleSetConnecting(false); return; }
+
+      handleSetConnecting(false);
+      history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`)
+    }
+    const onConnectionFailed = () => {
+      handleSetConnecting(false);
+      console.log('jitsi failed');
+    }
+    const disconnect = () => {
+      handleSetConnecting(false);
+      console.log('jitsi disconnect');
+    }
+    const onLocalTracks = (tracks) => {
+      console.log('setLocalTracks');
+      setLocalTracks(tracks);
+    }
+
+    if (JitsiMeetJS && connection) {
+      connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
+      connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
+      connection.addEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
+      connection.connect()
+      JitsiMeetJS.createLocalTracks({
+        devices: ['audio', 'video'],
+        maxFps: 24,
+        resolution: 720,
+        facingMode: 'user'
+      })
+        .then(onLocalTracks)
+        .catch(error => {
+          throw error;
+        });
+      return () => {
+        connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED, onConnectionSuccess);
+        connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_FAILED, onConnectionFailed);
+        connection.removeEventListener(JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED, disconnect);
+      }
+    }
+  }, [connection, JitsiMeetJS, workout, handleSetConnecting, handleSetRoom, history, roomName, setLocalTracks, username, workoutType]);
+
+  const handleSubmit = (event) => {
     event.preventDefault();
     handleSetConnecting(true);
-    const tempUserId = (isLoggedIn) ? userId : (await createTempUser(username));
-    const tok_res = await requests.twilioToken(tempUserId, roomName);
-    if (!tok_res.ok) { handleSetConnecting(false); return; }
-    const token = tok_res.body.token;
-    const room = await requests.createTwilioRoom(token, roomName);
-    if (!room) { handleSetConnecting(false); return; }
-    // Creates a room in the server
-    const room_res = await requests.createRoom(room, workout.id, 'vid');
-    if (!room_res.ok) { handleSetConnecting(false); return; }
-    handleSetRoom(room);
-    handleSetConnecting(false);
-    history.push(`${RoutesEnum.Room}/${roomName.substring(0, 6).toUpperCase()}`)
+    setConnection(createConnection(JitsiMeetJS, roomName.toLowerCase()));
   }
 
   const useStyles = makeStyles(theme => ({

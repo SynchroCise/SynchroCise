@@ -6,19 +6,19 @@ import { getVideoType } from '../../utils/video';
 import VideoSearch from './Search/Search';
 import VideoPlayer from "./Player/Player";
 
-const Video = ({ playerRef }) => {
-    const { username, room, videoProps, updateVideoProps, setVideoProps } = useAppContext();
+const Youtube = ({ playerRef }) => {
+    const { username, room, videoProps, updateVideoProps, setVideoProps, roomName } = useAppContext();
 
     const sendVideoState = useCallback(({ eventName, eventParams }) => {
         if (!room) return;
         let params = {
             name: username,
-            room: room.sid,
+            room: roomName,
             eventName: eventName,
             eventParams: eventParams
         };
         sckt.socket.emit('sendVideoState', params, (error) => { });
-    }, [room, username]);
+    }, [room, username, roomName]);
 
     const loadVideo = useCallback((searchItem, sync) => {
         const { playing, seekTime, initVideo } = videoProps;
@@ -153,4 +153,4 @@ const Video = ({ playerRef }) => {
     );
 }
 
-export default Video;
+export default Youtube;
